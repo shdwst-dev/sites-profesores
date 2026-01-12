@@ -6,8 +6,8 @@ export default function Home() {
     <div className="max-w-5xl mx-auto">
       {/* Encabezado */}
       <header className="mb-12">
-        <h1 className="text-3xl font-bold text-white">Bienvenido, Profesor</h1>
-        <p className="text-slate-400 mt-2 text-white">Seleccione el departamento para gestionar sus entregables.</p>
+        <h1 className="text-3xl font-bold text-slate-900">Bienvenido, Profesor</h1>
+        <p className="text-slate-500 mt-2">Seleccione el departamento para gestionar sus entregables.</p>
       </header>
 
       {/* Tarjetas de Selección */}
