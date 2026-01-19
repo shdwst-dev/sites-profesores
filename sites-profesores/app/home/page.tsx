@@ -13,6 +13,9 @@ export default function Home() {
     const manejarInfoDeInteres = () => {
         router.push('/Informacion-interes');
     };
+    const manejarSistemasComputacionales = () => {
+        router.push('/sistemas-computacionales');
+    }
 
     return (
         <div style={styles.page}>
@@ -46,7 +49,7 @@ export default function Home() {
                     onMouseEnter={() => setHoveredIcon(1)}
                     onMouseLeave={() => setHoveredIcon(null)}
                 >
-                    <div style={{ ...styles.opcionHeader, backgroundColor: '#c41e3a' }}>
+                    <div style={{ ...styles.opcionHeader, backgroundColor: '#c41e3a' }} onClick={manejarSistemasComputacionales}>
                         <div 
                             style={{
                                 ...styles.iconoWrapper,
