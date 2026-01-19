@@ -1,47 +1,76 @@
-import React from 'react';
-import Image from 'next/image';
+'use client';
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Info, Cpu, Globe } from 'lucide-react';
+import Header from '@/components/Header';
 
 
 export default function Home() {
+    const [hoveredIcon, setHoveredIcon] = useState<number | null>(null);
+    const router = useRouter();
+
+    const manejarInfoDeInteres = () => {
+        router.push('/Informacion-interes');
+    };
+
     return (
         <div style={styles.page}>
-            <header style={styles.header}>
-                <div style={styles.brand}>
-                    <Image
-                        src="/UPQ-Logo.png"
-                        alt="Logo UPQ"
-                        width={90}
-                        height={90}
-                    />
-                </div>
-            </header>
+            <Header />
             <div style={styles.container}>
                 <h1 style={styles.titulo}>Bienvenido al portal</h1>
-                <h2 style={styles.subtitulo}>Seleccione una opción para continuar</h2>
+                <h2 style={styles.subtitulo}>Seleccione una opción para continuar </h2>
             </div>
             <div style={styles.opciones}>
-                <div style={styles.opcion}>
-                    <div style={{ ...styles.opcionHeader, backgroundColor: '#004a8f' }}>
-                        <div className="icono-wrapper" style={styles.iconoWrapper}>
+                <div 
+                    style={styles.opcion}
+                    onMouseEnter={() => setHoveredIcon(0)}
+                    onMouseLeave={() => setHoveredIcon(null)}
+                >
+                    <div style={{ ...styles.opcionHeader, backgroundColor: '#004a8f' }} onClick={manejarInfoDeInteres}>
+                        <div
+                            className="icono-wrapper" 
+                            style={{
+                                ...styles.iconoWrapper,
+                                transform: hoveredIcon === 0 ? 'scale(1.2)' : 'scale(1)',
+                            }}
+                        >
                             <Info size={48} color="#fff" />
                         </div>
                         <h3 style={styles.opcionTitulo}>Información de Interés</h3>
                     </div>
                     <p style={styles.opcionDescripcion}>Avisos, comunicados y noticias importantes</p>
                 </div>
-                <div style={styles.opcion}>
+                <div 
+                    style={styles.opcion}
+                    onMouseEnter={() => setHoveredIcon(1)}
+                    onMouseLeave={() => setHoveredIcon(null)}
+                >
                     <div style={{ ...styles.opcionHeader, backgroundColor: '#c41e3a' }}>
-                        <div style={styles.iconoWrapper}>
+                        <div 
+                            style={{
+                                ...styles.iconoWrapper,
+                                transform: hoveredIcon === 1 ? 'scale(1.2)' : 'scale(1)',
+                            }}
+                        >
                             <Cpu size={48} color="#fff" />
                         </div>
                         <h3 style={styles.opcionTitulo}>Sistemas Computacionales</h3>
                     </div>
                     <p style={styles.opcionDescripcion}>Gestión de documentos y recursos de la carrera</p>
                 </div>
-                <div style={styles.opcion}>
+                <div 
+                    style={styles.opcion}
+                    onMouseEnter={() => setHoveredIcon(2)}
+                    onMouseLeave={() => setHoveredIcon(null)}
+                >
                     <div style={{ ...styles.opcionHeader, backgroundColor: '#004a8f' }}>
-                        <div style={styles.iconoWrapper}>
+                        <div 
+                            style={{
+                                ...styles.iconoWrapper,
+                                transform: hoveredIcon === 2 ? 'scale(1.2)' : 'scale(1)',
+                            }}
+                        >
                             <Globe size={48} color="#fff" />
                         </div>
                         <h3 style={styles.opcionTitulo}>TIID</h3>
@@ -57,21 +86,6 @@ const styles = {
     page: {
         minHeight: '100vh',
         backgroundColor: '#f7f7f7',
-    },
-    header: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0.5rem 2rem',
-        backgroundColor: '#ffffff',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)',
-    },
-    brand: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-    },
-    logo: {
-        objectFit: 'contain',
     },
     container: {
         display: 'flex',
@@ -134,7 +148,7 @@ const styles = {
         margin: 0,
     },
     iconoWrapper: {
-        transition: 'transform 0.3 ease',
+        transition: 'transform 0.3s ease',
         cursor: 'pointer'
     }
 };

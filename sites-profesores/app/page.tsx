@@ -32,7 +32,6 @@ export default function Login() {
       return;
     }
 
-    console.log("Datos válidos, redirigiendo...");
     router.push('/home');
   };
 
