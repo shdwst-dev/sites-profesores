@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Info, Cpu, Globe } from 'lucide-react';
 import Header from '@/components/Header';
-
+import Footer from '@/components/Footer';
 
 export default function Home() {
     const [hoveredIcon, setHoveredIcon] = useState<number | null>(null);
@@ -24,63 +24,66 @@ export default function Home() {
                 <h1 style={styles.titulo}>Bienvenido al portal</h1>
                 <h2 style={styles.subtitulo}>Seleccione una opción para continuar </h2>
             </div>
-            <div style={styles.opciones}>
-                <div 
-                    style={styles.opcion}
-                    onMouseEnter={() => setHoveredIcon(0)}
-                    onMouseLeave={() => setHoveredIcon(null)}
-                >
-                    <div style={{ ...styles.opcionHeader, backgroundColor: '#004a8f' }} onClick={manejarInfoDeInteres}>
-                        <div
-                            className="icono-wrapper" 
-                            style={{
-                                ...styles.iconoWrapper,
-                                transform: hoveredIcon === 0 ? 'scale(1.2)' : 'scale(1)',
-                            }}
-                        >
-                            <Info size={48} color="#fff" />
+            <main>
+                <div style={styles.opciones}>
+                    <div
+                        style={styles.opcion}
+                        onMouseEnter={() => setHoveredIcon(0)}
+                        onMouseLeave={() => setHoveredIcon(null)}
+                    >
+                        <div style={{ ...styles.opcionHeader, backgroundColor: '#004a8f' }} onClick={manejarInfoDeInteres}>
+                            <div
+                                className="icono-wrapper"
+                                style={{
+                                    ...styles.iconoWrapper,
+                                    transform: hoveredIcon === 0 ? 'scale(1.2)' : 'scale(1)',
+                                }}
+                            >
+                                <Info size={48} color="#fff" />
+                            </div>
+                            <h3 style={styles.opcionTitulo}>Información de Interés</h3>
                         </div>
-                        <h3 style={styles.opcionTitulo}>Información de Interés</h3>
+                        <p style={styles.opcionDescripcion}>Avisos, comunicados y noticias importantes</p>
                     </div>
-                    <p style={styles.opcionDescripcion}>Avisos, comunicados y noticias importantes</p>
-                </div>
-                <div 
-                    style={styles.opcion}
-                    onMouseEnter={() => setHoveredIcon(1)}
-                    onMouseLeave={() => setHoveredIcon(null)}
-                >
-                    <div style={{ ...styles.opcionHeader, backgroundColor: '#c41e3a' }} onClick={manejarSistemasComputacionales}>
-                        <div 
-                            style={{
-                                ...styles.iconoWrapper,
-                                transform: hoveredIcon === 1 ? 'scale(1.2)' : 'scale(1)',
-                            }}
-                        >
-                            <Cpu size={48} color="#fff" />
+                    <div
+                        style={styles.opcion}
+                        onMouseEnter={() => setHoveredIcon(1)}
+                        onMouseLeave={() => setHoveredIcon(null)}
+                    >
+                        <div style={{ ...styles.opcionHeader, backgroundColor: '#c41e3a' }} onClick={manejarSistemasComputacionales}>
+                            <div
+                                style={{
+                                    ...styles.iconoWrapper,
+                                    transform: hoveredIcon === 1 ? 'scale(1.2)' : 'scale(1)',
+                                }}
+                            >
+                                <Cpu size={48} color="#fff" />
+                            </div>
+                            <h3 style={styles.opcionTitulo}>Sistemas Computacionales</h3>
                         </div>
-                        <h3 style={styles.opcionTitulo}>Sistemas Computacionales</h3>
+                        <p style={styles.opcionDescripcion}>Gestión de documentos y recursos de la carrera</p>
                     </div>
-                    <p style={styles.opcionDescripcion}>Gestión de documentos y recursos de la carrera</p>
-                </div>
-                <div 
-                    style={styles.opcion}
-                    onMouseEnter={() => setHoveredIcon(2)}
-                    onMouseLeave={() => setHoveredIcon(null)}
-                >
-                    <div style={{ ...styles.opcionHeader, backgroundColor: '#004a8f' }}>
-                        <div 
-                            style={{
-                                ...styles.iconoWrapper,
-                                transform: hoveredIcon === 2 ? 'scale(1.2)' : 'scale(1)',
-                            }}
-                        >
-                            <Globe size={48} color="#fff" />
+                    <div
+                        style={styles.opcion}
+                        onMouseEnter={() => setHoveredIcon(2)}
+                        onMouseLeave={() => setHoveredIcon(null)}
+                    >
+                        <div style={{ ...styles.opcionHeader, backgroundColor: '#004a8f' }}>
+                            <div
+                                style={{
+                                    ...styles.iconoWrapper,
+                                    transform: hoveredIcon === 2 ? 'scale(1.2)' : 'scale(1)',
+                                }}
+                            >
+                                <Globe size={48} color="#fff" />
+                            </div>
+                            <h3 style={styles.opcionTitulo}>TIID</h3>
                         </div>
-                        <h3 style={styles.opcionTitulo}>TIID</h3>
+                        <p style={styles.opcionDescripcion}>Gestión de documentos y recursos de la carrera</p>
                     </div>
-                    <p style={styles.opcionDescripcion}>Gestión de documentos y recursos de la carrera</p>
                 </div>
-            </div>
+            </main>
+            <Footer />
         </div>
     );
 }
@@ -89,6 +92,9 @@ const styles = {
     page: {
         minHeight: '100vh',
         backgroundColor: '#f7f7f7',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        flex: 1,
     },
     container: {
         display: 'flex',

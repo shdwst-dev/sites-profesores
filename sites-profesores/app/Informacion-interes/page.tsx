@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, LogOut, Bell, Calendar, FileText, Users } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 export default function InfoPage() {
     const router = useRouter();
@@ -299,6 +300,7 @@ export default function InfoPage() {
                     </div>
                 </div>
             </main>
+            <Footer />
         </div>
     );
 }

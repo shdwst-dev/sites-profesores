@@ -2,12 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, LogOut, FileText, Bell } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 export default function SistemasComputacionales() {
     const router = useRouter();
 
     return (
-        <div>
+        <div style={styles.pageContainer}>
             <header className="bg-white shadow-sm border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
@@ -58,35 +59,42 @@ export default function SistemasComputacionales() {
                         </div>
                     </div>
                 </div>
-                <div>
-                    <h2>Información de la carrera</h2>
-                    <h3>Objetivo</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro eos aperiam totam qui autem quam exercitationem magni commodi! Nisi ipsam maxime voluptatibus nostrum explicabo a recusandae facilis dolores ipsum in?</p>
-                    <h3>Áreas de competencia</h3>
-                    <ul>
-                        <li>- Área 1</li>
-                        <li>- Área 2</li>
-                        <li>- Área 3</li>
-                    </ul>
-                    <ul>
-                        <li>- Área 4</li>
-                        <li>- Área 5</li>
-                    </ul>
-                    <h3>Datos de Contacto</h3>
-                    <p>Coordinación:</p>
-                    <p>Teléfono:</p>
-                    <p>Horario de atención:</p>
+                
+                {/* Sección Misión */}
+                <div style={styles.misionSection}>
+                    <div style={styles.misionImage}>
+                        <img 
+                            src="/mision-sistemas.png" 
+                            alt="Salón de clases" 
+                            style={styles.image}
+                        />
+                    </div>
+                    <div style={styles.misionContent}>
+                        <h2 style={styles.misionTitle}>Misión</h2>
+                        <p style={styles.misionText}>
+                            Formamos profesionales capaces de diseñar, construir y gestionar sistemas de tecnología de la información que transformen organizaciones y mejoren vidas. Con un enfoque en la innovación, la eficiencia y el factor humano, preparémoslos para liderar en un mundo globalizado, creando soluciones que no solo funcionen, sino que inspiren. ¡El futuro es suyo para construirlo!
+                        </p>
+                    </div>
                 </div>
             </main>
+            
+            <Footer />
         </div>
     );
 }
 
 const styles = {
+    pageContainer: {
+        display: 'flex',
+        flexDirection: 'column' as const,
+        flex: 1,
+    },
     main: {
+        flex: 1,
         maxWidth: '1200px',
         margin: '0 auto',
         padding: '24px 24px 40px',
+        width: '100%',
     },
     cards: {
         display: 'flex',
@@ -127,5 +135,46 @@ const styles = {
         margin: 0,
         fontSize: '17px',
         color: '#4a5568',
+    },
+    misionSection: {
+        marginTop: '60px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        display: 'flex',
+        flexWrap: 'wrap' as const,
+        boxShadow: '0 8px 20px rgba(0,0,0,0.06)',
+    },
+    misionImage: {
+        flex: '1 1 400px',
+        minWidth: '300px',
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover' as const,
+        display: 'block',
+    },
+    misionContent: {
+        flex: '1 1 400px',
+        padding: '48px 40px',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        justifyContent: 'center',
+        backgroundColor: '#f5f5f5',
+    },
+    misionTitle: {
+        fontSize: '32px',
+        fontWeight: 700,
+        color: '#1a202c',
+        marginBottom: '20px',
+        marginTop: 0,
+    },
+    misionText: {
+        fontSize: '16px',
+        lineHeight: '1.7',
+        color: '#4a5568',
+        textAlign: 'justify' as const,
+        margin: 0,
     },
 }
