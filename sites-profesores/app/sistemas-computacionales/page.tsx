@@ -2,10 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, LogOut, FileText, Bell } from 'lucide-react';
+import { useState } from 'react';
 import Footer from '@/components/Footer';
 
 export default function SistemasComputacionales() {
     const router = useRouter();
+    const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
     return (
         <div style={styles.pageContainer}>
@@ -38,9 +40,22 @@ export default function SistemasComputacionales() {
             <main style={styles.main}>
                 <div style={styles.cards}>
                     {/* Card 1 */}
-                    <div style={styles.card}>
+                    <div 
+                        style={styles.card} 
+                        onClick={() => router.push('/sistemas-computacionales/formatos-y-documentos')} 
+                        className='cursor-pointer'
+                        onMouseEnter={() => setHoveredCard(0)}
+                        onMouseLeave={() => setHoveredCard(null)}
+                    >
                         <div style={{ ...styles.cardTop, ...styles.redGradient }}>
-                            <FileText size={36} color="#fff" />
+                            <div
+                                style={{
+                                    ...styles.iconWrapper,
+                                    transform: hoveredCard === 0 ? 'scale(1.2)' : 'scale(1)',
+                                }}
+                            >
+                                <FileText size={36} color="#fff" />
+                            </div>
                             <h2 style={styles.cardTitle}>Formatos y Documentos</h2>
                         </div>
                         <div style={styles.cardBottom}>
@@ -49,9 +64,22 @@ export default function SistemasComputacionales() {
                     </div>
 
                     {/* Card 2 */}
-                    <div style={styles.card}>
+                    <div 
+                        style={styles.card}
+                        onClick={() => router.push('/sistemas-computacionales/recursos-y-avisos')}
+                        className='cursor-pointer'
+                        onMouseEnter={() => setHoveredCard(1)}
+                        onMouseLeave={() => setHoveredCard(null)}
+                    >
                         <div style={{ ...styles.cardTop, ...styles.blueGradient }}>
-                            <Bell size={36} color="#fff" />
+                            <div
+                                style={{
+                                    ...styles.iconWrapper,
+                                    transform: hoveredCard === 1 ? 'scale(1.2)' : 'scale(1)',
+                                }}
+                            >
+                                <Bell size={36} color="#fff" />
+                            </div>
                             <h2 style={styles.cardTitle}>Recursos y Avisos</h2>
                         </div>
                         <div style={styles.cardBottom}>
@@ -113,8 +141,9 @@ const styles = {
         padding: '22px 28px 26px',
         color: '#fff',
         display: 'flex',
-        flexDirection: 'column' as const,
+        flexDirection: 'row' as const,
         gap: '12px',
+        alignItems: 'center',
     },
     redGradient: {
         background: 'linear-gradient(135deg, #d80f32 0%, #a10c28 100%)',
@@ -126,6 +155,7 @@ const styles = {
         fontSize: '22px',
         fontWeight: 700,
         margin: 0,
+        flex: 1,
     },
     cardBottom: {
         backgroundColor: '#fff',
@@ -135,6 +165,13 @@ const styles = {
         margin: 0,
         fontSize: '17px',
         color: '#4a5568',
+    },
+    iconWrapper: {
+        transition: 'transform 0.3s ease',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
     },
     misionSection: {
         marginTop: '60px',
@@ -177,4 +214,4 @@ const styles = {
         textAlign: 'justify' as const,
         margin: 0,
     },
-}
+};

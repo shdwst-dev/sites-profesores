@@ -34,3 +34,7 @@ body {
 .icono-wrapper:hover {
   transform: scale(1.2);
 }
+
+.formato-row:hover .formato-nombre {
+  text-decoration: underline;
+}
