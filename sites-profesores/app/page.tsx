@@ -114,7 +114,9 @@ const styles = {
   title: { 
     textAlign: 'center' as const, 
     marginBottom: '1.5rem', 
-    color: '#333' 
+    color: '#333',
+    fontSize: '24px',
+    fontWeight: 700,
   },
   logoContainer: {
     display: 'flex',

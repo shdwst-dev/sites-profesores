@@ -152,7 +152,7 @@ const styles = {
         background: 'linear-gradient(135deg, #0a4a8c 0%, #06396b 100%)',
     },
     cardTitle: {
-        fontSize: '22px',
+        fontSize: '20px',
         fontWeight: 700,
         margin: 0,
         flex: 1,
@@ -163,7 +163,7 @@ const styles = {
     },
     cardText: {
         margin: 0,
-        fontSize: '17px',
+        fontSize: '16px',
         color: '#4a5568',
     },
     iconWrapper: {
@@ -201,14 +201,14 @@ const styles = {
         backgroundColor: '#f5f5f5',
     },
     misionTitle: {
-        fontSize: '32px',
+        fontSize: '26px',
         fontWeight: 700,
         color: '#1a202c',
         marginBottom: '20px',
         marginTop: 0,
     },
     misionText: {
-        fontSize: '16px',
+        fontSize: '15px',
         lineHeight: '1.7',
         color: '#4a5568',
         textAlign: 'justify' as const,

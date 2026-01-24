@@ -105,12 +105,12 @@ const styles = {
         marginBottom: '2rem',
     },
     titulo: {
-        fontSize: '2rem',
+        fontSize: '24px',
         color: '#333',
         marginBottom: '0.5rem',
     },
     subtitulo: {
-        fontSize: '1.2rem',
+        fontSize: '18px',
         color: '#666',
         marginTop: '0.5rem',
     },
@@ -134,7 +134,7 @@ const styles = {
         transition: 'transform 0.2s',
     },
     opcionTitulo: {
-        fontSize: '1.5rem',
+        fontSize: '20px',
         fontWeight: 600,
         color: '#ffffff',
         margin: 0,
@@ -150,7 +150,7 @@ const styles = {
         minHeight: '160px',
     },
     opcionDescripcion: {
-        fontSize: '1rem',
+        fontSize: '16px',
         color: '#666',
         padding: '1.5rem',
         textAlign: 'center' as const,

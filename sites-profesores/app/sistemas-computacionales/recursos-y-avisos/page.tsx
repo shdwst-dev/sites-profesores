@@ -1,12 +1,23 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, LogOut } from 'lucide-react'; // Agrega otros iconos según necesites
+import { AlignCenter, ArrowLeft, LogOut } from 'lucide-react';
 import Footer from '@/components/Footer';
 
 export default function RecursosAvisos() {
     const router = useRouter();
 
+/* 
+Cosas que debe de llevar esta pantalla:
+1. Quién el encargado de sistemas computacionales
+2. Coordinación de estancias y estadias, coordinación de tutorias
+3. Coordinación de proyectos integradores
+4. Criterios para solicitar un ETC
+5. Calendario escolar
+6. Altas y bajas de materias
+7. Avisos de lengua extranjera
+8. Solicitudes de casilleros para profesores
+*/
     return (
         <div style={styles.pageContainer}>
             {/* Header con navegación */}
@@ -21,8 +32,8 @@ export default function RecursosAvisos() {
                                 <ArrowLeft className="w-6 h-6 text-gray-700 cursor-pointer" />
                             </button>
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900">Título de tu Página</h1>
-                                <p className="text-sm text-gray-600">Subtítulo o descripción</p>
+                                <h1 className="text-xl font-bold text-gray-900">Recursos y avisos</h1>
+                                <p className="text-sm text-gray-600">Sistemas computacionales</p>
                             </div>
                         </div>
                         <button
@@ -39,6 +50,22 @@ export default function RecursosAvisos() {
             {/* Contenido principal */}
             <main style={styles.main}>
                 {/* Tu contenido aquí */}
+                <h1 className="text-2xl font-bold mb-4">Recursos y Avisos</h1>
+                <div style={styles.contenedorEncargado}>
+                    <div style={styles.contenedorEncargadoNombre}>
+                        ISC Lilia Jimenez Cruz
+                    </div>
+                    <div style={styles.contenedorEncargadoContacto}>
+                        Contacto: lilia.jimenez@upq.edu.mx
+                    </div>
+                </div>
+                <div style={styles.contenedorCoordinacion}>
+
+                    <div style={styles.contenedorCoordinacion}>
+
+                    </div>
+
+                </div>
             </main>
 
             {/* Footer reutilizable */}
@@ -61,4 +88,25 @@ const styles = {
         padding: '24px',
         width: '100%',
     },
+    contenedorEncargado: {
+        marginBottom: 16,
+        padding: 30,
+        border: '1px solid #e5e7eb',
+        borderRadius: 8,
+        backgroundColor: '#e1dfdb',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    contenedorCoordinacion: {
+
+    },
+    contenedorEncargadoNombre: {
+        fontSize: 18,
+        fontWeight: 600,
+    },
+    contenedorEncargadoContacto: {
+        fontSize: 18,
+        fontWeight: 600,
+    }
 };

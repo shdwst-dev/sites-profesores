@@ -143,7 +143,7 @@ export default function InfoPage() {
                             <div className="bg-gradient-to-br from-red-50 to-white rounded-xl shadow-sm border border-red-200 overflow-hidden flex flex-col">
                                 {/* Tutores */}
                                 <div className="p-6">
-                                    <h2 className="text-3xl font-bold text-red-900 mb-6">Tutores</h2>
+                                    <h2 className="text-2xl font-bold text-red-900 mb-6">Tutores</h2>
                                     <ul className="space-y-3">
                                         <li className="flex items-start gap-2">
                                             <span className="text-red-600 font-bold">•</span>
@@ -199,7 +199,7 @@ export default function InfoPage() {
                                     />
                                 </div>
                                 <div className="p-6">
-                                    <h2 className="text-3xl font-bold text-red-900 mb-6">Profesores</h2>
+                                    <h2 className="text-2xl font-bold text-red-900 mb-6">Profesores</h2>
                                     <ul className="space-y-3">
                                         <li className="flex items-start gap-2">
                                             <span className="text-red-600 font-bold">•</span>

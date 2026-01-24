@@ -160,7 +160,7 @@ const styles = {
         color: '#333',
     },
     subtitulo: {
-        fontSize: '18px',
+        fontSize: '16px',
         color: '#666',
         marginTop: '8px',
     },
@@ -182,7 +182,7 @@ const styles = {
         fontSize: 16 
     },
     sectionTitle: { 
-        fontSize: 16, 
+        fontSize: 20, 
         margin: 0 
     },
     card: {
@@ -201,11 +201,11 @@ const styles = {
         margin: 0, 
         fontWeight: 600, 
         color: '#1f2937',
-        fontSize: '15px',
+        fontSize: '16px',
     },
     cardMeta: { 
         margin: 0, 
-        fontSize: 12, 
+        fontSize: 13, 
         color: '#6b7280',
         display: 'flex',
         alignItems: 'center',
@@ -222,7 +222,7 @@ const styles = {
         border: '1px solid #e5eaf2',
         borderRadius: 8,
         padding: '8px 14px',
-        fontSize: 13,
+        fontSize: 14,
         cursor: 'pointer',
         fontWeight: 500,
         transition: 'all 0.2s',
@@ -233,7 +233,7 @@ const styles = {
         border: 'none',
         borderRadius: 8,
         padding: '8px 16px',
-        fontSize: 13,
+        fontSize: 14,
         cursor: 'pointer',
         fontWeight: 500,
         transition: 'all 0.2s',
@@ -255,7 +255,7 @@ const styles = {
         transition: 'color 0.2s, transform 0.15s',
     },
     formatoNombre: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 600,
         color: '#374151',  
     },
