@@ -1,15 +1,50 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 
+interface User {
+    name?: string;
+    picture?: string;
+    email?: string;
+}
+
 export default function Header() {
     const router = useRouter();
+    const [user, setUser] = useState<User | null>(null);
 
-    const manejarLogout = () => {
-        router.push('/');
+    // Obtiene los datos del usuario desde el backend (/api/auth/me)
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (!res.ok) {
+                    // Si /api/auth/me devuelve error, no hay sesión → ir a login
+                    router.push('/');
+                    return;
+                }
+                const data = await res.json();
+                setUser(data);
+            } catch (error) {
+                console.error('Error al obtener usuario', error);
+                router.push('/');
+            }
+        };
+
+        fetchUser();
+    }, [router]);
+
+    // Cierra la sesión: borra la cookie en el servidor y redirige al login
+    const manejarLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch (error) {
+            console.error('Error al cerrar sesión', error);
+        } finally {
+            router.push('/');
+        }
     };
 
     return (
@@ -22,10 +57,29 @@ export default function Header() {
                     height={90}
                 />
             </div>
-            <button onClick={manejarLogout} style={styles.btnCerrarSesion}>
-                <LogOut size={20} />
-                <span>Cerrar Sesión</span>
-            </button>
+            
+            <div style={styles.userSection}>
+                {/* Muestra la foto de perfil y nombre del usuario */}
+                {user && (
+                    <div style={styles.userInfo}>
+                        {user.picture && (
+                            <Image
+                                src={user.picture}
+                                alt="Foto de perfil"
+                                width={40}
+                                height={40}
+                                style={styles.profilePic}
+                            />
+                        )}
+                        <span style={styles.userName}>{user.name || user.email}</span>
+                    </div>
+                )}
+                
+                <button onClick={manejarLogout} style={styles.btnCerrarSesion}>
+                    <LogOut size={20} />
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
         </header>
     );
 }
@@ -37,9 +91,33 @@ const styles = {
         padding: '0.5rem 2rem',
         backgroundColor: '#ffffff',
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)',
+        justifyContent: 'space-between',
+    },
+    brand: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.75rem',
+    },
+    userSection: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1.5rem',
+    },
+    userInfo: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.75rem',
+    },
+    profilePic: {
+        borderRadius: '50%',
+        border: '2px solid #ddd',
+    } as const,
+    userName: {
+        fontSize: '0.95rem',
+        color: '#333',
+        fontWeight: 500 as const,
     },
     btnCerrarSesion: {
-        marginLeft: 'auto',
         display: 'flex',
         alignItems: 'center',
         gap: '0.5rem',
@@ -52,10 +130,5 @@ const styles = {
         fontWeight: 500 as const,
         cursor: 'pointer',
         transition: 'background-color 0.2s, transform 0.1s',
-    },
-    brand: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
     },
 };

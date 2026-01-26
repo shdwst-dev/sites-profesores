@@ -1,44 +1,77 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Mail, Lock } from 'lucide-react';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 export default function Login() {
   const router = useRouter();
-  
-  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    if (error) setError('');
+  // Verifica si el usuario ya está autenticado (tiene sesión válida)
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          // Si /api/auth/me devuelve 200, hay sesión válida → ir a /home
+          router.push('/home');
+        }
+      } catch (err) {
+        console.error('Session check failed', err);
+      }
+    };
+
+    checkSession();
+  }, [router]);
+
+  // Maneja el login exitoso con Google
+  const handleSuccess = async (credentialResponse: any) => {
+    if (!credentialResponse?.credential) {
+      setError('No se recibió el token de Google.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      // Envía el credential (id_token) de Google al backend
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ credential: credentialResponse.credential }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.message || 'No autorizado.');
+        return;
+      }
+
+      // Backend seteó la cookie → redirige a /home
+      router.push('/home');
+    } catch (err) {
+      console.error('Error al autenticar', err);
+      setError('Error al conectar con el servidor.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!formData.email.trim() || !formData.password.trim()) {
-      setError('Por favor completa todos los campos.');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email.trim())) {
-      
-      setError('Por favor ingresa un correo válido.');
-      return;
-    }
-
-    router.push('/home');
+  const handleError = () => {
+    setError('Error al iniciar sesión con Google');
+    console.error('Error al iniciar sesión con Google');
   };
 
   return (
-    
-    <div style={styles.container}>
-      <div style={styles.logoContainer}>
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+      <div style={styles.container}>
+        <div style={styles.logoContainer}>
           <Image 
             src="/UPQ-Logo.png" 
             alt="Logo" 
@@ -47,49 +80,25 @@ export default function Login() {
             priority
           />
         </div>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Iniciar Sesión</h2>
-        
-        <form onSubmit={handleSubmit}>
-
-            <div style={styles.inputGroup}>
-              <label>Correo Electrónico</label>
-              <div style={styles.inputWrapper}>
-                <Mail style={styles.inputIcon} />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="ejemplo@correo.com"
-                  style={styles.inputWithIcon}
-                />
-              </div>
-            </div>
-
-            <div style={styles.inputGroup}>
-              <label>Contraseña</label>
-              <div style={styles.inputWrapper}>
-                <Lock style={styles.inputIcon} />
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="******"
-                  style={styles.inputWithIcon}
-                />
-              </div>
-            </div>
-
+        <div style={styles.card}>
+          <h2 style={styles.title}>Iniciar Sesión</h2>
+          
           {error && <p style={styles.error}>{error}</p>}
-
-          <button type="submit" style={styles.button}>
-            Entrar
-          </button>
-        </form>
+          
+          <div style={styles.googleButtonContainer}>
+            <GoogleLogin
+              onSuccess={handleSuccess}
+              onError={handleError}
+              useOneTap
+              theme="outline"
+              size="large"
+              width="280"
+            />
+            {loading && <p style={styles.loading}>Validando...</p>}
+          </div>
+        </div>
       </div>
-    </div>
+    </GoogleOAuthProvider>
   );
 }
 //estilos
@@ -123,45 +132,26 @@ const styles = {
     justifyContent: 'center',
     marginBottom: '1.5rem'
   },
-  inputGroup: { marginBottom: '1rem' },
-    inputWrapper: {
-      position: 'relative' as const,
-      display: 'flex',
-      alignItems: 'center',
-      marginTop: '0.5rem',
-    },
-    inputWithIcon: {
-      width: '100%',
-      padding: '0.5rem 0.5rem 0.5rem 2.2rem', // padding-left para el icono
-      border: '1px solid #ddd',
-      borderRadius: '4px',
-      boxSizing: 'border-box' as const,
-      fontSize: '1rem',
-    },
-    inputIcon: {
-      position: 'absolute' as const,
-      left: '0.7rem',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      color: '#888',
-      width: '1.2rem',
-      height: '1.2rem',
-      pointerEvents: 'none' as const,
-    },
-  button: {
-    width: '100%', 
-    padding: '0.75rem', 
-    backgroundColor: '#1e3a5f', 
-    color: 'white', 
-    border: 'none', 
-    borderRadius: '4px', 
-    cursor: 'pointer', 
-    fontSize: '1rem'
+  googleButtonContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    width: '100%',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
   },
   error: { 
-    color: 'red', 
+    color: '#c41e3a', 
     fontSize: '0.875rem', 
     marginBottom: '1rem', 
-    textAlign: 'center' as const 
-  }
+    textAlign: 'center' as const,
+    padding: '0.75rem',
+    backgroundColor: '#ffe5e5',
+    borderRadius: '4px',
+    border: '1px solid #ffcccc'
+  },
+  loading: {
+    marginTop: '0.75rem',
+    color: '#1e3a5f',
+    fontSize: '0.9rem',
+  },
 };
