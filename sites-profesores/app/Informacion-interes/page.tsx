@@ -92,8 +92,8 @@ export default function InfoPage() {
                 <div className="grid lg:grid-cols-3 gap-8">
 
                     <div className="lg:col-span-2 space-y-8">
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <div style={{ backgroundColor: '#1e3a5f', color: '#fff', padding: '30px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                            <h2 style={{ fontSize: '24px', fontWeight: 600, color: 'inherit', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Bell />
                                 Comunicados Recientes
                             </h2>
@@ -101,27 +101,28 @@ export default function InfoPage() {
                                 {comunicados.map((comm) => (
                                     <div
                                         key={comm.id}
-                                        className="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-sm border border-blue-200 p-6 hover:shadow-md transition-all"
+                                        className="rounded-xl shadow-sm border p-6 hover:shadow-md transition-all"
+                                        style={{ backgroundColor: '#f9f9f9', borderColor: '#e5e7eb' }}
                                     >
                                         <div className="flex items-start justify-between mb-3">
-                                            <h3 className="font-bold text-blue-900 text-lg">{comm.title}</h3>
-                                            <span className="px-3 py-1 bg-blue-200 text-blue-800 text-xs rounded-full font-medium">
+                                            <h3 style={{ fontWeight: 600, fontSize: '18px', color: '#333', margin: 0 }}>{comm.title}</h3>
+                                            <span className="px-3 py-1 text-xs rounded-full font-medium" style={{ backgroundColor: '#1e3a5f', color: '#fff' }}>
                                                 {comm.category}
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-blue-700 mb-3">
+                                        <div className="flex items-center gap-2 text-sm mb-3" style={{ color: '#666' }}>
                                             <Calendar />
                                             {comm.date}
                                         </div>
-                                        <p className="text-blue-900">{comm.content}</p>
+                                        <p style={{ color: '#333' }}>{comm.content}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
 
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <div style={{ backgroundColor: '#e1dfdb', padding: '30px', borderRadius: '8px', border: '1px solid #e5e7eb', marginTop: '24px' }}>
+                            <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#333', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <FileText />
                                 Trámites y Procedimientos
                             </h2>
@@ -129,51 +130,55 @@ export default function InfoPage() {
                                 {tramites_y_procedimientos.map((procedure, index) => (
                                     <div
                                         key={index}
-                                        className="bg-gradient-to-br from-green-50 to-white rounded-xl shadow-sm border border-green-200 p-5 hover:shadow-md transition-all cursor-pointer"
+                                        className="rounded-xl shadow-sm border p-5 hover:shadow-md transition-all cursor-pointer"
+                                        style={{ backgroundColor: '#f9f9f9', borderColor: '#e5e7eb' }}
                                     >
-                                        <h3 className="font-bold text-green-900 mb-2">{procedure.title}</h3>
-                                        <p className="text-sm text-green-800">{procedure.description}</p>
+                                        <h3 className="font-bold mb-2" style={{ color: '#333' }}>{procedure.title}</h3>
+                                        <p className="text-sm" style={{ color: '#666' }}>{procedure.description}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         {/* Tutores y Profesores */}
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div className="bg-gradient-to-br from-red-50 to-white rounded-xl shadow-sm border border-red-200 overflow-hidden flex flex-col">
+                        <div className="grid md:grid-cols-2 gap-6" style={{ backgroundColor: '#431d2a', padding: '30px', borderRadius: '8px', border: '1px solid #e5e7eb', marginTop: '24px' }}>
+                            <div className="rounded-xl shadow-sm border overflow-hidden flex flex-col" style={{ backgroundColor: '#f9f9f9'}}>
                                 {/* Tutores */}
                                 <div className="p-6">
-                                    <h2 className="text-2xl font-bold text-red-900 mb-6">Tutores</h2>
+                                    <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#333', marginBottom: '24px' }}>Tutores</h2>
                                     <ul className="space-y-3">
                                         <li className="flex items-start gap-2">
-                                            <span className="text-red-600 font-bold">•</span>
+                                            <span className="font-bold" style={{ color: '#431d2a' }}>•</span>
                                             <a
                                                 href="https://www.youtube.com/watch?v=1oin1h4kdOg"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="font-semibold text-red-900 hover:text-red-700 hover:underline transition-colors"
+                                                className="font-semibold hover:underline transition-colors"
+                                                style={{ color: '#431d2a' }}
                                             >
                                                 ¿Qué son las tutorías académicas?
                                             </a>
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <span className="text-red-600 font-bold">•</span>
+                                            <span className="font-bold" style={{ color: '#431d2a' }}>•</span>
                                             <a 
                                                 href="https://www.youtube.com/watch?v=sDk1pTDPROI" 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
-                                                className="font-semibold text-red-900 hover:text-red-700 hover:underline transition-colors"
+                                                className="font-semibold hover:underline transition-colors"
+                                                style={{ color: '#431d2a' }}
                                             >
                                                 Todo el mundo debería saber programar.
                                             </a>
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <span className="text-red-600 font-bold">•</span>
+                                            <span className="font-bold" style={{ color: '#431d2a' }}>•</span>
                                             <a 
                                                 href="https://www.youtube.com/watch?v=fYJ9VtBt7lQ" 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
-                                                className="font-semibold text-red-900 hover:text-red-700 hover:underline transition-colors"
+                                                className="font-semibold hover:underline transition-colors"
+                                                style={{ color: '#431d2a' }}
                                             >
                                                 La vida es maravillosa.
                                             </a>
@@ -190,7 +195,7 @@ export default function InfoPage() {
                             </div>
 
                             {/* Profesores */}
-                            <div className="bg-gradient-to-br from-red-50 to-white rounded-xl shadow-sm border border-red-200 overflow-hidden flex flex-col">
+                            <div className="rounded-xl shadow-sm border overflow-hidden flex flex-col" style={{ backgroundColor: '#f9f9f9'}}>
                                 <div className="flex-1 bg-gray-200 relative overflow-hidden">
                                     <img 
                                         src="/tutores-image.jpg" 
@@ -199,37 +204,40 @@ export default function InfoPage() {
                                     />
                                 </div>
                                 <div className="p-6">
-                                    <h2 className="text-2xl font-bold text-red-900 mb-6">Profesores</h2>
+                                    <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#333', marginBottom: '24px' }}>Profesores</h2>
                                     <ul className="space-y-3">
                                         <li className="flex items-start gap-2">
-                                            <span className="text-red-600 font-bold">•</span>
+                                            <span className="font-bold" style={{ color: '#431d2a' }}>•</span>
                                             <a 
                                                 href="https://www.uniandes.edu.co/es/oferta-academica" 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
-                                                className="font-semibold text-red-900 hover:text-red-700 hover:underline transition-colors"
+                                                className="font-semibold hover:underline transition-colors"
+                                                style={{ color: '#431d2a' }}
                                             >
                                                 Estrategias didácticas
                                             </a>
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <span className="text-red-600 font-bold">•</span>
+                                            <span className="font-bold" style={{ color: '#431d2a' }}>•</span>
                                             <a 
                                                 href="https://www.youtube.com/watch?v=ejemplo2" 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
-                                                className="font-semibold text-red-900 hover:text-red-700 hover:underline transition-colors"
+                                                className="font-semibold hover:underline transition-colors"
+                                                style={{ color: '#431d2a' }}
                                             >
                                                 Manual - Estrategias didácticas **LINK PENDIENTE**
                                             </a>
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <span className="text-red-600 font-bold">•</span>
+                                            <span className="font-bold" style={{ color: '#431d2a' }}>•</span>
                                             <a 
                                                 href="https://www.enso.edu.co/biblionline/archivos/3280.pdf" 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
-                                                className="font-semibold text-red-900 hover:text-red-700 hover:underline transition-colors"
+                                                className="font-semibold hover:underline transition-colors"
+                                                style={{ color: '#431d2a' }}
                                             >
                                                 Mejorar la disciplina en el aula
                                             </a>
@@ -242,7 +250,7 @@ export default function InfoPage() {
 
                     <div className="space-y-6">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#333', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Calendar />
                                 Fechas Importantes
                             </h2>
@@ -274,7 +282,7 @@ export default function InfoPage() {
                         </div>
 
                         <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 border border-yellow-200">
-                            <h3 className="font-bold text-yellow-900 mb-4 flex items-center gap-2">
+                            <h3 style={{ fontWeight: 600, fontSize: '18px', color: '#874d33', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Users className="w-5 h-5" />
                                 Contactos Importantes
                             </h3>

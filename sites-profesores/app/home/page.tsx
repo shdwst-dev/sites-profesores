@@ -31,7 +31,7 @@ export default function Home() {
                         onMouseEnter={() => setHoveredIcon(0)}
                         onMouseLeave={() => setHoveredIcon(null)}
                     >
-                        <div style={{ ...styles.opcionHeader, backgroundColor: '#004a8f' }} onClick={manejarInfoDeInteres}>
+                        <div style={{ ...styles.opcionHeader, backgroundColor: '#1e3a5f' }} onClick={manejarInfoDeInteres}>
                             <div
                                 className="icono-wrapper"
                                 style={{
@@ -50,7 +50,7 @@ export default function Home() {
                         onMouseEnter={() => setHoveredIcon(1)}
                         onMouseLeave={() => setHoveredIcon(null)}
                     >
-                        <div style={{ ...styles.opcionHeader, backgroundColor: '#c41e3a' }} onClick={manejarSistemasComputacionales}>
+                        <div style={{ ...styles.opcionHeader, backgroundColor: '#431d2a' }} onClick={manejarSistemasComputacionales}>
                             <div
                                 style={{
                                     ...styles.iconoWrapper,
@@ -68,7 +68,7 @@ export default function Home() {
                         onMouseEnter={() => setHoveredIcon(2)}
                         onMouseLeave={() => setHoveredIcon(null)}
                     >
-                        <div style={{ ...styles.opcionHeader, backgroundColor: '#004a8f' }}>
+                        <div style={{ ...styles.opcionHeader, backgroundColor: '#1e3a5f' }}>
                             <div
                                 style={{
                                     ...styles.iconoWrapper,
@@ -105,12 +105,14 @@ const styles = {
         marginBottom: '2rem',
     },
     titulo: {
-        fontSize: '24px',
+        fontSize: '28px',
+        fontWeight: 700,
         color: '#333',
         marginBottom: '0.5rem',
     },
     subtitulo: {
-        fontSize: '18px',
+        fontSize: '20px',
+        fontWeight: 600,
         color: '#666',
         marginTop: '0.5rem',
     },
@@ -134,7 +136,7 @@ const styles = {
         transition: 'transform 0.2s',
     },
     opcionTitulo: {
-        fontSize: '20px',
+        fontSize: '24px',
         fontWeight: 600,
         color: '#ffffff',
         margin: 0,
@@ -150,7 +152,8 @@ const styles = {
         minHeight: '160px',
     },
     opcionDescripcion: {
-        fontSize: '16px',
+        fontSize: '18px',
+        fontWeight: 600,
         color: '#666',
         padding: '1.5rem',
         textAlign: 'center' as const,

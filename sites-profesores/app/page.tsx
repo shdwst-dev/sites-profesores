@@ -101,7 +101,7 @@ const styles = {
     alignItems: 'center',
     minHeight: '100vh',
     width: '100vw',
-    background: 'linear-gradient(180deg, #0a3871 0%, #e03c5a 100%)',
+    background: 'linear-gradient(180deg, #1e3a5f 0%, #431d2a 100%)',
     padding: '0',
   },
   card: {
@@ -151,7 +151,7 @@ const styles = {
   button: {
     width: '100%', 
     padding: '0.75rem', 
-    backgroundColor: '#003B71', 
+    backgroundColor: '#1e3a5f', 
     color: 'white', 
     border: 'none', 
     borderRadius: '4px', 

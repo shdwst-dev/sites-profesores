@@ -39,7 +39,6 @@ export default function SistemasComputacionales() {
 
             <main style={styles.main}>
                 <div style={styles.cards}>
-                    {/* Card 1 */}
                     <div 
                         style={styles.card} 
                         onClick={() => router.push('/sistemas-computacionales/formatos-y-documentos')} 
@@ -63,7 +62,6 @@ export default function SistemasComputacionales() {
                         </div>
                     </div>
 
-                    {/* Card 2 */}
                     <div 
                         style={styles.card}
                         onClick={() => router.push('/sistemas-computacionales/recursos-y-avisos')}
@@ -146,14 +144,14 @@ const styles = {
         alignItems: 'center',
     },
     redGradient: {
-        background: 'linear-gradient(135deg, #d80f32 0%, #a10c28 100%)',
+        background: 'linear-gradient(135deg, #431d2a 0%, #2d1420 100%)',
     },
     blueGradient: {
-        background: 'linear-gradient(135deg, #0a4a8c 0%, #06396b 100%)',
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #152a45 100%)',
     },
     cardTitle: {
-        fontSize: '20px',
-        fontWeight: 700,
+        fontSize: '24px',
+        fontWeight: 600,
         margin: 0,
         flex: 1,
     },
@@ -163,7 +161,8 @@ const styles = {
     },
     cardText: {
         margin: 0,
-        fontSize: '16px',
+        fontSize: '18px',
+        fontWeight: 600,
         color: '#4a5568',
     },
     iconWrapper: {
@@ -201,14 +200,15 @@ const styles = {
         backgroundColor: '#f5f5f5',
     },
     misionTitle: {
-        fontSize: '26px',
-        fontWeight: 700,
+        fontSize: '28px',
+        fontWeight: 600,
         color: '#1a202c',
         marginBottom: '20px',
         marginTop: 0,
     },
     misionText: {
-        fontSize: '15px',
+        fontSize: '18px',
+        fontWeight: 600,
         lineHeight: '1.7',
         color: '#4a5568',
         textAlign: 'justify' as const,

@@ -1,11 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, LogOut, Clock, Calendar, FileText, BookOpen, Table, CheckSquare, Book, Map, NotebookPen } from 'lucide-react';
+import { ArrowLeft, LogOut, Clock, Calendar, FileText, BookOpen, Table, CheckSquare, Book, Map, NotebookPen, X } from 'lucide-react';
+import { useState } from 'react';
 import Footer from '@/components/Footer';
 
 export default function FormatosDocumentos() {
     const router = useRouter();
+    const [selectedFiles, setSelectedFiles] = useState<{ [key: string]: File[] }>({});
 
     const entregables = [{
         titulo: 'Semana 1',
@@ -82,6 +84,22 @@ export default function FormatosDocumentos() {
             <main style={styles.main}>
                 <h1 style={styles.titulo}>Entregables del cuatrimestre</h1>
                 <h2 style={styles.subtitulo}>Sube tus entregables antes de la fecha límite indicada</h2>
+
+                {/* Instrucciones */}
+                <div style={styles.instruccionesContainer}>
+                    <h3 style={styles.instruccionesTitle}>Cómo subir tus archivos</h3>
+                    <ol style={styles.instruccionesList}>
+                        <li style={styles.instruccionItem}>
+                            <strong>Seleccionar archivo:</strong> Haz clic en el botón <em>"Seleccionar archivo"</em> para abrir tu explorador de archivos.
+                        </li>
+                        <li style={styles.instruccionItem}>
+                            <strong>Elegir archivos:</strong> Navega por tus carpetas y selecciona el archivo o archivos que necesitas subir. Puedes seleccionar múltiples archivos manteniendo presionada la tecla <em>Ctrl</em> (o <em>Cmd</em> en Mac) mientras haces clic en cada archivo.
+                        </li>
+                        <li style={styles.instruccionItem}>
+                            <strong>Confirmar subida:</strong> Una vez que hayas seleccionado todos los archivos necesarios, haz clic en el botón <em>"Subir"</em> para enviarlos a la carpeta de Google Drive correspondiente.
+                        </li>
+                    </ol>
+                </div>
                 
                 <div style={{ marginTop: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
                     {entregables.map((grupo) => (
@@ -92,24 +110,91 @@ export default function FormatosDocumentos() {
                             </div>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                {grupo.items.map((item) => (
+                                {grupo.items.map((item, itemIdx) => {
+                                    const taskKey = `${grupo.titulo}-${itemIdx}`;
+                                    const currentFiles = selectedFiles[taskKey] || [];
+                                    
+                                    return (
                                     <div key={item.nombre} style={styles.card}>
-                                        <div>
-                                            <p style={styles.cardTitle}>{item.nombre}</p>
-                                            <p style={styles.cardMeta}>
-                                                <span style={{ marginRight: 4 }}><Clock /></span>
-                                                {item.fecha}
-                                            </p>
+                                        <div style={styles.cardHeader}>
+                                            <div>
+                                                <p style={styles.cardTitle}>{item.nombre}</p>
+                                                <p style={styles.cardMeta}>
+                                                    <span style={{ marginRight: 4 }}><Clock /></span>
+                                                    {item.fecha}
+                                                </p>
+                                            </div>
+                                            <div style={styles.actions}>
+                                                <label style={styles.fileButton}>
+                                                    Seleccionar archivo
+                                                    <input 
+                                                        type="file" 
+                                                        multiple
+                                                        style={{ display: 'none' }}
+                                                        onChange={(e) => {
+                                                            if (e.target.files) {
+                                                                setSelectedFiles({
+                                                                    ...selectedFiles,
+                                                                    [taskKey]: Array.from(e.target.files)
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
+                                                </label>
+                                                <button 
+                                                    style={styles.uploadButton}
+                                                    disabled={currentFiles.length === 0}
+                                                    onClick={() => {
+                                                        if (currentFiles.length > 0) {
+                                                            console.log('Subiendo archivos:', currentFiles);
+                                                            setSelectedFiles({
+                                                                ...selectedFiles,
+                                                                [taskKey]: []
+                                                            });
+                                                        }
+                                                    }}
+                                                >
+                                                    Subir
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div style={styles.actions}>
-                                            <label style={styles.fileButton}>
-                                                Seleccionar archivo
-                                                <input type="file" style={{ display: 'none' }} />
-                                            </label>
-                                            <button style={styles.uploadButton}>Subir</button>
-                                        </div>
+                                        
+                                        {currentFiles.length > 0 && (
+                                            <div style={styles.selectedFilesContainer}>
+                                                <div style={styles.selectedFilesHeader}>
+                                                    <strong>Archivos seleccionados ({currentFiles.length})</strong>
+                                                    <button
+                                                        onClick={() => setSelectedFiles({
+                                                            ...selectedFiles,
+                                                            [taskKey]: []
+                                                        })}
+                                                        style={styles.clearAllButton}
+                                                    >
+                                                        Limpiar todo
+                                                    </button>
+                                                </div>
+                                                <ul style={styles.selectedFilesList}>
+                                                    {currentFiles.map((file, idx) => (
+                                                        <li key={`${file.name}-${idx}`} style={styles.selectedFileItem}>
+                                                            <span>{file.name}</span>
+                                                            <button
+                                                                onClick={() => setSelectedFiles({
+                                                                    ...selectedFiles,
+                                                                    [taskKey]: currentFiles.filter((_, i) => i !== idx)
+                                                                })}
+                                                                style={styles.removeFileButton}
+                                                                title="Eliminar archivo"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
                                     </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </section>
                     ))}
@@ -127,7 +212,7 @@ export default function FormatosDocumentos() {
                                 className='formato-row'
                                 onClick={() => window.open(formato.url, '_blank')}
                             >
-                                <IconComponent size={22} color="#1a4fb0" />
+                                <IconComponent size={22} color="#1e3a5f" />
                                 <span style={styles.formatoNombre} className='formato-nombre'>{formato.nombre}</span>
                             </div>
                         );
@@ -155,18 +240,19 @@ const styles = {
         width: '100%',
     },
     titulo: {
-        fontSize: '24px',
+        fontSize: '28px',
         fontWeight: 600,
         color: '#333',
     },
     subtitulo: {
-        fontSize: '16px',
+        fontSize: '18px',
+        fontWeight: 600,
         color: '#666',
         marginTop: '8px',
     },
     section: {
-        background: '#f7f9fc',
-        border: '1px solid #e5eaf2',
+        background: '#e1dfdb',
+        border: '1px solid #d4d2cd',
         borderRadius: 12,
         padding: 16,
     },
@@ -175,33 +261,38 @@ const styles = {
         alignItems: 'center',
         gap: 8,
         marginBottom: 12,
-        color: '#1a4fb0',
+        color: '#1e3a5f',
         fontWeight: 700,
     },
     sectionIcon: { 
         fontSize: 16 
     },
     sectionTitle: { 
-        fontSize: 20, 
+        fontSize: 24,
+        fontWeight: 600,
         margin: 0 
     },
     card: {
         display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        flexDirection: 'column' as const,
         background: '#fff',
         border: '1px solid #e8edf5',
         borderRadius: 10,
         padding: '14px 16px',
         boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        gap: 12,
+    },
+    cardHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
         gap: 16,
-        flexWrap: 'wrap' as const,
     },
     cardTitle: { 
         margin: 0, 
         fontWeight: 600, 
         color: '#1f2937',
-        fontSize: '16px',
+        fontSize: '18px',
     },
     cardMeta: { 
         margin: 0, 
@@ -212,7 +303,8 @@ const styles = {
         marginTop: 4,
     },
     actions: { 
-        display: 'flex', 
+        display: 'flex',
+        flexDirection: 'row' as const,
         alignItems: 'center', 
         gap: 8 
     },
@@ -228,8 +320,8 @@ const styles = {
         transition: 'all 0.2s',
     },
     uploadButton: {
-        background: '#e5e9f2',
-        color: '#6b7280',
+        background: '#431d2a',
+        color: '#ffffff',
         border: 'none',
         borderRadius: 8,
         padding: '8px 16px',
@@ -237,6 +329,91 @@ const styles = {
         cursor: 'pointer',
         fontWeight: 500,
         transition: 'all 0.2s',
+    },
+    selectedFilesContainer: {
+        marginTop: '16px',
+        padding: '12px',
+        backgroundColor: '#e1dfdb',
+        border: '1px solid #d4d2cd',
+        borderRadius: '6px',
+    },
+    selectedFilesHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '12px',
+        fontSize: '14px',
+        color: '#1e3a5f',
+    },
+    clearAllButton: {
+        background: 'none',
+        border: 'none',
+        color: '#e11d48',
+        cursor: 'pointer',
+        fontSize: '13px',
+        fontWeight: 500,
+        padding: '4px 8px',
+        borderRadius: '4px',
+        transition: 'all 0.2s',
+    },
+    selectedFilesList: {
+        margin: 0,
+        padding: 0,
+        listStyle: 'none',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        gap: '8px',
+    },
+    selectedFileItem: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '8px 10px',
+        backgroundColor: '#ffffff',
+        border: '1px solid #1e3a5f',
+        borderRadius: '4px',
+        fontSize: '13px',
+        color: '#333',
+    },
+    removeFileButton: {
+        background: '#fff',
+        border: '1px solid #431d2a',
+        color: '#431d2a',
+        borderRadius: '4px',
+        padding: '4px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'all 0.2s',
+    },
+    instruccionesContainer: {
+        backgroundColor: '#1e3a5f',
+        color: '#fff',
+        padding: '24px',
+        borderRadius: '8px',
+        marginTop: '32px',
+        marginBottom: '32px',
+        border: '1px solid #152a45',
+    },
+    instruccionesTitle: {
+        fontSize: '20px',
+        fontWeight: 600,
+        marginTop: 0,
+        marginBottom: '16px',
+        color: 'inherit',
+    },
+    instruccionesList: {
+        marginTop: 0,
+        marginBottom: 0,
+        paddingLeft: '20px',
+        lineHeight: '1.8',
+    },
+    instruccionItem: {
+        marginBottom: '12px',
+        fontSize: '16px',
+        fontWeight: 500,
+        color: 'inherit',
     },
     formatosList: {
         marginTop: 20,
@@ -255,7 +432,7 @@ const styles = {
         transition: 'color 0.2s, transform 0.15s',
     },
     formatoNombre: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 600,
         color: '#374151',  
     },
