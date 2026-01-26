@@ -16,6 +16,9 @@ export default function Home() {
     const manejarSistemasComputacionales = () => {
         router.push('/sistemas-computacionales');
     }
+    const manejarTIID = () => {
+        router.push('/tiid');
+    }
 
     return (
         <div style={styles.page}>
@@ -68,7 +71,7 @@ export default function Home() {
                         onMouseEnter={() => setHoveredIcon(2)}
                         onMouseLeave={() => setHoveredIcon(null)}
                     >
-                        <div style={{ ...styles.opcionHeader, backgroundColor: '#1e3a5f' }}>
+                        <div style={{ ...styles.opcionHeader, backgroundColor: '#1e3a5f' }} onClick={manejarTIID}>
                             <div
                                 style={{
                                     ...styles.iconoWrapper,
