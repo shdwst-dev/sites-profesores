@@ -39,11 +39,17 @@ export default function Header() {
     // Cierra la sesión: borra la cookie en el servidor y redirige al login
     const manejarLogout = async () => {
         try {
-            await fetch('/api/auth/logout', { method: 'POST' });
+            // Llama al endpoint de logout y fuerza limpieza de cookie
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include',
+                cache: 'no-store',
+            });
         } catch (error) {
             console.error('Error al cerrar sesión', error);
         } finally {
-            router.push('/');
+            // Redirige al login y evita quedarte en la ruta protegida
+            router.replace('/');
         }
     };
 
@@ -75,7 +81,7 @@ export default function Header() {
                     </div>
                 )}
                 
-                <button onClick={manejarLogout} style={styles.btnCerrarSesion}>
+                <button type="button" onClick={manejarLogout} style={styles.btnCerrarSesion}>
                     <LogOut size={20} />
                     <span>Cerrar Sesión</span>
                 </button>

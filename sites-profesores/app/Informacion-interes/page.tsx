@@ -60,7 +60,7 @@ export default function InfoPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        <div className="min-h-screen">
             <header className="bg-white shadow-sm border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
@@ -77,11 +77,11 @@ export default function InfoPage() {
                             </div>
                         </div>
                         <button
-                            onClick={() => router.push('/')}
+                            onClick={() => router.push('/home')}
                             className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all cursor-pointer"
                         >
                             <LogOut className="w-5 h-5" />
-                            <span>Cerrar Sesión</span>
+                            <span>Volver al inicio</span>
                         </button>
                     </div>
                 </div>

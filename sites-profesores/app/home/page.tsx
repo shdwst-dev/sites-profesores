@@ -94,7 +94,7 @@ export default function Home() {
 const styles = {
     page: {
         minHeight: '100vh',
-        backgroundColor: '#f7f7f7',
+        background: 'linear-gradient(180deg, #1e3a5f 0%, #431d2a 100%)',
         display: 'flex',
         flexDirection: 'column' as const,
         flex: 1,
@@ -137,6 +137,9 @@ const styles = {
         cursor: 'pointer',
         overflow: 'hidden',
         transition: 'transform 0.2s',
+        borderColor: '#e0e0e0',
+        borderWidth: 1,
+        borderStyle: 'solid' as const,
     },
     opcionTitulo: {
         fontSize: '24px',

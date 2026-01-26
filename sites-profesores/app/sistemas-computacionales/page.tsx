@@ -27,11 +27,11 @@ export default function SistemasComputacionales() {
                             </div>
                         </div>
                         <button
-                            onClick={() => router.push('/')}
+                            onClick={() => router.push('/home')}
                             className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all cursor-pointer"
                         >
                             <LogOut className="w-5 h-5" />
-                            <span>Cerrar Sesión</span>
+                            <span>Volver al inicio</span>
                         </button>
                     </div>
                 </div>

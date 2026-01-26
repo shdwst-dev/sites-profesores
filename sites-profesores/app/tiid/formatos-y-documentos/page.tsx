@@ -70,11 +70,11 @@ export default function FormatosDocumentos() {
                             </div>
                         </div>
                         <button
-                            onClick={() => router.push('/')}
+                            onClick={() => router.push('/home')}
                             className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all cursor-pointer"
                         >
                             <LogOut className="w-5 h-5" />
-                            <span>Cerrar Sesión</span>
+                            <span>Volver al inicio</span>
                         </button>
                     </div>
                 </div>
@@ -202,7 +202,7 @@ export default function FormatosDocumentos() {
                 </div>
                 
                 <h1 style={styles.titulo}>Consultar formatos</h1>
-                <div style={styles.formatosList}>
+                <div style={styles.formatosGrid} className="grid gap-3 md:grid-cols-2">
                     {formatos.map((formato, index) => {
                         const IconComponent = formato.icono;
                         return (
@@ -415,17 +415,16 @@ const styles = {
         fontWeight: 500,
         color: 'inherit',
     },
-    formatosList: {
+    formatosGrid: {
         marginTop: 20,
         marginBottom: 40,
-        borderTop: '1px solid #e5e7eb',
-        display: 'flex',
-        flexDirection: 'column' as const,
     },
     formatoRow: {
-        display: 'flex',
+        display: 'grid',
+        gridTemplateColumns: 'auto 1fr',
         alignItems: 'center',
-        gap: 12,
+        columnGap: 12,
+        rowGap: 2,
         padding: '12px 0',
         borderBottom: '1px solid #e5e7eb',
         cursor: 'pointer',
