@@ -150,7 +150,8 @@ export default function RecursosAvisos() {
                                 src="/coordinacionEstanciasEstadias.jpg"
                                 alt="Logo Estancias"
                                 fill
-                                style={{ objectFit: 'cover' }}
+                                unoptimized
+                                style={{ objectFit: 'contain' }}
                             />
                         </div>
 
@@ -167,7 +168,8 @@ export default function RecursosAvisos() {
                                 src="/coordinacionTutorias.jpg"
                                 alt="Logo Tutorías"
                                 fill
-                                style={{ objectFit: 'cover' }}
+                                unoptimized
+                                style={{ objectFit: 'contain' }}
                             />
                         </div>
                         <p style={styles.tarjetaTitulo}>
@@ -184,8 +186,9 @@ export default function RecursosAvisos() {
                         <Image
                             src="/coordinacionPI.png"
                             alt="Logo Proyectos"
+                            unoptimized
                             fill
-                            style={{ objectFit: 'cover' }}
+                            style={{ objectFit: 'contain' }}
                         />
                     </div>
                     <div style={styles.contenidoProyectos}>
@@ -220,6 +223,7 @@ export default function RecursosAvisos() {
                         <Image
                             src="/calendario2025-2026.png"
                             alt="Calendario Escolar"
+                            unoptimized
                             fill
                             style={{ objectFit: 'contain' }}
                         />
@@ -535,6 +539,7 @@ const styles = {
         borderRadius: '4px',
         overflow: 'hidden',
         marginTop: '20px',
+        backgroundColor: '#fff',
     },
     contenedorAltasBajasMaterias: {
         marginTop: '24px',

@@ -60,7 +60,7 @@ export default function InfoPage() {
     ];
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen" style={{ minHeight: '100vh' }}>
             <header className="bg-white shadow-sm border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex items-center justify-between">
@@ -92,7 +92,7 @@ export default function InfoPage() {
                 <div className="grid lg:grid-cols-3 gap-8">
 
                     <div className="lg:col-span-2 space-y-8">
-                        <div style={{ backgroundColor: '#1e3a5f', color: '#fff', padding: '30px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                        <div style={{ backgroundColor: '#1e3a5f', color: '#fff', padding: '30px', borderRadius: '8px',  }}>
                             <h2 style={{ fontSize: '24px', fontWeight: 600, color: 'inherit', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Bell />
                                 Comunicados Recientes
@@ -101,8 +101,8 @@ export default function InfoPage() {
                                 {comunicados.map((comm) => (
                                     <div
                                         key={comm.id}
-                                        className="rounded-xl shadow-sm border p-6 hover:shadow-md transition-all"
-                                        style={{ backgroundColor: '#f9f9f9', borderColor: '#e5e7eb' }}
+                                        className="rounded-xl shadow-sm p-6 hover:shadow-md transition-all"
+                                        style={{ backgroundColor: '#f9f9f9' }}
                                     >
                                         <div className="flex items-start justify-between mb-3">
                                             <h3 style={{ fontWeight: 600, fontSize: '18px', color: '#333', margin: 0 }}>{comm.title}</h3>
@@ -121,7 +121,7 @@ export default function InfoPage() {
                         </div>
 
 
-                        <div style={{ backgroundColor: '#e1dfdb', padding: '30px', borderRadius: '8px', border: '1px solid #e5e7eb', marginTop: '24px' }}>
+                        <div style={{ backgroundColor: '#e1dfdb', padding: '30px', borderRadius: '8px', marginTop: '24px' }}>
                             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#333', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <FileText />
                                 Trámites y Procedimientos
@@ -130,8 +130,8 @@ export default function InfoPage() {
                                 {tramites_y_procedimientos.map((procedure, index) => (
                                     <div
                                         key={index}
-                                        className="rounded-xl shadow-sm border p-5 hover:shadow-md transition-all cursor-pointer"
-                                        style={{ backgroundColor: '#f9f9f9', borderColor: '#e5e7eb' }}
+                                        className="rounded-xl shadow-sm p-5 hover:shadow-md transition-all cursor-pointer"
+                                        style={{ backgroundColor: '#f9f9f9' }}
                                     >
                                         <h3 className="font-bold mb-2" style={{ color: '#333' }}>{procedure.title}</h3>
                                         <p className="text-sm" style={{ color: '#666' }}>{procedure.description}</p>
@@ -141,10 +141,11 @@ export default function InfoPage() {
                         </div>
 
                         {/* Tutores y Profesores */}
-                        <div className="grid md:grid-cols-2 gap-6" style={{ backgroundColor: '#431d2a', padding: '30px', borderRadius: '8px', border: '1px solid #e5e7eb', marginTop: '24px' }}>
-                            <div className="rounded-xl shadow-sm border overflow-hidden flex flex-col" style={{ backgroundColor: '#f9f9f9'}}>
-                                {/* Tutores */}
-                                <div className="p-6">
+                        <div style={{ backgroundColor: '#431d2a', padding: '30px', borderRadius: '8px', marginTop: '24px' }}>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="rounded-xl shadow-sm overflow-hidden flex flex-col" style={{ backgroundColor: '#f9f9f9'}}>
+                                    {/* Tutores */}
+                                    <div className="p-6">
                                     <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#333', marginBottom: '24px' }}>Tutores</h2>
                                     <ul className="space-y-3">
                                         <li className="flex items-start gap-2">
@@ -195,7 +196,7 @@ export default function InfoPage() {
                             </div>
 
                             {/* Profesores */}
-                            <div className="rounded-xl shadow-sm border overflow-hidden flex flex-col" style={{ backgroundColor: '#f9f9f9'}}>
+                            <div className="rounded-xl shadow-sm overflow-hidden flex flex-col" style={{ backgroundColor: '#f9f9f9'}}>
                                 <div className="flex-1 bg-gray-200 relative overflow-hidden">
                                     <img 
                                         src="/tutores-image.jpg" 
@@ -247,10 +248,11 @@ export default function InfoPage() {
                             </div>
                         </div>
                     </div>
+                </div>
 
                     <div className="space-y-6">
                         <div>
-                            <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#333', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#ffffff', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Calendar />
                                 Fechas Importantes
                             </h2>

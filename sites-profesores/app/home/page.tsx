@@ -110,13 +110,13 @@ const styles = {
     titulo: {
         fontSize: '28px',
         fontWeight: 700,
-        color: '#333',
+        color: '#ffffff',
         marginBottom: '0.5rem',
     },
     subtitulo: {
         fontSize: '20px',
         fontWeight: 600,
-        color: '#666',
+        color: '#ffffff',
         marginTop: '0.5rem',
     },
     opciones: {

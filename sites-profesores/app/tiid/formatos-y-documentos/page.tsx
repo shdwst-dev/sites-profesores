@@ -242,12 +242,12 @@ const styles = {
     titulo: {
         fontSize: '28px',
         fontWeight: 600,
-        color: '#333',
+        color: '#ffffff',
     },
     subtitulo: {
         fontSize: '18px',
         fontWeight: 600,
-        color: '#666',
+        color: '#ffffff',
         marginTop: '8px',
     },
     section: {

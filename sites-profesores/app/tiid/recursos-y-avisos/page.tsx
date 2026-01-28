@@ -150,7 +150,8 @@ export default function RecursosAvisos() {
                             src="/coordinacionPI.png"
                             alt="Logo Proyectos"
                             fill
-                            style={{ objectFit: 'cover' }}
+                            unoptimized
+                            style={{ objectFit: 'contain' }}
                         />
                     </div>
                     <div style={styles.contenidoProyectos}>
@@ -180,6 +181,7 @@ export default function RecursosAvisos() {
                             src="/tutores-tiid.jpg"
                             alt="Tabla de Tutores TIID"
                             fill
+                            unoptimized
                             style={{ objectFit: 'contain' }}
                         />
                     </div>
@@ -230,6 +232,7 @@ export default function RecursosAvisos() {
                         <Image
                             src="/calendario2025-2026.png"
                             alt="Calendario Escolar"
+                            unoptimized
                             fill
                             style={{ objectFit: 'contain' }}
                         />
@@ -571,6 +574,7 @@ const styles = {
         borderRadius: '4px',
         overflow: 'hidden',
         marginTop: '20px',
+        backgroundColor: '#fff',
     },
     contenedorAltasBajasMaterias: {
         marginTop: '24px',
