@@ -132,7 +132,7 @@ export default function RecursosAvisos() {
 
             {/* Contenido principal */}
             <main style={styles.main}>
-                <h1 className="text-2xl font-bold mb-4">Recursos y Avisos</h1>
+                <h1 className="text-2xl font-bold mb-4 text-white">Recursos y Avisos</h1>
 
                     <div id="encargado" style={styles.contenedorEncargadoSistemas}>
                         <p style={styles.contenedorEncargadoNombre}>

@@ -201,23 +201,27 @@ export default function FormatosDocumentos() {
                     <br />
                 </div>
                 
-                <h1 style={styles.titulo}>Consultar formatos</h1>
-                <div style={styles.formatosGrid} className="grid gap-3 md:grid-cols-2">
-                    {formatos.map((formato, index) => {
-                        const IconComponent = formato.icono;
-                        return (
-                            <div 
-                                key={`${formato.nombre}-${index}`} 
-                                style={styles.formatoRow}
-                                className='formato-row'
-                                onClick={() => window.open(formato.url, '_blank')}
-                            >
-                                <IconComponent size={22} color="#1e3a5f" />
-                                <span style={styles.formatoNombre} className='formato-nombre'>{formato.nombre}</span>
-                            </div>
-                        );
-                    })}
-                </div>
+                <section style={styles.section}>
+                    <div style={styles.sectionHeader}>
+                        <h3 style={styles.sectionTitle}>Consultar formatos</h3>
+                    </div>
+                    <div style={{ ...styles.formatosGrid, marginTop: 10 }} className="grid gap-3 md:grid-cols-2">
+                        {formatos.map((formato, index) => {
+                            const IconComponent = formato.icono;
+                            return (
+                                <div 
+                                    key={`${formato.nombre}-${index}`} 
+                                    style={{...styles.formatoRow, borderBottom: '1px solid #c7c7c7'}}
+                                    className='formato-row'
+                                    onClick={() => window.open(formato.url, '_blank')}
+                                >
+                                    <IconComponent size={22} color="#1e3a5f" />
+                                    <span style={styles.formatoNombre} className='formato-nombre'>{formato.nombre}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </section>
             </main>
 
             {/* Footer reutilizable */}
@@ -435,5 +439,6 @@ const styles = {
         fontWeight: 600,
         color: '#374151',  
     },
+    
 
 };

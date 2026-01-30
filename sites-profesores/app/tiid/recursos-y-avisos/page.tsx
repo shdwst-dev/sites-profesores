@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { AlignCenter, ArrowLeft, LogOut, ChevronUp, Menu, X } from 'lucide-react';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
-import { text } from 'stream/consumers';
 import { useState, useEffect } from 'react';
 
 export default function RecursosAvisos() {
@@ -25,19 +24,7 @@ export default function RecursosAvisos() {
     };
 
     return (
-        <div style={styles.pageContainer}>
-            <style jsx>{`
-                .sidebar-link:hover {
-                    text-decoration: underline;
-                    background-color: rgba(255, 255, 255, 0.1);
-                }
-                .menu-button:hover {
-                    background-color: #2a4a6f;
-                }
-                .close-button:hover {
-                    background-color: rgba(255, 255, 255, 0.1);
-                }
-            `}</style>
+        <div className="flex flex-col flex-1">
             {/* Header con navegación */}
             <header className="bg-white shadow-sm border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -66,62 +53,67 @@ export default function RecursosAvisos() {
             </header>
 
             {/* Botón para abrir menú */}
-            <div style={styles.menuButtonContainer}>
+            <div className="max-w-[1200px] mx-auto pt-4 px-6 pb-0 w-full">
                 <button
                     onClick={() => setMenuOpen(!menuOpen)}
-                    style={styles.menuButton}
-                    className="menu-button"
+                    className="flex items-center bg-[#1e3a5f] text-white border-none rounded-lg py-3 px-5 text-base font-semibold cursor-pointer shadow-[0_2px_8px_rgba(30,58,95,0.2)] hover:bg-[#2a4a6f] transition-all duration-300"
                     title="Tabla de contenidos"
                 >
                     {menuOpen ? <X size={24} /> : <Menu size={24} />}
-                    <span style={{ marginLeft: '8px' }}>Contenidos</span>
+                    <span className="ml-2">Contenidos</span>
                 </button>
             </div>
 
             {/* Menú desplegable */}
             {menuOpen && (
                 <>
-                    <div style={styles.overlay} onClick={() => setMenuOpen(false)} />
-                    <aside style={styles.sidebarDropdown}>
-                        <div style={styles.sidebarHeader}>
-                            <h3 style={styles.sidebarTitle}>Tabla de Contenidos</h3>
-                            <button onClick={() => setMenuOpen(false)} style={styles.closeButton} className="close-button">
+                    <div 
+                        className="fixed inset-0 bg-black/50 z-[100]" 
+                        onClick={() => setMenuOpen(false)} 
+                    />
+                    <aside className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1e3a5f] text-white p-6 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] z-[101] min-w-[300px] max-w-[90%] max-h-[80vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-5">
+                            <h3 className="text-lg font-bold m-0 text-inherit">Tabla de Contenidos</h3>
+                            <button 
+                                onClick={() => setMenuOpen(false)} 
+                                className="bg-transparent border-none text-white cursor-pointer p-1 flex items-center justify-center rounded transition-all hover:bg-white/10"
+                            >
                                 <X size={20} />
                             </button>
                         </div>
-                        <ul style={styles.sidebarList}>
+                        <ul className="m-0 p-0 list-none">
                             <li>
-                                <a href="#encargado" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
+                                <a href="#encargado" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
                                     Encargado
                                 </a>
                             </li>
                             <li>
-                                <a href="#coordinaciones" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
+                                <a href="#coordinaciones" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
                                     Coordinaciones
                                 </a>
                             </li>
                             <li>
-                                <a href="#etc" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
+                                <a href="#etc" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
                                     ETC
                                 </a>
                             </li>
                             <li>
-                                <a href="#calendario" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
+                                <a href="#calendario" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
                                     Calendario
                                 </a>
                             </li>
                             <li>
-                                <a href="#altasbajas" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
+                                <a href="#altasbajas" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
                                     Altas y Bajas
                                 </a>
                             </li>
                             <li>
-                                <a href="#lengua" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
+                                <a href="#lengua" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
                                     Lengua Extranjera
                                 </a>
                             </li>
                             <li>
-                                <a href="#casilleros" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
+                                <a href="#casilleros" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
                                     Casilleros
                                 </a>
                             </li>
@@ -131,21 +123,21 @@ export default function RecursosAvisos() {
             )}
 
             {/* Contenido principal */}
-            <main style={styles.main}>
-                <h1 className="text-2xl font-bold mb-4">Coordinación de Tutorías</h1>
+            <main className="flex-1 max-w-[1200px] mx-auto p-6 w-full">
+                <h1 className="text-2xl font-bold mb-4 text-white">Coordinación de Tutorías</h1>
 
-                <div id="encargado" style={styles.contenedorEncargadoSistemas}>
-                    <p style={styles.contenedorEncargadoNombre}>
+                <div id="encargado" className="mb-4 py-[30px] px-[30px] border border-gray-200 rounded-lg bg-[#1e3a5f] text-white flex justify-between items-center">
+                    <p className="text-lg font-semibold">
                         <strong>ISC Lilia Jimenez Cruz</strong>
                     </p>
-                    <p style={styles.contenedorEncargadoContacto}>
-                        Contacto: <a href="mailto:lilia.jimenez@upq.edu.mx" style={{ color: 'inherit', textDecoration: 'underline' }}>lilia.jimenez@upq.edu.mx</a>
+                    <p className="text-lg font-semibold">
+                        Contacto: <a href="mailto:lilia.jimenez@upq.edu.mx" className="text-inherit underline">lilia.jimenez@upq.edu.mx</a>
                     </p>
                 </div>
 
                 {/* Coordinación de Proyectos Integradores */}
-                <div style={styles.tarjetaProyectos}>
-                    <div style={styles.imagenContenedorProyectos}>
+                <div className="border border-gray-200 rounded-lg py-5 px-5 bg-[#431d2a] text-white transition-all duration-300 flex gap-5 items-center mt-6">
+                    <div className="relative flex-1 h-[450px] rounded-md overflow-hidden">
                         <Image
                             src="/coordinacionPI.png"
                             alt="Logo Proyectos"
@@ -154,29 +146,29 @@ export default function RecursosAvisos() {
                             style={{ objectFit: 'contain' }}
                         />
                     </div>
-                    <div style={styles.contenidoProyectos}>
-                        <p style={styles.tarjetaTituloGrande}>
+                    <div className="flex flex-col justify-start text-center flex-1">
+                        <p className="mt-4 text-2xl font-semibold text-white text-center">
                             <strong>Coordinación de Proyectos Integradores</strong>
                         </p>
-                        <p style={styles.tarjetaTitulo}>
+                        <p className="mt-4 text-lg font-semibold text-inherit">
                             <strong>Dra Cecilia Alvarado Salayanda</strong>
                         </p>
-                        <p style={styles.tarjetaTitulo}>
-                            Contacto: <a href="mailto:cecilia.alvarado@upq.mx" style={{ color: 'inherit', textDecoration: 'underline' }}>cecilia.alvarado@upq.mx</a>
+                        <p className="mt-4 text-lg font-semibold text-inherit">
+                            Contacto: <a href="mailto:cecilia.alvarado@upq.mx" className="text-inherit underline">cecilia.alvarado@upq.mx</a>
                         </p>
                     </div>
                 </div>
                 {/* Coordinación de Tutorías */}
-                <div id="coordinaciones" style={styles.contenedorTutorias}>
-                    <div style={styles.tutoriasTexto}>
-                        <h2 style={styles.tutoriasTitulo}>
+                <div id="coordinaciones" className="mt-6 py-10 px-[30px] rounded-lg bg-[#e1dfdb] border border-[#d4d2cd] flex flex-row gap-10 items-center">
+                    <div className="flex-none flex flex-col justify-center items-center text-center gap-4">
+                        <h2 className="text-[32px] font-bold text-[#431d2a] m-0 mb-3 text-left">
                             <strong>TUTORES</strong>
                         </h2>
-                        <h3 style={styles.tutoriasSubtitulo}>
+                        <h3 className="text-[28px] font-bold text-[#431d2a] m-0 text-left">
                             <strong>MAYO-AGOSTO 2025</strong>
                         </h3>
                     </div>
-                    <div style={styles.tutoriasImagenContenedor}>
+                    <div className="relative flex-1 h-[400px] rounded-lg overflow-hidden">
                         <Image
                             src="/tutores-tiid.jpg"
                             alt="Tabla de Tutores TIID"
@@ -187,18 +179,18 @@ export default function RecursosAvisos() {
                     </div>
                 </div>
                 {/*Recursamientos*/}
-                <div id="recursamientos" style={styles.contenedorRecursamientos}>
-                    <h2 style={styles.tarjetaTituloGrande}>
+                <div id="recursamientos" className="mt-6 py-[30px] px-[30px] border border-[#152a45] rounded-lg bg-[#1e3a5f] text-white">
+                    <h2 className="mt-4 text-2xl font-semibold text-white text-center">
                         <strong>Recursamientos</strong>
                     </h2>
                     <p>En construccion</p>
                 </div>
                                 {/*Altas y bajas de materias*/}
-                <div id="altasbajas" style={styles.contenedorAltasBajasMaterias}>
-                    <h2 style={{...styles.tarjetaTituloGrande, color: '#333'}}>
+                <div id="altasbajas" className="mt-6 py-[30px] px-[30px] border border-[#d4d2cd] rounded-lg bg-[#e1dfdb]">
+                    <h2 className="mt-4 text-2xl font-semibold text-[#333] text-center">
                         <strong>Altas y Bajas de Materias</strong>
                     </h2>
-                    <ul className='list-disc list-inside mt-4 text-lg'>
+                    <ul className='list-disc list-inside mt-4 text-lg text-[#333]'>
                         <li>Revisar carga académica con su tutor.</li>
                         <li>Si tiene asignaturas reprobadas o sin cursar en el ciclo anterior, no podrá cambiar de ciclo de formación.</li>
                         <li>Si hay materias del ciclo que cursará que no le aparecen en el SII, el tutor deberá solicitarlas con el Formato de ALTAS Y BAJAS  a la Dirección de Programa.</li>
@@ -207,14 +199,14 @@ export default function RecursosAvisos() {
                         <li>Asegurarse de que todos sus alumnos tengan su carga académica al 100% antes de cerrar el período de altas y bajas indicado en el calendario.</li>
                         <li>Pueden solicitar ETC's de INGLÉS</li>
                         <li>Este cuatrimestre se abrirán todos los intensivos de INGLÉS ( Motivemos a que los estudiantes salgan del rezago de inglés)</li>
-                        <li>Formulario de Registro:   <a href="https://forms.gle/6mzeEmkYbU2MboKBA" style={{ textDecoration: 'underline', color: '#431d2a' }}>https://forms.gle/6mzeEmkYbU2MboKBA</a> </li>
+                        <li>Formulario de Registro:   <a href="https://forms.gle/6mzeEmkYbU2MboKBA" className="underline text-[#431d2a]">https://forms.gle/6mzeEmkYbU2MboKBA</a> </li>
                         <li>Si alguien puede acreditar su inglés con TOEFL, Certificaciones o algún otro curso externo, acercarse a Lengua Extranjera para que validen el caso</li>
                     </ul>
                 </div>
                 
                 {/* Criterios para solicitar un ETC */}
-                <div id="etc" style={styles.contenedorETC}>
-                    <h2 style={styles.tarjetaTituloGrande}>
+                <div id="etc" className="mt-6 py-[30px] px-[30px] border border-[#5d3338] rounded-lg bg-[#431d2a] text-white">
+                    <h2 className="mt-4 text-2xl font-semibold text-white text-center">
                         <strong>Criterios para solicitar un ETC</strong>
                     </h2>
                     <ul className='list-disc list-inside mt-4 text-lg'>
@@ -224,11 +216,11 @@ export default function RecursosAvisos() {
                     </ul>
                 </div>
                 {/* Calendario Escolar */}
-                <div id="calendario" style={styles.contenedorCalendario}>
-                    <h2 style={styles.tarjetaTituloGrande}>
+                <div id="calendario" className="mt-6 py-[30px] px-[30px] border border-[#152a45] rounded-lg bg-[#1e3a5f] text-white">
+                    <h2 className="mt-4 text-2xl font-semibold text-white text-center">
                         <strong>Calendario Escolar</strong>
                     </h2>
-                    <div style={styles.imagenContenedorCalendario}>
+                    <div className="relative w-full h-[800px] rounded-md overflow-hidden mt-5 bg-white">
                         <Image
                             src="/calendario2025-2026.png"
                             alt="Calendario Escolar"
@@ -239,14 +231,14 @@ export default function RecursosAvisos() {
                     </div>
                 </div>
                 {/*Avisos de lengua extranjera*/}
-                <div id="lengua" style={styles.contenedorAvisosLenguaExtranjera}>
-                    <h2 style={{...styles.tarjetaTituloGrande, color: '#333'}}>
+                <div id="lengua" className="mt-6 py-[30px] px-[30px] border border-[#d4d2cd] rounded-lg bg-[#e1dfdb] text-[#333]">
+                    <h2 className="mt-4 text-2xl font-semibold text-[#333] text-center">
                         <strong>Avisos de Lengua Extranjera</strong>
                     </h2>
                     <ul className='list-disc list-inside mt-4 text-lg'>
                         <li>
                             Solicitar ETC's de Inglés en:
-                            <a href="https://docs.google.com/spreadsheets/d/1UmV92-deFOLvl4mZ1KyE5tYnue3bbDLACB3cYxPIhCk/edit?usp=sharing" style={{ textDecoration: 'underline', marginLeft: 4, color: 'inherit' }}>
+                            <a href="https://docs.google.com/spreadsheets/d/1UmV92-deFOLvl4mZ1KyE5tYnue3bbDLACB3cYxPIhCk/edit?usp=sharing" className="underline ml-1 text-inherit">
                                 https://docs.google.com/spreadsheets/d/1UmV92-deFOLvl4mZ1KyE5tYnue3bbDLACB3cYxPIhCk/edit?usp=sharing
                             </a>
                         </li>
@@ -265,14 +257,14 @@ export default function RecursosAvisos() {
                     </ul>
                 </div>
                 {/* Solicitudes de casilleros para profesores */}
-                <div id="casilleros" style={styles.contenedorSolicitudesCasilleros}>
-                    <h2 style={styles.tarjetaTituloGrande}>
+                <div id="casilleros" className="mt-6 mb-10 py-[30px] px-[30px] border border-[#5d3338] rounded-lg bg-[#431d2a] text-white">
+                    <h2 className="mt-4 text-2xl font-semibold text-white text-center">
                         <strong>Solicitudes de Casilleros para Profesores</strong>
                     </h2>
-                    <p style={{ marginTop: '16px', fontSize: '18px', lineHeight: '1.8', color: '#fff' }}>
+                    <p className="mt-4 text-lg leading-[1.8] text-white">
                         Solicitar en el siguiente enlace:
                         <br />
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform " style={{ textDecoration: 'underline', marginLeft: 4, color: '#fff' }}>
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform " className="underline ml-1 text-white">
                             https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform
                         </a>
                     </p>
@@ -283,7 +275,7 @@ export default function RecursosAvisos() {
             {showScrollTop && (
                 <button
                     onClick={scrollToTop}
-                    style={styles.scrollTopButton}
+                    className="fixed bottom-8 right-8 bg-[#1e3a5f] text-white border-none rounded-full w-[50px] h-[50px] flex items-center justify-center cursor-pointer shadow-[0_4px_12px_rgba(30,58,95,0.3)] transition-all duration-300 z-50 transform hover:scale-110"
                     title="Volver al inicio"
                 >
                     <ChevronUp size={24} />
@@ -294,330 +286,3 @@ export default function RecursosAvisos() {
         </div>
     );
 }
-
-// Estilos básicos
-const styles = {
-    pageContainer: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        flex: 1,
-    },
-    main: {
-        flex: 1,
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '24px',
-        width: '100%',
-    },
-    menuButtonContainer: {
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '16px 24px 0 24px',
-        width: '100%',
-    },
-    menuButton: {
-        display: 'flex',
-        alignItems: 'center',
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '8px',
-        padding: '12px 20px',
-        fontSize: '16px',
-        fontWeight: 600,
-        cursor: 'pointer',
-        boxShadow: '0 2px 8px rgba(30, 58, 95, 0.2)',
-        transition: 'all 0.3s ease',
-    },
-    overlay: {
-        position: 'fixed' as const,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 100,
-    },
-    sidebarDropdown: {
-        position: 'fixed' as const,
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-        padding: '24px',
-        borderRadius: '12px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        zIndex: 101,
-        minWidth: '300px',
-        maxWidth: '90%',
-        maxHeight: '80vh',
-        overflowY: 'auto' as const,
-    },
-    sidebarHeader: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '20px',
-    },
-    sidebarTitle: {
-        fontSize: '18px',
-        fontWeight: 700,
-        margin: 0,
-        color: 'inherit',
-    },
-    closeButton: {
-        background: 'transparent',
-        border: 'none',
-        color: '#fff',
-        cursor: 'pointer',
-        padding: '4px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: '4px',
-        transition: 'all 0.2s',
-    },
-    sidebarList: {
-        margin: 0,
-        padding: 0,
-        listStyle: 'none',
-    },
-    sidebarLink: {
-        display: 'block',
-        color: '#fff',
-        textDecoration: 'none',
-        fontSize: '16px',
-        fontWeight: 500,
-        padding: '12px 16px',
-        transition: 'all 0.2s',
-        borderRadius: '6px',
-        marginBottom: '4px',
-    },
-    scrollTopButton: {
-        position: 'fixed' as const,
-        bottom: '32px',
-        right: '32px',
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '50%',
-        width: '50px',
-        height: '50px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        boxShadow: '0 4px 12px rgba(30, 58, 95, 0.3)',
-        transition: 'all 0.3s ease',
-        zIndex: 50,
-    },
-    contenedorEncargadoSistemas: {
-        marginBottom: 16,
-        paddingTop: '30px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #e5e7eb',
-        borderRadius: 8,
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    contenedorCoordinacion: {
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '24px',
-        marginTop: '24px',
-        padding: '24px',
-        borderRadius: 8,
-        backgroundColor: '#e1dfdb',
-    },
-    contenedorTutorias: {
-        marginTop: '24px',
-        padding: '40px 30px',
-        borderRadius: 8,
-        backgroundColor: '#e1dfdb',
-        border: '1px solid #d4d2cd',
-        display: 'flex',
-        flexDirection: 'row' as const,
-        gap: '40px',
-        alignItems: 'center',
-    },
-    tutoriasTexto: {
-        flex: '0 0 auto',
-        display: 'flex',
-        flexDirection: 'column' as const,
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center' as const,
-        gap: '16px',
-    },
-    tutoriasTitulo: {
-        fontSize: 32,
-        fontWeight: 700,
-        color: '#431d2a',
-        margin: 0,
-        marginBottom: '12px',
-        textAlign: 'left' as const,
-    },
-    tutoriasSubtitulo: {
-        fontSize: 28,
-        fontWeight: 700,
-        color: '#431d2a',
-        margin: 0,
-        textAlign: 'left' as const,
-    },
-    tutoriasImagenContenedor: {
-        position: 'relative' as const,
-        flex: 1,
-        height: '400px',
-        borderRadius: '8px',
-        overflow: 'hidden',
-    },
-    tarjeta: {
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        paddingTop: '20px',
-        paddingBottom: '20px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
-        textAlign: 'center' as const,
-        backgroundColor: '#f9f9f9',
-        transition: 'all 0.3s ease',
-    },
-    imagenContenedor: {
-        position: 'relative' as const,
-        width: '100%',
-        height: '250px',
-        borderRadius: '4px',
-        overflow: 'hidden',
-    },
-    tarjetaTitulo: {
-        marginTop: '16px',
-        fontSize: 18,
-        fontWeight: 600,
-        color: 'inherit',
-    },
-    tarjetaTituloGrande: {
-        marginTop: '16px',
-        fontSize: 24,
-        fontWeight: 600,
-        color: '#fff',
-        textAlign: 'center' as const,
-    },
-    contenedorEncargadoNombre: {
-        fontSize: 18,
-        fontWeight: 600,
-    },
-    contenedorEncargadoContacto: {
-        fontSize: 18,
-        fontWeight: 600,
-    },
-    tarjetaProyectos: {
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        paddingTop: '20px',
-        paddingBottom: '20px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
-        backgroundColor: '#431d2a',
-        color: '#fff',
-        transition: 'all 0.3s ease',
-        display: 'flex',
-        gap: '20px',
-        alignItems: 'center',
-        marginTop: '24px',
-    },
-    imagenContenedorProyectos: {
-        position: 'relative' as const,
-        flex: 1,
-        height: '450px',
-        borderRadius: '4px',
-        overflow: 'hidden',
-    },
-    contenidoProyectos: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        justifyContent: 'flex-start',
-        textAlign: 'center' as const,
-        flex: 1,
-    },
-    contenedorETC: {
-        marginTop: '24px',
-        paddingTop: '30px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #5d3338',
-        borderRadius: 8,
-        backgroundColor: '#431d2a',
-        color: '#fff',
-    },
-    contenedorCalendario: {
-        marginTop: '24px',
-        paddingTop: '30px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #152a45',
-        borderRadius: 8,
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-    },
-    imagenContenedorCalendario: {
-        position: 'relative' as const,
-        width: '100%',
-        height: '800px',
-        borderRadius: '4px',
-        overflow: 'hidden',
-        marginTop: '20px',
-        backgroundColor: '#fff',
-    },
-    contenedorAltasBajasMaterias: {
-        marginTop: '24px',
-        paddingTop: '30px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #d4d2cd',
-        borderRadius: 8,
-        backgroundColor: '#e1dfdb',
-    },
-    contenedorAvisosLenguaExtranjera: {
-        marginTop: '24px',
-        paddingTop: '30px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #d4d2cd',
-        borderRadius: 8,
-        backgroundColor: '#e1dfdb',
-        color: '#333',
-    },
-    contenedorSolicitudesCasilleros: {
-        marginTop: '24px',
-        marginBottom: '40px',
-        paddingTop: '30px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #5d3338',
-        borderRadius: 8,
-        backgroundColor: '#431d2a',
-        color: '#fff',
-    },
-    contenedorRecursamientos: {
-        marginTop: '24px',
-        paddingTop: '30px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #152a45',
-        borderRadius: 8,
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-    }
-};
