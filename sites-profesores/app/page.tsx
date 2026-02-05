@@ -70,88 +70,91 @@ export default function Login() {
 
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
-      <div style={styles.container}>
-        <div style={styles.logoContainer}>
-          <Image 
-            src="/UPQ-Logo.png" 
-            alt="Logo" 
-            width={150} 
-            height={40}
-            priority
-          />
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#0f172a] relative overflow-hidden selection:bg-blue-500/30">
+
+        {/* Decorative Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] animate-pulse duration-[10s]"></div>
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] animate-pulse duration-[8s] delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-sky-500/5 rounded-full blur-[150px]"></div>
         </div>
-        <div style={styles.card}>
-          <h2 style={styles.title}>Iniciar Sesión</h2>
-          
-          {error && <p style={styles.error}>{error}</p>}
-          
-          <div style={styles.googleButtonContainer}>
-            <GoogleLogin
-              onSuccess={handleSuccess}
-              onError={handleError}
-              useOneTap
-              theme="outline"
-              size="large"
-              width="280"
-            />
-            {loading && <p style={styles.loading}>Validando...</p>}
+
+        <div className="relative z-10 w-full max-w-md px-6 animate-in fade-in zoom-in duration-700">
+          {/* Logo Section */}
+          <div className="flex flex-col items-center mb-10">
+            <div className="p-4 bg-white rounded-3xl shadow-2xl mb-6 transform hover:scale-105 transition-transform duration-500">
+              <Image
+                src="/UPQ-Logo.png"
+                alt="Logo UPQ"
+                width={140}
+                height={140}
+                priority
+                className="object-contain"
+              />
+            </div>
+            <h1 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">
+              Portal <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Docente</span>
+            </h1>
+            <p className="text-gray-400 font-medium text-center uppercase tracking-[0.2em] text-[10px]">
+              Universidad Politécnica de Querétaro
+            </p>
           </div>
+
+          {/* Login Card */}
+          <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-10 shadow-3xl overflow-hidden relative group">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+
+            <h2 className="text-xl font-bold text-white mb-8 text-center tracking-tight">
+              Bienvenido de nuevo
+            </h2>
+
+            {error && (
+              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in shake duration-500">
+                <p className="text-red-400 text-xs font-bold text-center uppercase tracking-wider">
+                  {error}
+                </p>
+              </div>
+            )}
+
+            <div className="flex flex-col items-center justify-center space-y-6">
+              <div className="w-full flex justify-center transform hover:scale-[1.02] transition-transform duration-300">
+                <GoogleLogin
+                  onSuccess={handleSuccess}
+                  onError={handleError}
+                  useOneTap
+                  theme="filled_blue"
+                  shape="pill"
+                  size="large"
+                  text="signin_with"
+                  logo_alignment="left"
+                  width="100%"
+                />
+              </div>
+
+              {loading && (
+                <div className="flex items-center gap-3 text-blue-400 animate-pulse font-bold text-xs uppercase tracking-widest">
+                  <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                  Validando credenciales...
+                </div>
+              )}
+            </div>
+
+            <div className="mt-10 pt-8 border-t border-white/5 text-center">
+              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1">
+                Acceso Exclusivo Personal
+              </p>
+              <p className="text-gray-600 text-[9px] leading-relaxed px-4">
+                Este sistema es de uso restringido. Al ingresar, usted acepta los términos de uso y políticas de privacidad de la institución.
+              </p>
+            </div>
+          </div>
+
+          <p className="mt-12 text-center text-gray-500 text-[11px] font-medium tracking-wide">
+            © {new Date().getFullYear()} Universidad Politécnica de Querétaro. <br />
+            Todos los derechos reservados.
+          </p>
         </div>
       </div>
     </GoogleOAuthProvider>
   );
 }
-//estilos
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
-    width: '100vw',
-    background: 'linear-gradient(180deg, #1e3a5f 0%, #431d2a 100%)',
-    padding: '0',
-  },
-  card: {
-    padding: '2rem', 
-    width: '300px', 
-    backgroundColor: 'white', 
-    borderRadius: '8px', 
-    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-  },
-  title: { 
-    textAlign: 'center' as const, 
-    marginBottom: '1.5rem', 
-    color: '#333',
-    fontSize: '24px',
-    fontWeight: 700,
-  },
-  logoContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginBottom: '1.5rem'
-  },
-  googleButtonContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    width: '100%',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-  },
-  error: { 
-    color: '#c41e3a', 
-    fontSize: '0.875rem', 
-    marginBottom: '1rem', 
-    textAlign: 'center' as const,
-    padding: '0.75rem',
-    backgroundColor: '#ffe5e5',
-    borderRadius: '4px',
-    border: '1px solid #ffcccc'
-  },
-  loading: {
-    marginTop: '0.75rem',
-    color: '#1e3a5f',
-    fontSize: '0.9rem',
-  },
-};

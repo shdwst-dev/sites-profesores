@@ -67,15 +67,15 @@ export default function RecursosAvisos() {
             {/* Menú desplegable */}
             {menuOpen && (
                 <>
-                    <div 
-                        className="fixed inset-0 bg-black/50 z-[100]" 
-                        onClick={() => setMenuOpen(false)} 
+                    <div
+                        className="fixed inset-0 bg-black/50 z-[100]"
+                        onClick={() => setMenuOpen(false)}
                     />
                     <aside className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1e3a5f] text-white p-6 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] z-[101] min-w-[300px] max-w-[90%] max-h-[80vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-5">
                             <h3 className="text-lg font-bold m-0 text-inherit">Tabla de Contenidos</h3>
-                            <button 
-                                onClick={() => setMenuOpen(false)} 
+                            <button
+                                onClick={() => setMenuOpen(false)}
                                 className="bg-transparent border-none text-white cursor-pointer p-1 flex items-center justify-center rounded transition-all hover:bg-white/10"
                             >
                                 <X size={20} />
@@ -179,13 +179,59 @@ export default function RecursosAvisos() {
                     </div>
                 </div>
                 {/*Recursamientos*/}
-                <div id="recursamientos" className="mt-6 py-[30px] px-[30px] border border-[#152a45] rounded-lg bg-[#1e3a5f] text-white">
-                    <h2 className="mt-4 text-2xl font-semibold text-white text-center">
-                        <strong>Recursamientos</strong>
+                <div id="recursamientos" className="mt-6 py-[40px] px-[30px] border border-[#152a45] rounded-xl bg-[#1e3a5f] text-white shadow-lg transition-all duration-300 hover:shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -m-10 group-hover:scale-150 transition-transform duration-700"></div>
+                    <h2 className="text-3xl font-extrabold text-white text-center mb-8 tracking-tight">
+                        Proceso de Recursamientos
                     </h2>
-                    <p>En construccion</p>
+                    <div className="grid md:grid-cols-2 gap-10 relative z-10">
+                        <div className="space-y-6">
+                            <div className="bg-white/10 p-5 rounded-lg border-l-4 border-amber-400">
+                                <h3 className="text-xl font-bold text-amber-400 mb-2">Periodo Crítico</h3>
+                                <p className="text-lg">Las solicitudes se recibirán del <strong>12 al 16 de mayo de 2025</strong>.</p>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-bold mb-4 text-blue-200 uppercase tracking-wider text-sm">Lineamientos Generales</h3>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-blue-400 font-bold">•</span>
+                                        <span>Solo se permite recursar un máximo de 2 materias por cuatrimestre.</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-blue-400 font-bold">•</span>
+                                        <span>El costo por materia es de <strong>$450.00 MXN</strong>.</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-blue-400 font-bold">•</span>
+                                        <span>Indispensable no tener adeudos administrativos.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10">
+                            <h3 className="text-xl font-bold mb-6 text-white border-b border-white/20 pb-2">Procedimiento paso a paso</h3>
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">1</div>
+                                    <p className="text-sm">Descarga el formato <strong>"Solicitud de Recursamiento"</strong> en la sección de documentos.</p>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">2</div>
+                                    <p className="text-sm">Obtén la validación académica con tu tutor y firma del Director de Programa.</p>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">3</div>
+                                    <p className="text-sm">Realiza el pago en el portal de finanzas o cajas de la universidad.</p>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">4</div>
+                                    <p className="text-sm">Carga el formato firmado y tu comprobante de pago en el apartado de entregables.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                                {/*Altas y bajas de materias*/}
+                {/*Altas y bajas de materias*/}
                 <div id="altasbajas" className="mt-6 py-[30px] px-[30px] border border-[#d4d2cd] rounded-lg bg-[#e1dfdb]">
                     <h2 className="mt-4 text-2xl font-semibold text-[#333] text-center">
                         <strong>Altas y Bajas de Materias</strong>
@@ -203,7 +249,7 @@ export default function RecursosAvisos() {
                         <li>Si alguien puede acreditar su inglés con TOEFL, Certificaciones o algún otro curso externo, acercarse a Lengua Extranjera para que validen el caso</li>
                     </ul>
                 </div>
-                
+
                 {/* Criterios para solicitar un ETC */}
                 <div id="etc" className="mt-6 py-[30px] px-[30px] border border-[#5d3338] rounded-lg bg-[#431d2a] text-white">
                     <h2 className="mt-4 text-2xl font-semibold text-white text-center">

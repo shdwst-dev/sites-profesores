@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Info, Cpu, Globe } from 'lucide-react';
+import { Info, Cpu, Globe, ChevronRight, Sparkles } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -10,163 +10,99 @@ export default function Home() {
     const [hoveredIcon, setHoveredIcon] = useState<number | null>(null);
     const router = useRouter();
 
-    const manejarInfoDeInteres = () => {
-        router.push('/Informacion-interes');
-    };
-    const manejarSistemasComputacionales = () => {
-        router.push('/sistemas-computacionales');
-    }
-    const manejarTIID = () => {
-        router.push('/tiid');
-    }
+    const menuItems = [
+        {
+            title: 'Información de Interés',
+            description: 'Avisos, comunicados y noticias importantes del portal',
+            icon: Info,
+            color: 'from-blue-600 to-indigo-700',
+            path: '/Informacion-interes',
+            shadow: 'shadow-blue-500/20'
+        },
+        {
+            title: 'TIID',
+            description: 'Tecnologías de la Información e Innovación Digital',
+            icon: Globe,
+            color: 'from-purple-600 to-pink-700',
+            path: '/tiid',
+            shadow: 'shadow-purple-500/20'
+        },
+        {
+            title: 'Sistemas Computacionales',
+            description: 'Gestión de documentos y recursos de la ingeniería',
+            icon: Cpu,
+            color: 'from-cyan-600 to-teal-700',
+            path: '/sistemas-computacionales',
+            shadow: 'shadow-cyan-500/20'
+        }
+    ];
 
     return (
-        <div style={styles.page}>
+        <div className="min-h-screen flex flex-col bg-[#0f172a] selection:bg-blue-500 selection:text-white">
             <Header />
-            <div style={styles.container}>
-                <h1 style={styles.titulo}>Bienvenido al portal</h1>
-                <h2 style={styles.subtitulo}>Seleccione una opción para continuar </h2>
-            </div>
-            <main>
-                <div style={styles.opciones}>
-                    <div
-                        style={styles.opcion}
-                        onMouseEnter={() => setHoveredIcon(0)}
-                        onMouseLeave={() => setHoveredIcon(null)}
-                    >
-                        <div style={{ ...styles.opcionHeader, backgroundColor: '#1e3a5f' }} onClick={manejarInfoDeInteres}>
-                            <div
-                                className="icono-wrapper"
-                                style={{
-                                    ...styles.iconoWrapper,
-                                    transform: hoveredIcon === 0 ? 'scale(1.2)' : 'scale(1)',
-                                }}
-                            >
-                                <Info size={48} color="#fff" />
-                            </div>
-                            <h3 style={styles.opcionTitulo}>Información de Interés</h3>
-                        </div>
-                        <p style={styles.opcionDescripcion}>Avisos, comunicados y noticias importantes</p>
+
+            <main className="flex-1 flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
+                {/* Background decorative elements */}
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]"></div>
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px]"></div>
+                </div>
+
+                <div className="relative z-10 text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-6 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                        <Sparkles size={14} />
+                        Bienvenido al Portal Docente
                     </div>
-                    <div
-                        style={styles.opcion}
-                        onMouseEnter={() => setHoveredIcon(1)}
-                        onMouseLeave={() => setHoveredIcon(null)}
-                    >
-                        <div style={{ ...styles.opcionHeader, backgroundColor: '#431d2a' }} onClick={manejarSistemasComputacionales}>
+                    <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tighter">
+                        GESTIÓN <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">ACADÉMICA</span>
+                    </h1>
+                    <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+                        Seleccione el área de trabajo para comenzar a gestionar sus recursos y documentos institucionales.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl w-full relative z-10">
+                    {menuItems.map((item, index) => {
+                        const Icon = item.icon;
+                        const isHovered = hoveredIcon === index;
+
+                        return (
                             <div
-                                style={{
-                                    ...styles.iconoWrapper,
-                                    transform: hoveredIcon === 1 ? 'scale(1.2)' : 'scale(1)',
-                                }}
+                                key={item.title}
+                                className={`group relative bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 ${item.shadow} hover:shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700`}
+                                style={{ animationDelay: `${index * 150}ms` }}
+                                onMouseEnter={() => setHoveredIcon(index)}
+                                onMouseLeave={() => setHoveredIcon(null)}
+                                onClick={() => router.push(item.path)}
                             >
-                                <Cpu size={48} color="#fff" />
+                                {/* Glow effect on hover */}
+                                <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-5 rounded-3xl transition-opacity duration-500`}></div>
+
+                                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-8 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                                    <Icon size={32} color="#fff" />
+                                </div>
+
+                                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors">
+                                    {item.title}
+                                </h3>
+
+                                <p className="text-gray-400 font-medium leading-relaxed mb-8">
+                                    {item.description}
+                                </p>
+
+                                <div className="flex items-center gap-2 text-sm font-bold text-blue-400 group-hover:gap-4 transition-all duration-300">
+                                    INGRESAR <ChevronRight size={18} />
+                                </div>
+
+                                {/* Bottom line decoration */}
+                                <div className={`absolute bottom-0 left-8 right-8 h-1 bg-gradient-to-r ${item.color} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full`}></div>
                             </div>
-                            <h3 style={styles.opcionTitulo}>Sistemas Computacionales</h3>
-                        </div>
-                        <p style={styles.opcionDescripcion}>Gestión de documentos y recursos de la carrera</p>
-                    </div>
-                    <div
-                        style={styles.opcion}
-                        onMouseEnter={() => setHoveredIcon(2)}
-                        onMouseLeave={() => setHoveredIcon(null)}
-                    >
-                        <div style={{ ...styles.opcionHeader, backgroundColor: '#1e3a5f' }} onClick={manejarTIID}>
-                            <div
-                                style={{
-                                    ...styles.iconoWrapper,
-                                    transform: hoveredIcon === 2 ? 'scale(1.2)' : 'scale(1)',
-                                }}
-                            >
-                                <Globe size={48} color="#fff" />
-                            </div>
-                            <h3 style={styles.opcionTitulo}>TIID</h3>
-                        </div>
-                        <p style={styles.opcionDescripcion}>Gestión de documentos y recursos de la carrera</p>
-                    </div>
+                        );
+                    })}
                 </div>
             </main>
+
             <Footer />
         </div>
     );
 }
-
-const styles = {
-    page: {
-        minHeight: '100vh',
-        background: 'linear-gradient(180deg, #1e3a5f 0%, #431d2a 100%)',
-        display: 'flex',
-        flexDirection: 'column' as const,
-        flex: 1,
-    },
-    container: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingTop: '4rem',
-        marginBottom: '2rem',
-    },
-    titulo: {
-        fontSize: '28px',
-        fontWeight: 700,
-        color: '#ffffff',
-        marginBottom: '0.5rem',
-    },
-    subtitulo: {
-        fontSize: '20px',
-        fontWeight: 600,
-        color: '#ffffff',
-        marginTop: '0.5rem',
-    },
-    opciones: {
-        display: 'flex',
-        flexDirection: 'row' as const,
-        justifyContent: 'center',
-        gap: '2rem',
-        padding: '1rem 2rem',
-        flexWrap: 'wrap' as const,
-    },
-    opcion: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        width: '380px',
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
-        cursor: 'pointer',
-        overflow: 'hidden',
-        transition: 'transform 0.2s',
-        borderColor: '#e0e0e0',
-        borderWidth: 1,
-        borderStyle: 'solid' as const,
-    },
-    opcionTitulo: {
-        fontSize: '24px',
-        fontWeight: 600,
-        color: '#ffffff',
-        margin: 0,
-        textAlign: 'center' as const,
-    },
-    opcionHeader: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2.5rem 1.5rem',
-        gap: '1rem',
-        minHeight: '160px',
-    },
-    opcionDescripcion: {
-        fontSize: '18px',
-        fontWeight: 600,
-        color: '#666',
-        padding: '1.5rem',
-        textAlign: 'center' as const,
-        margin: 0,
-    },
-    iconoWrapper: {
-        transition: 'transform 0.3s ease',
-        cursor: 'pointer'
-    }
-};

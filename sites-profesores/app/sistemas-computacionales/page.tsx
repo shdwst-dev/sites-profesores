@@ -1,217 +1,124 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, LogOut, FileText, Bell } from 'lucide-react';
+import { FileText, Bell, ChevronRight, Cpu } from 'lucide-react';
 import { useState } from 'react';
 import Footer from '@/components/Footer';
+import SubHeader from '@/components/SubHeader';
 
-export default function SistemasComputacionales() {
+export default function SistemasComputacionalesPage() {
     const router = useRouter();
     const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
+    const sections = [
+        {
+            title: 'Formatos y Documentos',
+            description: 'Subir entregables, plan de asignatura y reportes de academia.',
+            icon: FileText,
+            color: 'from-rose-700 to-red-900',
+            path: '/sistemas-computacionales/formatos-y-documentos'
+        },
+        {
+            title: 'Recursos y Avisos',
+            description: 'Materiales de apoyo, coordinaciones y calendarios específicos.',
+            icon: Bell,
+            color: 'from-slate-700 to-slate-900',
+            path: '/sistemas-computacionales/recursos-y-avisos'
+        }
+    ];
+
     return (
-        <div style={styles.pageContainer}>
-            <header className="bg-white shadow-sm border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <button
-                                onClick={() => router.push('/home')}
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-all"
-                            >
-                                <ArrowLeft className="w-6 h-6 text-gray-700 cursor-pointer" />
-                            </button>
-                            <div>
-                                <h1 className="text-xl font-bold text-gray-900">Sistemas Computacionales</h1>
-                                <p className="text-sm text-gray-600">Gestión de carrera</p>
-                            </div>
+        <div className="min-h-screen flex flex-col bg-[#0f172a]">
+            {/* Glass Header */}
+            <SubHeader
+                title="Sistemas Computacionales"
+                subtitle="Gestión Académica"
+                accentColor="#1e3a5f"
+            />
+
+            <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full animate-in fade-in duration-700">
+                {/* Hero Section for Branch */}
+                <div className="mb-16 text-center lg:text-left flex flex-col lg:flex-row items-center gap-8 bg-gradient-to-br from-rose-950/40 to-slate-900/40 p-8 rounded-[2rem] border border-white/10 backdrop-blur-sm">
+                    <div className="lg:w-1/2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-widest mb-6">
+                            <Cpu size={14} />
+                            Ingeniería en Sistemas
                         </div>
-                        <button
-                            onClick={() => router.push('/home')}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all cursor-pointer"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            <span>Volver al inicio</span>
-                        </button>
+                        <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight uppercase tracking-tighter">
+                            Excelencia en <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-orange-400">Ingeniería</span>
+                        </h2>
+                        <p className="text-gray-400 text-lg font-medium leading-relaxed mb-0">
+                            Plataforma integral para la gestión de la carrera de Sistemas Computacionales. Acceda a herramientas especializadas para la docencia y administración académica.
+                        </p>
+                    </div>
+                    <div className="lg:w-1/2 relative h-64 w-full rounded-2xl overflow-hidden shadow-2xl border border-white/5">
+                        <img
+                            src="/mision-sistemas.png"
+                            alt="Ingeniería"
+                            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-rose-950/60 to-transparent"></div>
                     </div>
                 </div>
-            </header>
 
-            <main style={styles.main}>
-                <div style={styles.cards}>
-                    <div 
-                        style={styles.card} 
-                        onClick={() => router.push('/sistemas-computacionales/formatos-y-documentos')} 
-                        className='cursor-pointer'
-                        onMouseEnter={() => setHoveredCard(0)}
-                        onMouseLeave={() => setHoveredCard(null)}
-                    >
-                        <div style={{ ...styles.cardTop, ...styles.redGradient }}>
+                {/* Section Cards */}
+                <div className="grid md:grid-cols-2 gap-8 mb-16">
+                    {sections.map((section, index) => {
+                        const Icon = section.icon;
+                        return (
                             <div
-                                style={{
-                                    ...styles.iconWrapper,
-                                    transform: hoveredCard === 0 ? 'scale(1.2)' : 'scale(1)',
-                                }}
+                                key={section.title}
+                                onClick={() => router.push(section.path)}
+                                className="group relative bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 shadow-xl hover:shadow-rose-500/10"
+                                onMouseEnter={() => setHoveredCard(index)}
+                                onMouseLeave={() => setHoveredCard(null)}
                             >
-                                <FileText size={36} color="#fff" />
+                                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${section.color} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+                                    <Icon size={28} color="#fff" />
+                                </div>
+                                <h3 className="text-2xl font-black text-white mb-4 group-hover:text-rose-400 transition-colors uppercase tracking-tight">
+                                    {section.title}
+                                </h3>
+                                <p className="text-gray-400 font-medium leading-relaxed mb-6">
+                                    {section.description}
+                                </p>
+                                <div className="flex items-center gap-2 text-sm font-bold text-rose-400 group-hover:gap-4 transition-all duration-300 uppercase tracking-widest">
+                                    Acceder <ChevronRight size={18} />
+                                </div>
+                                <div className={`absolute bottom-0 left-8 right-8 h-1 bg-gradient-to-r ${section.color} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full`}></div>
                             </div>
-                            <h2 style={styles.cardTitle}>Formatos y Documentos</h2>
-                        </div>
-                        <div style={styles.cardBottom}>
-                            <p style={styles.cardText}>Subir entregables y documentos requeridos</p>
-                        </div>
-                    </div>
-
-                    <div 
-                        style={styles.card}
-                        onClick={() => router.push('/sistemas-computacionales/recursos-y-avisos')}
-                        className='cursor-pointer'
-                        onMouseEnter={() => setHoveredCard(1)}
-                        onMouseLeave={() => setHoveredCard(null)}
-                    >
-                        <div style={{ ...styles.cardTop, ...styles.blueGradient }}>
-                            <div
-                                style={{
-                                    ...styles.iconWrapper,
-                                    transform: hoveredCard === 1 ? 'scale(1.2)' : 'scale(1)',
-                                }}
-                            >
-                                <Bell size={36} color="#fff" />
-                            </div>
-                            <h2 style={styles.cardTitle}>Recursos y Avisos</h2>
-                        </div>
-                        <div style={styles.cardBottom}>
-                            <p style={styles.cardText}>Materiales de apoyo y comunicados</p>
-                        </div>
-                    </div>
+                        );
+                    })}
                 </div>
-                
-                {/* Sección Misión */}
-                <div style={styles.misionSection}>
-                    <div style={styles.misionImage}>
-                        <img 
-                            src="/mision-sistemas.png" 
-                            alt="Salón de clases" 
-                            style={styles.image}
+
+                {/* Mission Section (Enhanced) */}
+                <div className="bg-white rounded-[2rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-gray-100">
+                    <div className="lg:w-1/3 h-64 lg:h-auto bg-slate-200">
+                        <img
+                            src="/mision-sistemas.png"
+                            alt="Misión Sistemas"
+                            className="w-full h-full object-cover"
                         />
                     </div>
-                    <div style={styles.misionContent}>
-                        <h2 style={styles.misionTitle}>Misión</h2>
-                        <p style={styles.misionText}>
-                            Formamos profesionales capaces de diseñar, construir y gestionar sistemas de tecnología de la información que transformen organizaciones y mejoren vidas. Con un enfoque en la innovación, la eficiencia y el factor humano, preparémoslos para liderar en un mundo globalizado, creando soluciones que no solo funcionen, sino que inspiren. ¡El futuro es suyo para construirlo!
+                    <div className="lg:w-2/3 p-10 lg:p-16 flex flex-col justify-center">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-1 bg-rose-700 rounded-full"></div>
+                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">Misión</h2>
+                        </div>
+                        <p className="text-xl font-semibold leading-relaxed text-slate-600 italic">
+                            "Formamos profesionales capaces de diseñar, construir y gestionar sistemas de tecnología de la información que transformen organizaciones y mejoren vidas. Con un enfoque en la innovación, la eficiencia y el factor humano, preparémoslos para liderar en un mundo globalizado."
                         </p>
+                        <div className="mt-8 flex justify-end">
+                            <div className="text-right">
+                                <p className="text-slate-900 font-black uppercase tracking-widest text-sm">Dirección de Carrera</p>
+                                <p className="text-rose-700 font-bold">Sistemas UPQ</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
-            
+
             <Footer />
         </div>
     );
 }
-
-const styles = {
-    pageContainer: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        flex: 1,
-    },
-    main: {
-        flex: 1,
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '24px 24px 40px',
-        width: '100%',
-    },
-    cards: {
-        display: 'flex',
-        gap: '28px',
-        flexWrap: 'wrap' as const,
-        justifyContent: 'center',
-    },
-    card: {
-        width: '520px',
-        borderRadius: '18px',
-        overflow: 'hidden',
-        boxShadow: '0 12px 30px rgba(0,0,0,0.08)',
-        backgroundColor: '#fff',
-    },
-    cardTop: {
-        padding: '22px 28px 26px',
-        color: '#fff',
-        display: 'flex',
-        flexDirection: 'row' as const,
-        gap: '12px',
-        alignItems: 'center',
-    },
-    redGradient: {
-        background: 'linear-gradient(135deg, #431d2a 0%, #2d1420 100%)',
-    },
-    blueGradient: {
-        background: 'linear-gradient(135deg, #1e3a5f 0%, #152a45 100%)',
-    },
-    cardTitle: {
-        fontSize: '24px',
-        fontWeight: 600,
-        margin: 0,
-        flex: 1,
-    },
-    cardBottom: {
-        backgroundColor: '#fff',
-        padding: '20px 28px 24px',
-    },
-    cardText: {
-        margin: 0,
-        fontSize: '18px',
-        fontWeight: 600,
-        color: '#4a5568',
-    },
-    iconWrapper: {
-        transition: 'transform 0.3s ease',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-    },
-    misionSection: {
-        marginTop: '60px',
-        backgroundColor: '#f5f5f5',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        display: 'flex',
-        flexWrap: 'wrap' as const,
-        boxShadow: '0 8px 20px rgba(0,0,0,0.06)',
-    },
-    misionImage: {
-        flex: '1 1 400px',
-        minWidth: '300px',
-    },
-    image: {
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover' as const,
-        display: 'block',
-    },
-    misionContent: {
-        flex: '1 1 400px',
-        padding: '48px 40px',
-        display: 'flex',
-        flexDirection: 'column' as const,
-        justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
-    },
-    misionTitle: {
-        fontSize: '28px',
-        fontWeight: 600,
-        color: '#1a202c',
-        marginBottom: '20px',
-        marginTop: 0,
-    },
-    misionText: {
-        fontSize: '18px',
-        fontWeight: 600,
-        lineHeight: '1.7',
-        color: '#4a5568',
-        textAlign: 'justify' as const,
-        margin: 0,
-    },
-};
