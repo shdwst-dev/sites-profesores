@@ -31,7 +31,7 @@ export default function TIIDPage() {
         <div className="min-h-screen flex flex-col bg-[#0f172a]">
             <SubHeader
                 title="TIID"
-                subtitle="Innovación Digital"
+                subtitle="Tecnologías de la Información e Innovación Digital"
                 accentColor="#1e3a5f"
             />
 
@@ -41,10 +41,10 @@ export default function TIIDPage() {
                     <div className="lg:w-1/2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold uppercase tracking-widest mb-6">
                             <Zap size={14} className="fill-indigo-400" />
-                            Tecnologías de la Información
+                            Tecnologías de la Información e Innovación Digital
                         </div>
                         <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
-                            Gestión de <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Innovación Digital</span>
+                            Gestión de <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Tecnologías de la Información e Innovación Digital</span>
                         </h2>
                         <p className="text-gray-400 text-lg font-medium leading-relaxed mb-0">
                             Centralizamos todos los recursos académicos y administrativos para la carrera de TIID, facilitando el seguimiento y la entrega de documentación oficial.

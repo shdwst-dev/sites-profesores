@@ -1,443 +1,442 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, LogOut, Clock, Calendar, FileText, BookOpen, Table, CheckSquare, Book, Map, NotebookPen, X } from 'lucide-react';
-import { useState } from 'react';
+import { Clock, Calendar, FileText, BookOpen, Table, CheckSquare, Book, Map, NotebookPen, X, Upload, Info, FileDown, ChevronRight, Check, Image as ImageIcon, FileSpreadsheet, Trash2, Menu, ChevronUp, LayoutGrid } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Footer from '@/components/Footer';
+import SubHeader from '@/components/SubHeader';
 
-export default function FormatosDocumentos() {
+// Helper for file size
+const formatBytes = (bytes: number, decimals = 2) => {
+    if (!+bytes) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+};
+
+export default function SistemasFormatosDocumentos() {
     const router = useRouter();
     const [selectedFiles, setSelectedFiles] = useState<{ [key: string]: File[] }>({});
+    const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
+    const [success, setSuccess] = useState<{ [key: string]: boolean }>({});
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
+    const [activeSection, setActiveSection] = useState('');
 
-    const entregables = [{
-        titulo: 'Semana 1',
-        items: [
-            { nombre : 'Plan y Guía de asignatura firmados por estudiantes', fecha: 'Semana 1'},
-            { nombre : 'Acta de trabajo en academia', fecha: 'Semana 1'},
-            { nombre : 'Registrar códigos, plataformas, fechas de exámenes', fecha: 'Semana 1'}
-        ],
-    },
-    {
-        titulo: 'Plazos especiales',
-        items: [
-            { nombre : 'Altas y bajas de materias', fecha : 'Hasta el 16 de Enero de 2026'},
-        ],
-    },
-    {
-        titulo: 'Solo tutores',
-        items: [
-            { nombre : 'Solicitudes de ETC / Solo tutores', fecha : 'Hasta el 12 de Enero de 2026'},
-            { nombre : 'Cartas de ETC / Solo tutores', fecha : 'Hasta el 12 de Enero de 2026'},
-        ],
-    },
-    {
-        titulo: 'Semana 3',
-        items: [
-            { nombre : 'Plan de actividades ETC', fecha : 'Semana 3'},
-        ],
-    }
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollTop(window.scrollY > 300);
+
+            const sections = ['instrucciones', 'entregables', 'formatos'];
+            for (const id of sections) {
+                const el = document.getElementById(id);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top >= 0 && rect.top <= 300) {
+                        setActiveSection(id);
+                        break;
+                    }
+                }
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const sections = [
+        { id: 'instrucciones', label: 'Guía de Uso', icon: Info },
+        { id: 'entregables', label: 'Entregables Semanales', icon: CheckSquare },
+        { id: 'formatos', label: 'Descargas', icon: FileDown },
     ];
-    
+
+    const entregables = [
+        {
+            titulo: 'Semana 1',
+            items: [
+                { nombre: 'Plan y Guía de asignatura firmados por estudiantes', fecha: 'Cierre: Fin de Semana 1' },
+                { nombre: 'Acta de trabajo en academia', fecha: 'Cierre: Fin de Semana 1' },
+                { nombre: 'Registrar códigos, plataformas, fechas de exámenes', fecha: 'Semana 1' }
+            ],
+        },
+        {
+            titulo: 'Plazos especiales',
+            items: [
+                { nombre: 'Altas y bajas de materias', fecha: 'Hasta el 16 de Enero de 2026' },
+            ],
+        },
+        {
+            titulo: 'Solo tutores',
+            items: [
+                { nombre: 'Solicitudes de ETC / Solo tutores', fecha: 'Cerrado: 12 de Enero de 2026' },
+                { nombre: 'Cartas de ETC / Solo tutores', fecha: 'Cerrado: 12 de Enero de 2026' },
+            ],
+        },
+        {
+            titulo: 'Semana 3',
+            items: [
+                { nombre: 'Plan de actividades ETC', fecha: 'Semana 3' },
+            ],
+        }
+    ];
+
     const formatos = [
-        { nombre: 'Calendario 25 - 26', icono: Calendar, url: '/formatos/calendario.pdf' },
-        { nombre: 'CARTA ETC - Evaluación a Título de Competencia', icono: FileText, url: '/formatos/carta-etc.pdf' },
-        { nombre: 'Formato Academia', icono: BookOpen, url: '/formatos/formato-academia.pdf' },
-        { nombre: 'Grupos y Horarios ENERO-ABRIL 2026', icono: Table, url: '/formatos/grupos-horarios.pdf' },
-        { nombre: 'Guía Asignatura', icono: Book, url: '/formatos/guia-asignatura.pdf' },
-        { nombre: 'Información Estancias y Estadías', icono: FileText, url: '/formatos/estancias-estadias.pdf' },
-        { nombre: 'Lista de Asistencias Tutorías', icono: CheckSquare, url: '/formatos/lista-asistencias.pdf' },
-        { nombre: 'Manuales de Asignatura', icono: BookOpen, url: '/formatos/manuales.pdf' },
-        { nombre: 'Mapa Curricular', icono: Map, url: '/formatos/mapa-curricular.pdf' },
-        { nombre: 'Plan de Asignatura', icono: NotebookPen, url: '/formatos/plan-asignatura.pdf' },
+        { nombre: 'Calendario 25 - 26', icono: Calendar, url: '/formatos/calendario.pdf', color: 'bg-blue-50' },
+        { nombre: 'CARTA ETC', icono: FileText, url: '/formatos/carta-etc.pdf', color: 'bg-rose-50' },
+        { nombre: 'Formato Academia', icono: BookOpen, url: '/formatos/formato-academia.pdf', color: 'bg-orange-50' },
+        { nombre: 'Grupos y Horarios', icono: Table, url: '/formatos/grupos-horarios.pdf', color: 'bg-amber-50' },
+        { nombre: 'Guía Asignatura', icono: Book, url: '/formatos/guia-asignatura.pdf', color: 'bg-red-50' },
+        { nombre: 'Información Estancias', icono: FileText, url: '/formatos/estancias-estadias.pdf', color: 'bg-blue-50' },
+        { nombre: 'Asistencias Tutorías', icono: CheckSquare, url: '/formatos/lista-asistencias.pdf', color: 'bg-emerald-50' },
+        { nombre: 'Manuales Asignatura', icono: BookOpen, url: '/formatos/manuales.pdf', color: 'bg-rose-50' },
+        { nombre: 'Mapa Curricular', icono: Map, url: '/formatos/mapa-curricular.pdf', color: 'bg-orange-50' },
+        { nombre: 'Plan de Asignatura', icono: NotebookPen, url: '/formatos/plan-asignatura.pdf', color: 'bg-pink-50' },
     ];
+
+    const handleUpload = (taskKey: string) => {
+        setUploading(prev => ({ ...prev, [taskKey]: true }));
+        // Simular subida
+        setTimeout(() => {
+            setUploading(prev => ({ ...prev, [taskKey]: false }));
+            setSuccess(prev => ({ ...prev, [taskKey]: true }));
+            setSelectedFiles(prev => ({ ...prev, [taskKey]: [] }));
+            setTimeout(() => {
+                setSuccess(prev => ({ ...prev, [taskKey]: false }));
+            }, 3000);
+        }, 1500);
+    };
 
     return (
-        <div style={styles.pageContainer}>
-            {/* Header con navegación */}
-            <header className="bg-white shadow-sm border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <button
-                                onClick={() => router.push('/sistemas-computacionales')}
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-all"
-                            >
-                                <ArrowLeft className="w-6 h-6 text-gray-700 cursor-pointer" />
-                            </button>
-                            <div>
-                                <h1 className="text-xl font-bold text-gray-900">Formatos y Documentos</h1>
-                                <p className="text-sm text-gray-600">Sistemas Computacionales</p>
+        <div className="min-h-screen w-full flex flex-col bg-[#0f172a]">
+            <SubHeader
+                title="Formatos y Documentos"
+                subtitle="Sistemas - Gestión Académica"
+                accentColor="#431d2a"
+                backPath="/sistemas-computacionales"
+            />
+
+            <div className="flex-1 w-full max-w-[1400px] mx-auto flex gap-8 px-4 sm:px-6 lg:px-8 py-10">
+                {/* Floating Table of Contents for Desktop */}
+                <aside className="hidden xl:block w-64 shrink-0 sticky top-32 h-fit">
+                    <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl">
+                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 px-2">Contenidos</h3>
+                        <nav className="space-y-1">
+                            {sections.map((s) => {
+                                const Icon = s.icon;
+                                return (
+                                    <a
+                                        key={s.id}
+                                        href={`#${s.id}`}
+                                        className={`
+                                            flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 group
+                                            ${activeSection === s.id ? 'bg-rose-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}
+                                        `}
+                                    >
+                                        <Icon size={16} className={activeSection === s.id ? 'text-white' : 'group-hover:text-rose-400'} />
+                                        {s.label}
+                                    </a>
+                                );
+                            })}
+                        </nav>
+                    </div>
+                </aside>
+
+                <main className="flex-1 min-w-0 animate-in fade-in duration-700">
+                    {/* Hero / Instructions Section */}
+                    <div id="instrucciones" className="scroll-mt-32 grid lg:grid-cols-3 gap-8 mb-16">
+                        <div className="lg:col-span-2 bg-gradient-to-br from-rose-900/40 to-slate-900/40 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-sm relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+                            <h2 className="text-3xl font-black text-white mb-6 uppercase tracking-tight">
+                                Gestión de <span className="text-rose-400">Entregables</span>
+                            </h2>
+                            <p className="text-gray-400 font-medium mb-8 max-w-2xl leading-relaxed">
+                                Plataforma oficial para la carga de documentación de la carrera de Sistemas Computacionales. Por favor, asegúrese de que sus archivos sigan la nomenclatura institucional.
+                            </p>
+
+                            <div className="grid sm:grid-cols-3 gap-4">
+                                {[
+                                    { step: '01', title: 'Seleccionar', desc: 'Elige tus archivos locales.' },
+                                    { step: '02', title: 'Verificar', desc: 'Revisa nombres y formatos.' },
+                                    { step: '03', title: 'Cargar', desc: 'Sube a la nube de Drive.' }
+                                ].map((s) => (
+                                    <div key={s.step} className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                                        <span className="text-rose-500 font-black text-xl mb-2 block">{s.step}</span>
+                                        <h4 className="text-white font-bold text-sm mb-1 uppercase tracking-wider">{s.title}</h4>
+                                        <p className="text-gray-500 text-xs leading-tight">{s.desc}</p>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                        <button
-                            onClick={() => router.push('/home')}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all cursor-pointer"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            <span>Volver al inicio</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
 
-            {/* Contenido principal */}
-            <main style={styles.main}>
-                <h1 style={styles.titulo}>Entregables del cuatrimestre</h1>
-                <h2 style={styles.subtitulo}>Sube tus entregables antes de la fecha límite indicada</h2>
-
-                {/* Instrucciones */}
-                <div style={styles.instruccionesContainer}>
-                    <h3 style={styles.instruccionesTitle}>Cómo subir tus archivos</h3>
-                    <ol style={styles.instruccionesList}>
-                        <li style={styles.instruccionItem}>
-                            <strong>Seleccionar archivo:</strong> Haz clic en el botón <em>"Seleccionar archivo"</em> para abrir tu explorador de archivos.
-                        </li>
-                        <li style={styles.instruccionItem}>
-                            <strong>Elegir archivos:</strong> Navega por tus carpetas y selecciona el archivo o archivos que necesitas subir. Puedes seleccionar múltiples archivos manteniendo presionada la tecla <em>Ctrl</em> (o <em>Cmd</em> en Mac) mientras haces clic en cada archivo.
-                        </li>
-                        <li style={styles.instruccionItem}>
-                            <strong>Confirmar subida:</strong> Una vez que hayas seleccionado todos los archivos necesarios, haz clic en el botón <em>"Subir"</em> para enviarlos a la carpeta de Google Drive correspondiente.
-                        </li>
-                    </ol>
-                </div>
-                
-                <div style={{ marginTop: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
-                    {entregables.map((grupo) => (
-                        <section key={grupo.titulo} style={styles.section}>
-                            <div style={styles.sectionHeader}>
-                                <span style={styles.sectionIcon}><Clock /></span>
-                                <h3 style={styles.sectionTitle}>{grupo.titulo}</h3>
+                        <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-gray-100 flex flex-col justify-center">
+                            <div className="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center mb-6">
+                                <Info className="text-rose-600" size={24} />
                             </div>
-
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                {grupo.items.map((item, itemIdx) => {
-                                    const taskKey = `${grupo.titulo}-${itemIdx}`;
-                                    const currentFiles = selectedFiles[taskKey] || [];
-                                    
-                                    return (
-                                    <div key={item.nombre} style={styles.card}>
-                                        <div style={styles.cardHeader}>
-                                            <div>
-                                                <p style={styles.cardTitle}>{item.nombre}</p>
-                                                <p style={styles.cardMeta}>
-                                                    <span style={{ marginRight: 4 }}><Clock /></span>
-                                                    {item.fecha}
-                                                </p>
-                                            </div>
-                                            <div style={styles.actions}>
-                                                <label style={styles.fileButton}>
-                                                    Seleccionar archivo
-                                                    <input 
-                                                        type="file" 
-                                                        multiple
-                                                        style={{ display: 'none' }}
-                                                        onChange={(e) => {
-                                                            if (e.target.files) {
-                                                                setSelectedFiles({
-                                                                    ...selectedFiles,
-                                                                    [taskKey]: Array.from(e.target.files)
-                                                                });
-                                                            }
-                                                        }}
-                                                    />
-                                                </label>
-                                                <button 
-                                                    style={styles.uploadButton}
-                                                    disabled={currentFiles.length === 0}
-                                                    onClick={() => {
-                                                        if (currentFiles.length > 0) {
-                                                            console.log('Subiendo archivos:', currentFiles);
-                                                            setSelectedFiles({
-                                                                ...selectedFiles,
-                                                                [taskKey]: []
-                                                            });
-                                                        }
-                                                    }}
-                                                >
-                                                    Subir
-                                                </button>
-                                            </div>
-                                        </div>
-                                        
-                                        {currentFiles.length > 0 && (
-                                            <div style={styles.selectedFilesContainer}>
-                                                <div style={styles.selectedFilesHeader}>
-                                                    <strong>Archivos seleccionados ({currentFiles.length})</strong>
-                                                    <button
-                                                        onClick={() => setSelectedFiles({
-                                                            ...selectedFiles,
-                                                            [taskKey]: []
-                                                        })}
-                                                        style={styles.clearAllButton}
-                                                    >
-                                                        Limpiar todo
-                                                    </button>
-                                                </div>
-                                                <ul style={styles.selectedFilesList}>
-                                                    {currentFiles.map((file, idx) => (
-                                                        <li key={`${file.name}-${idx}`} style={styles.selectedFileItem}>
-                                                            <span>{file.name}</span>
-                                                            <button
-                                                                onClick={() => setSelectedFiles({
-                                                                    ...selectedFiles,
-                                                                    [taskKey]: currentFiles.filter((_, i) => i !== idx)
-                                                                })}
-                                                                style={styles.removeFileButton}
-                                                                title="Eliminar archivo"
-                                                            >
-                                                                <X size={16} />
-                                                            </button>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </div>
-                                    );
-                                })}
-                            </div>
-                        </section>
-                    ))}
-                    <br />
-                </div>
-                
-                <section style={styles.section}>
-                    <div style={styles.sectionHeader}>
-                        <h3 style={styles.sectionTitle}>Consultar formatos</h3>
-                    </div>
-                    <div style={{ ...styles.formatosGrid, marginTop: 10 }} className="grid gap-3 md:grid-cols-2">
-                        {formatos.map((formato, index) => {
-                            const IconComponent = formato.icono;
-                            return (
-                                <div 
-                                    key={`${formato.nombre}-${index}`} 
-                                    style={{...styles.formatoRow, borderBottom: '1px solid #c7c7c7'}}
-                                    className='formato-row'
-                                    onClick={() => window.open(formato.url, '_blank')}
-                                >
-                                    <IconComponent size={22} color="#1e3a5f" />
-                                    <span style={styles.formatoNombre} className='formato-nombre'>{formato.nombre}</span>
+                            <h3 className="text-xl font-black text-slate-900 mb-4 tracking-tighter uppercase">Guía de Uso</h3>
+                            <p className="text-slate-600 font-medium text-sm leading-relaxed mb-6">
+                                Todos los formatos descargables están actualizados al ciclo Enero-Abril 2026. Verifique la vigencia antes de imprimir.
+                            </p>
+                            <div className="p-4 bg-rose-50 rounded-2xl border border-rose-100">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 bg-rose-600 rounded-full animate-pulse"></div>
+                                    <span className="text-rose-900 font-bold text-xs uppercase tracking-widest">Servidor Operativo</span>
                                 </div>
-                            );
-                        })}
+                            </div>
+                        </div>
                     </div>
-                </section>
-            </main>
 
-            {/* Footer reutilizable */}
+                    <div className="grid lg:grid-cols-3 gap-12">
+                        {/* Left Column: Deliverables */}
+                        <div id="entregables" className="scroll-mt-32 lg:col-span-2 space-y-12">
+                            {entregables.map((grupo) => {
+                                const grupoKey = grupo.titulo;
+
+                                return (
+                                    <section key={grupo.titulo} className="animate-in slide-in-from-bottom-4 duration-500">
+                                        <div className="flex items-center gap-4 mb-6">
+                                            <div className="p-3 bg-rose-500/20 rounded-2xl border border-rose-500/20">
+                                                <Calendar className="text-rose-400" size={24} />
+                                            </div>
+                                            <h3 className="text-2xl font-black text-white tracking-tight uppercase">
+                                                {grupo.titulo}
+                                            </h3>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            {grupo.items.map((item, itemIdx) => {
+                                                const taskKey = `${grupo.titulo}-${itemIdx}`;
+                                                const currentFiles = selectedFiles[taskKey] || [];
+                                                const isUploading = uploading[taskKey];
+                                                const isSuccess = success[taskKey];
+
+                                                return (
+                                                    <div
+                                                        key={item.nombre}
+                                                        className="group bg-slate-900/40 backdrop-blur-md border border-white/5 hover:border-rose-500/30 rounded-3xl p-6 transition-all duration-300"
+                                                    >
+                                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                                            <div className="flex-1">
+                                                                <h4 className="text-lg font-bold text-white mb-2 group-hover:text-rose-400 transition-colors leading-tight">
+                                                                    {item.nombre}
+                                                                </h4>
+                                                                <div className="flex items-center gap-2 text-gray-500 text-xs font-bold uppercase tracking-widest">
+                                                                    <Clock size={12} />
+                                                                    {item.fecha}
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-3">
+                                                                <label className={`
+                                                                flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-widest cursor-pointer transition-all active:scale-95
+                                                                ${currentFiles.length > 0
+                                                                        ? 'bg-rose-600 text-white shadow-lg'
+                                                                        : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
+                                                                    }
+                                                            `}>
+                                                                    <Upload size={14} />
+                                                                    {currentFiles.length > 0 ? `${currentFiles.length} Seleccionados` : 'Elegir'}
+                                                                    <input
+                                                                        type="file"
+                                                                        multiple
+                                                                        className="hidden"
+                                                                        onChange={(e) => {
+                                                                            if (e.target.files) {
+                                                                                setSelectedFiles({
+                                                                                    ...selectedFiles,
+                                                                                    [taskKey]: Array.from(e.target.files)
+                                                                                });
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </label>
+
+                                                                <button
+                                                                    onClick={() => handleUpload(taskKey)}
+                                                                    disabled={currentFiles.length === 0 || isUploading}
+                                                                    className={`
+                                                                    flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all
+                                                                    ${isSuccess
+                                                                            ? 'bg-emerald-500 text-white'
+                                                                            : currentFiles.length > 0
+                                                                                ? 'bg-white text-[#0f172a] hover:bg-rose-400'
+                                                                                : 'bg-white/5 text-gray-700 cursor-not-allowed border border-white/5'
+                                                                        }
+                                                                `}
+                                                                >
+                                                                    {isUploading ? (
+                                                                        <div className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
+                                                                    ) : isSuccess ? (
+                                                                        <Check size={14} />
+                                                                    ) : (
+                                                                        'Subir'
+                                                                    )}
+                                                                </button>
+
+                                                                {currentFiles.length > 0 && !isUploading && (
+                                                                    <button
+                                                                        onClick={() => setSelectedFiles({ ...selectedFiles, [taskKey]: [] })}
+                                                                        className="p-2 text-red-400 hover:bg-red-400/10 rounded-full transition-colors"
+                                                                    >
+                                                                        <X size={16} />
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* File Preview */}
+                                                        {currentFiles.length > 0 && (
+                                                            <div className="mt-6 pt-6 border-t border-white/5 grid gap-3">
+                                                                {currentFiles.map((f, i) => {
+                                                                    // Determine icon
+                                                                    const isImage = f.type.startsWith('image/');
+                                                                    const isPdf = f.type === 'application/pdf';
+                                                                    const Icon = isImage ? ImageIcon : (isPdf ? FileText : FileSpreadsheet);
+
+                                                                    return (
+                                                                        <div key={i} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors group/file">
+                                                                            <div className="flex items-center gap-4">
+                                                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isImage ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                                                                                    <Icon size={20} />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <p className="text-white text-sm font-medium truncate max-w-[200px]">{f.name}</p>
+                                                                                    <p className="text-gray-500 text-xs font-bold uppercase">{formatBytes(f.size)}</p>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            {!isUploading && (
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        const newFiles = [...currentFiles];
+                                                                                        newFiles.splice(i, 1);
+                                                                                        setSelectedFiles({ ...selectedFiles, [taskKey]: newFiles });
+                                                                                    }}
+                                                                                    className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all opacity-0 group-hover/file:opacity-100"
+                                                                                    title="Eliminar archivo"
+                                                                                >
+                                                                                    <Trash2 size={16} />
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </section>
+                                );
+                            })}
+                        </div>
+
+                        {/* Right Column: PDF Formats */}
+                        <div id="formatos" className="scroll-mt-32 space-y-8">
+                            <section className="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-gray-100">
+                                <div className="flex items-center gap-3 mb-8">
+                                    <div className="p-2 bg-rose-900 rounded-xl">
+                                        <FileDown className="text-white" size={20} />
+                                    </div>
+                                    <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Formatos</h3>
+                                </div>
+
+                                <div className="space-y-2">
+                                    {formatos.map((formato, index) => {
+                                        const Icon = formato.icono;
+                                        return (
+                                            <a
+                                                key={index}
+                                                href={formato.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-between p-4 rounded-[1.25rem] hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100"
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`w-10 h-10 ${formato.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                                                        <Icon className="text-slate-700" size={18} />
+                                                    </div>
+                                                    <span className="text-sm font-bold text-slate-700 group-hover:text-rose-900 transition-colors">
+                                                        {formato.nombre}
+                                                    </span>
+                                                </div>
+                                                <ChevronRight className="text-slate-300 group-hover:text-rose-400 group-hover:translate-x-1 transition-all" size={16} />
+                                            </a>
+                                        );
+                                    })}
+                                </div>
+
+                                <div className="mt-8 pt-8 border-t border-slate-100">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Soporte</p>
+                                    <div className="space-y-3">
+                                        <button className="w-full text-left px-4 py-3 bg-slate-50 rounded-xl text-xs font-bold text-slate-600 hover:bg-rose-50 hover:text-rose-900 transition-colors flex items-center gap-3">
+                                            <Check size={14} /> Requisitos de firmas
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            {/* Mobile Menu Trigger */}
+            <div className="fixed bottom-8 left-8 xl:hidden z-50">
+                <button
+                    onClick={() => setMenuOpen(!menuOpen)}
+                    className="flex items-center justify-center bg-rose-600 text-white rounded-full w-14 h-14 shadow-2xl active:scale-95 transition-all"
+                >
+                    {menuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+            </div>
+
+            {/* Mobile Menu Backdrop */}
+            {menuOpen && (
+                <div
+                    className="fixed inset-0 bg-[#0f172a]/80 backdrop-blur-md z-[60] xl:hidden flex items-center justify-center p-6 animate-in fade-in"
+                    onClick={() => setMenuOpen(false)}
+                >
+                    <div className="w-full max-w-sm bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 shadow-3xl" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center mb-8">
+                            <h3 className="text-xl font-black text-white tracking-tight uppercase">Dashboard</h3>
+                            <button onClick={() => setMenuOpen(false)} className="p-2 text-gray-400 hover:text-white"><X size={20} /></button>
+                        </div>
+                        <nav className="grid gap-3">
+                            {sections.map((s) => {
+                                const Icon = s.icon;
+                                return (
+                                    <a
+                                        key={s.id}
+                                        href={`#${s.id}`}
+                                        onClick={() => setMenuOpen(false)}
+                                        className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl text-gray-300 font-bold hover:bg-rose-600 hover:text-white transition-all"
+                                    >
+                                        <Icon size={20} />
+                                        {s.label}
+                                    </a>
+                                );
+                            })}
+                        </nav>
+                    </div>
+                </div>
+            )}
+
+            {/* Scroll Top Button */}
+            {showScrollTop && (
+                <button
+                    onClick={scrollToTop}
+                    className="fixed bottom-8 right-8 bg-rose-700 text-white border-none rounded-full w-14 h-14 flex items-center justify-center shadow-2xl transition-all duration-300 z-50 transform hover:scale-110 active:scale-90"
+                >
+                    <ChevronUp size={24} />
+                </button>
+            )}
+
             <Footer />
         </div>
     );
 }
-
-const styles = {
-    pageContainer: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        flex: 1,
-    },
-    main: {
-        flex: 1,
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '24px',
-        width: '100%',
-    },
-    titulo: {
-        fontSize: '28px',
-        fontWeight: 600,
-        color: '#ffffff',
-    },
-    subtitulo: {
-        fontSize: '18px',
-        fontWeight: 600,
-        color: '#ffffff',
-        marginTop: '8px',
-    },
-    section: {
-        background: '#e1dfdb',
-        border: '1px solid #d4d2cd',
-        borderRadius: 12,
-        padding: 16,
-    },
-    sectionHeader: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        marginBottom: 12,
-        color: '#1e3a5f',
-        fontWeight: 700,
-    },
-    sectionIcon: { 
-        fontSize: 16 
-    },
-    sectionTitle: { 
-        fontSize: 24,
-        fontWeight: 600,
-        margin: 0 
-    },
-    card: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        background: '#fff',
-        border: '1px solid #e8edf5',
-        borderRadius: 10,
-        padding: '14px 16px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-        gap: 12,
-    },
-    cardHeader: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        gap: 16,
-    },
-    cardTitle: { 
-        margin: 0, 
-        fontWeight: 600, 
-        color: '#1f2937',
-        fontSize: '18px',
-    },
-    cardMeta: { 
-        margin: 0, 
-        fontSize: 13, 
-        color: '#6b7280',
-        display: 'flex',
-        alignItems: 'center',
-        marginTop: 4,
-    },
-    actions: { 
-        display: 'flex',
-        flexDirection: 'row' as const,
-        alignItems: 'center', 
-        gap: 8 
-    },
-    fileButton: {
-        background: '#f3f6fb',
-        color: '#1f2937',
-        border: '1px solid #e5eaf2',
-        borderRadius: 8,
-        padding: '8px 14px',
-        fontSize: 14,
-        cursor: 'pointer',
-        fontWeight: 500,
-        transition: 'all 0.2s',
-    },
-    uploadButton: {
-        background: '#8A1538',
-        color: '#ffffff',
-        border: 'none',
-        borderRadius: 8,
-        padding: '8px 16px',
-        fontSize: 14,
-        cursor: 'pointer',
-        fontWeight: 500,
-        transition: 'all 0.2s',
-    },
-    selectedFilesContainer: {
-        marginTop: '16px',
-        padding: '12px',
-        backgroundColor: '#e1dfdb',
-        border: '1px solid #d4d2cd',
-        borderRadius: '6px',
-    },
-    selectedFilesHeader: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '12px',
-        fontSize: '14px',
-        color: '#1e3a5f',
-    },
-    clearAllButton: {
-        background: 'none',
-        border: 'none',
-        color: '#e11d48',
-        cursor: 'pointer',
-        fontSize: '13px',
-        fontWeight: 500,
-        padding: '4px 8px',
-        borderRadius: '4px',
-        transition: 'all 0.2s',
-    },
-    selectedFilesList: {
-        margin: 0,
-        padding: 0,
-        listStyle: 'none',
-        display: 'flex',
-        flexDirection: 'column' as const,
-        gap: '8px',
-    },
-    selectedFileItem: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '8px 10px',
-        backgroundColor: '#ffffff',
-        border: '1px solid #1e3a5f',
-        borderRadius: '4px',
-        fontSize: '13px',
-        color: '#333',
-    },
-    removeFileButton: {
-        background: '#fff',
-        border: '1px solid #431d2a',
-        color: '#431d2a',
-        borderRadius: '4px',
-        padding: '4px',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        transition: 'all 0.2s',
-    },
-    instruccionesContainer: {
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-        padding: '24px',
-        borderRadius: '8px',
-        marginTop: '32px',
-        marginBottom: '32px',
-        border: '1px solid #152a45',
-    },
-    instruccionesTitle: {
-        fontSize: '20px',
-        fontWeight: 600,
-        marginTop: 0,
-        marginBottom: '16px',
-        color: 'inherit',
-    },
-    instruccionesList: {
-        marginTop: 0,
-        marginBottom: 0,
-        paddingLeft: '20px',
-        lineHeight: '1.8',
-    },
-    instruccionItem: {
-        marginBottom: '12px',
-        fontSize: '16px',
-        fontWeight: 500,
-        color: 'inherit',
-    },
-    formatosGrid: {
-        marginTop: 20,
-        marginBottom: 40,
-    },
-    formatoRow: {
-        display: 'grid',
-        gridTemplateColumns: 'auto 1fr',
-        alignItems: 'center',
-        columnGap: 12,
-        rowGap: 2,
-        padding: '12px 0',
-        borderBottom: '1px solid #e5e7eb',
-        cursor: 'pointer',
-        transition: 'color 0.2s, transform 0.15s',
-    },
-    formatoNombre: {
-        fontSize: 18,
-        fontWeight: 600,
-        color: '#374151',  
-    },
-
-};

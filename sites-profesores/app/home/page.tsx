@@ -49,10 +49,6 @@ export default function Home() {
                 </div>
 
                 <div className="relative z-10 text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-6 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-                        <Sparkles size={14} />
-                        Bienvenido al Portal Docente
-                    </div>
                     <h1 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tighter">
                         GESTIÓN <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">ACADÉMICA</span>
                     </h1>

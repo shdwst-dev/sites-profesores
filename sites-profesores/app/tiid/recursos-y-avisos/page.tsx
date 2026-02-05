@@ -1,19 +1,34 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { AlignCenter, ArrowLeft, LogOut, ChevronUp, Menu, X } from 'lucide-react';
+import { ChevronUp, Menu, X, Mail, Phone, Users, Calendar, AlertCircle, Info, BookOpen, GraduationCap, MapPin, ExternalLink, ChevronRight, LayoutGrid, Check } from 'lucide-react';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import SubHeader from '@/components/SubHeader';
 
-export default function RecursosAvisos() {
+export default function TIIDRecursosAvisos() {
     const router = useRouter();
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState('');
 
     useEffect(() => {
         const handleScroll = () => {
             setShowScrollTop(window.scrollY > 300);
+
+            // Basic intersection observer simulation
+            const sections = ['encargado', 'coordinaciones', 'recursamientos', 'altasbajas', 'etc', 'calendario', 'lengua', 'casilleros'];
+            for (const id of sections) {
+                const el = document.getElementById(id);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top >= 0 && rect.top <= 300) {
+                        setActiveSection(id);
+                        break;
+                    }
+                }
+            }
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -23,306 +38,384 @@ export default function RecursosAvisos() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const sections = [
+        { id: 'encargado', label: 'Encargada de Tutorías', icon: Users },
+        { id: 'coordinaciones', label: 'Coordinaciones', icon: LayoutGrid },
+        { id: 'recursamientos', label: 'Recursamientos', icon: AlertCircle },
+        { id: 'altasbajas', label: 'Altas y Bajas', icon: BookOpen },
+        { id: 'etc', label: 'Criterios ETC', icon: Info },
+        { id: 'calendario', label: 'Calendario Escolar', icon: Calendar },
+        { id: 'lengua', label: 'Lengua Extranjera', icon: GraduationCap },
+        { id: 'casilleros', label: 'Casilleros', icon: MapPin },
+    ];
+
     return (
-        <div className="flex flex-col flex-1">
-            {/* Header con navegación */}
-            <header className="bg-white shadow-sm border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <button
-                                onClick={() => router.push('/tiid')}
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-all"
-                            >
-                                <ArrowLeft className="w-6 h-6 text-gray-700 cursor-pointer" />
-                            </button>
-                            <div>
-                                <h1 className="text-xl font-bold text-gray-900">Recursos y avisos</h1>
-                                <p className="text-sm text-gray-600">Tecnologías de la Información e Innovación Digital</p>
+        <div className="min-h-screen w-full flex flex-col bg-[#0f172a] selection:bg-indigo-500/30">
+            <SubHeader
+                title="Recursos y Avisos"
+                subtitle="TIID - Información Académica"
+                accentColor="#1e3a5f"
+                backPath="/tiid"
+            />
+
+            <div className="flex-1 w-full max-w-[1400px] mx-auto flex gap-8 px-4 sm:px-6 lg:px-8 py-10">
+                {/* Floating Table of Contents for Desktop */}
+                <aside className="hidden xl:block w-64 shrink-0 sticky top-32 h-fit">
+                    <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl">
+                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 px-2">Contenidos</h3>
+                        <nav className="space-y-1">
+                            {sections.map((s) => {
+                                const Icon = s.icon;
+                                return (
+                                    <a
+                                        key={s.id}
+                                        href={`#${s.id}`}
+                                        className={`
+                                            flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 group
+                                            ${activeSection === s.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}
+                                        `}
+                                    >
+                                        <Icon size={16} className={activeSection === s.id ? 'text-white' : 'group-hover:text-indigo-400'} />
+                                        {s.label}
+                                    </a>
+                                );
+                            })}
+                        </nav>
+                    </div>
+                </aside>
+
+                <div id="recursos-content" className="space-y-24">
+
+                    {/* Section: Encargado */}
+                    <section id="encargado" className="scroll-mt-32">
+                        <div className="relative p-10 bg-gradient-to-br from-indigo-900/60 to-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+
+                            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+                                <div className="w-32 h-32 rounded-3xl bg-indigo-600 shadow-2xl flex items-center justify-center transform group-hover:rotate-6 transition-transform">
+                                    <Users size={48} className="text-white" />
+                                </div>
+                                <div>
+                                    <span className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full mb-3">Coordinación de Tutorías</span>
+                                    <h2 className="text-3xl font-black text-white mb-2 tracking-tight">ISC Lilia Jimenez Cruz</h2>
+                                    <div className="flex flex-col md:flex-row items-center gap-4 text-gray-400">
+                                        <a href="mailto:lilia.jimenez@upq.edu.mx" className="flex items-center gap-2 hover:text-indigo-400 transition-colors font-bold text-sm">
+                                            <Mail size={16} /> lilia.jimenez@upq.edu.mx
+                                        </a>
+                                        <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
+                                        <div className="flex items-center gap-2 font-bold text-sm">
+                                            <Phone size={16} /> Ext. 120
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button
-                            onClick={() => router.push('/home')}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all cursor-pointer"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            <span>Volver al inicio</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
+                    </section>
 
-            {/* Botón para abrir menú */}
-            <div className="max-w-[1200px] mx-auto pt-4 px-6 pb-0 w-full">
+                    {/* Section: Coordinaciones */}
+                    <section id="coordinaciones" className="scroll-mt-32 space-y-12">
+                        <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-gray-100">
+                            <div className="md:w-1/2 relative min-h-[300px] bg-slate-50 border-r border-gray-50">
+                                <Image
+                                    src="/coordinacionPI.png"
+                                    alt="Logo Proyectos"
+                                    fill
+                                    className="p-8 object-contain group-hover:scale-105 transition-transform duration-700"
+                                />
+                            </div>
+                            <div className="md:w-1/2 p-10 flex flex-col justify-center bg-white">
+                                <span className="text-indigo-600 font-black text-[10px] uppercase tracking-widest mb-3 block">Innovación & Calidad</span>
+                                <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tighter leading-tight">Coordinación de Proyectos Integradores</h3>
+                                <p className="text-slate-700 font-bold text-lg mb-6">Dra. Cecilia Alvarado Salayanda</p>
+                                <a href="mailto:cecilia.alvarado@upq.mx" className="inline-flex items-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest hover:gap-4 transition-all">
+                                    <Mail size={14} /> cecilia.alvarado@upq.mx <ChevronRight size={14} />
+                                </a>
+                            </div>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-white/5">
+                            <div className="md:w-1/2 flex flex-col justify-center p-10 order-2 md:order-1">
+                                <span className="text-indigo-400 font-black text-[10px] uppercase tracking-widest mb-3 block">Asignación Académica</span>
+                                <h3 className="text-4xl font-black text-white mb-2 tracking-tighter uppercase">TUTORES</h3>
+                                <h4 className="text-xl font-bold text-indigo-400 mb-8 opacity-80">ENERO-ABRIL 2026</h4>
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                        <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Nota</p>
+                                        <p className="text-white font-medium text-sm leading-relaxed">Consulte la tabla lateral para identificar a los docentes asignados a cada grupo de TIID.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="md:w-1/2 relative min-h-[300px] bg-white order-1 md:order-2 overflow-hidden">
+                                <Image
+                                    src="/tutores-tiid.jpg"
+                                    alt="Tabla de Tutores TIID"
+                                    fill
+                                    className="object-cover md:object-contain p-4 group-hover:scale-110 transition-transform duration-700"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-slate-900/10"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Recursamientos */}
+                    <section id="recursamientos" className="scroll-mt-32">
+                        <div className="p-10 bg-indigo-600 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+                            {/* Background Decoration */}
+                            <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-white/10 rounded-full blur-[80px] group-hover:scale-110 transition-transform duration-1000"></div>
+
+                            <div className="relative z-10 flex flex-col md:flex-row gap-12">
+                                <div className="md:w-1/2">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+                                        <AlertCircle size={14} /> Atención Académica
+                                    </div>
+                                    <h2 className="text-4xl font-black text-white mb-6 uppercase tracking-tighter leading-none">Proceso de <br /><span className="text-indigo-200">Recursamientos</span></h2>
+                                    <p className="text-indigo-100 font-medium leading-relaxed mb-8">
+                                        Para aquellos alumnos que requieren retomar asignaturas, se ha establecido un calendario y normativa específica.
+                                    </p>
+
+                                    <div className="space-y-6">
+                                        <div className="bg-white/10 border border-white/20 p-6 rounded-[2rem]">
+                                            <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                <Calendar size={14} /> Fecha Límite
+                                            </h4>
+                                            <p className="text-white text-xl font-bold">12 al 16 de Mayo, 2025</p>
+                                        </div>
+                                        <div className="bg-white/15 p-6 rounded-[2rem]">
+                                            <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                <AlertCircle size={14} /> Costo Unitario
+                                            </h4>
+                                            <p className="text-white text-xl font-bold">$450.00 MXN</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="md:w-1/2 space-y-4">
+                                    <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4">Pasos a seguir</h4>
+                                    {[
+                                        { step: '01', text: 'Descarga de Solicitud en portal de documentos.' },
+                                        { step: '02', text: 'Obtención de firma de tutor y Director de Programa.' },
+                                        { step: '03', text: 'Pago oficial en portal de finanzas institucional.' },
+                                        { step: '04', text: 'Carga de comprobante y solicitud firmada.' }
+                                    ].map((step) => (
+                                        <div key={step.step} className="flex gap-4 p-4 bg-white/10 rounded-2xl hover:bg-white/20 transition-colors border border-white/5">
+                                            <span className="text-indigo-300 font-black text-sm">{step.step}</span>
+                                            <p className="text-white text-sm font-bold leading-snug">{step.text}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Altas y Bajas */}
+                    <section id="altasbajas" className="scroll-mt-32">
+                        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl p-10 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-2 h-full bg-indigo-600"></div>
+                            <div className="flex items-center gap-4 mb-10">
+                                <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                                    <BookOpen size={28} />
+                                </div>
+                                <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Altas y Bajas</h2>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-10">
+                                <div className="space-y-6">
+                                    {[
+                                        'Revisión obligatoria de carga académica con tutor.',
+                                        'Restricción de cambio de ciclo con materias reprobadas.',
+                                        'Solicitud formal mediante formato de ALTAS Y BAJAS.',
+                                        'Prohibición de múltiples estancias simultáneas.'
+                                    ].map((text, i) => (
+                                        <div key={i} className="flex gap-4 items-start">
+                                            <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <Check size={14} />
+                                            </div>
+                                            <p className="text-slate-600 font-bold text-sm leading-relaxed">{text}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
+                                    <h4 className="text-slate-900 font-black text-xs uppercase tracking-[0.2em] mb-4">Registro Digital</h4>
+                                    <p className="text-slate-500 text-xs font-medium mb-6">Complete el formulario de registro oficial para procesar su solicitud en tiempo y forma.</p>
+                                    <a
+                                        href="https://forms.gle/6mzeEmkYbU2MboKBA"
+                                        target="_blank"
+                                        className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl hover:border-indigo-600 hover:text-indigo-600 transition-all group"
+                                    >
+                                        <span className="font-black text-xs uppercase tracking-widest">Portal de Registro</span>
+                                        <ExternalLink size={16} className="text-slate-300 group-hover:text-indigo-600 transition-colors" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Criterios ETC */}
+                    <section id="etc" className="scroll-mt-32">
+                        <div className="bg-[#431d2a] rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group">
+                            <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors duration-700"></div>
+                            <h2 className="text-3xl font-black mb-10 flex items-center gap-4 uppercase tracking-tighter">
+                                <Info size={32} className="text-rose-400" />
+                                Criterios ETC
+                            </h2>
+                            <div className="grid sm:grid-cols-3 gap-6">
+                                {[
+                                    { title: 'Parciales', text: 'Aprobar al menos 2 parciales en curso normal.' },
+                                    { title: 'Historial', text: 'No haber solicitado ETC previo de la materia.' },
+                                    { title: 'Promedio', text: 'Tener un promedio mínimo acumulado de 7.0.' }
+                                ].map((c, i) => (
+                                    <div key={i} className="p-6 bg-white/10 border border-white/5 rounded-3xl backdrop-blur-sm">
+                                        <h4 className="text-rose-400 font-black text-xs uppercase tracking-widest mb-3">{c.title}</h4>
+                                        <p className="text-white font-medium text-sm leading-relaxed opacity-80">{c.text}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Calendario */}
+                    <section id="calendario" className="scroll-mt-32">
+                        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl p-10">
+                            <div className="flex items-center justify-between mb-10">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                                        <Calendar size={28} />
+                                    </div>
+                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Calendario Institucional</h2>
+                                </div>
+                                <span className="bg-indigo-600 text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg">Ciclo 2025 - 2026</span>
+                            </div>
+                            <div className="relative w-full h-[600px] rounded-[2rem] overflow-hidden bg-slate-100 border border-slate-200 group">
+                                <Image
+                                    src="/calendario2025-2026.png"
+                                    alt="Calendario Escolar"
+                                    unoptimized
+                                    fill
+                                    className="object-contain p-4 group-hover:scale-[1.02] transition-transform duration-700"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent pointer-events-none"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Lengua Extranjera */}
+                    <section id="lengua" className="scroll-mt-32">
+                        <div className="bg-slate-900 p-10 rounded-[2.5rem] border border-white/10 shadow-3xl text-white">
+                            <div className="flex items-center gap-4 mb-10">
+                                <div className="p-3 bg-indigo-600 rounded-2xl">
+                                    <GraduationCap size={28} />
+                                </div>
+                                <h2 className="text-3xl font-black tracking-tight uppercase">Avisos de Inglés</h2>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-12">
+                                <div className="space-y-8">
+                                    <div>
+                                        <h4 className="text-indigo-400 font-black text-xs uppercase tracking-widest mb-4">Intensivos</h4>
+                                        <div className="space-y-3">
+                                            {[
+                                                'Niveles 1-3: Alumnos de 2do/3er ciclo.',
+                                                'Niveles 4-6: Alumnos de 3er ciclo.',
+                                                'Niveles 7-9: Generación 18 y anteriores.'
+                                            ].map((t, i) => (
+                                                <div key={i} className="flex gap-3 text-sm font-medium opacity-80">
+                                                    <div className="w-1 h-1 bg-indigo-400 rounded-full mt-2"></div>
+                                                    {t}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
+                                        <p className="text-gray-400 text-xs font-bold uppercase mb-2">Informes</p>
+                                        <p className="text-white font-bold text-lg mb-1">Dra. Gabriela Aguilera</p>
+                                        <p className="text-indigo-400 text-sm font-medium italic underline">juana.aguilera@upq.mx</p>
+                                    </div>
+                                </div>
+                                <div className="bg-white/5 p-8 rounded-[2rem] border border-white/10 flex flex-col justify-between">
+                                    <h4 className="text-indigo-400 font-black text-xs uppercase tracking-widest mb-6">Solicitud Formal</h4>
+                                    <p className="text-gray-400 text-sm font-medium mb-8 leading-relaxed">Debe registrar su solicitud de ETC de Inglés en el formato oficial compartido por la academia.</p>
+                                    <a
+                                        href="https://docs.google.com/spreadsheets/d/1UmV92-deFOLvl4mZ1KyE5tYnue3bbDLACB3cYxPIhCk/edit?usp=sharing"
+                                        target="_blank"
+                                        className="flex items-center justify-center gap-3 w-full py-4 bg-indigo-600 hover:bg-indigo-500 rounded-2xl text-xs font-black uppercase tracking-widest transition-all"
+                                    >
+                                        Acceder al Registro <ExternalLink size={14} />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Casilleros */}
+                    <section id="casilleros" className="scroll-mt-32 pb-20">
+                        <div className="bg-gradient-to-br from-slate-200 to-slate-300 p-10 rounded-[2.5rem] border border-white/10 shadow-xl flex flex-col md:flex-row items-center gap-10">
+                            <div className="md:w-1/2">
+                                <div className="p-3 bg-white rounded-2xl w-fit mb-6 shadow-sm">
+                                    <MapPin size={28} className="text-slate-900" />
+                                </div>
+                                <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-4">Casilleros para Profesores</h2>
+                                <p className="text-slate-600 font-bold text-sm leading-relaxed">Solicite su espacio personal para el resguardo de materiales académicos en los edificios de TIID.</p>
+                            </div>
+                            <div className="md:w-1/2 w-full">
+                                <a
+                                    href="https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform"
+                                    target="_blank"
+                                    className="flex items-center justify-center gap-4 w-full py-6 bg-slate-900 text-white hover:bg-black rounded-3xl text-sm font-black uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all"
+                                >
+                                    <LayoutGrid size={20} /> Solicitar espacio
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                </div> {/* End recursos-content */}
+            </div> {/* End flex wrapper */}
+
+            {/* Mobile Menu Trigger */}
+            <div className="fixed bottom-8 left-8 xl:hidden z-50">
                 <button
                     onClick={() => setMenuOpen(!menuOpen)}
-                    className="flex items-center bg-[#1e3a5f] text-white border-none rounded-lg py-3 px-5 text-base font-semibold cursor-pointer shadow-[0_2px_8px_rgba(30,58,95,0.2)] hover:bg-[#2a4a6f] transition-all duration-300"
-                    title="Tabla de contenidos"
+                    className="flex items-center justify-center bg-indigo-600 text-white rounded-full w-14 h-14 shadow-2xl active:scale-95 transition-all"
                 >
                     {menuOpen ? <X size={24} /> : <Menu size={24} />}
-                    <span className="ml-2">Contenidos</span>
                 </button>
             </div>
 
-            {/* Menú desplegable */}
+            {/* Mobile Menu Backdrop */}
             {menuOpen && (
-                <>
-                    <div
-                        className="fixed inset-0 bg-black/50 z-[100]"
-                        onClick={() => setMenuOpen(false)}
-                    />
-                    <aside className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1e3a5f] text-white p-6 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] z-[101] min-w-[300px] max-w-[90%] max-h-[80vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-5">
-                            <h3 className="text-lg font-bold m-0 text-inherit">Tabla de Contenidos</h3>
-                            <button
-                                onClick={() => setMenuOpen(false)}
-                                className="bg-transparent border-none text-white cursor-pointer p-1 flex items-center justify-center rounded transition-all hover:bg-white/10"
-                            >
-                                <X size={20} />
-                            </button>
+                <div
+                    className="fixed inset-0 bg-[#0f172a]/80 backdrop-blur-md z-[60] xl:hidden flex items-center justify-center p-6 animate-in fade-in"
+                    onClick={() => setMenuOpen(false)}
+                >
+                    <div className="w-full max-w-sm bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 shadow-3xl" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center mb-8">
+                            <h3 className="text-xl font-black text-white tracking-tight uppercase">Dashboard</h3>
+                            <button onClick={() => setMenuOpen(false)} className="p-2 text-gray-400 hover:text-white"><X size={20} /></button>
                         </div>
-                        <ul className="m-0 p-0 list-none">
-                            <li>
-                                <a href="#encargado" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
-                                    Encargado
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#coordinaciones" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
-                                    Coordinaciones
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#etc" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
-                                    ETC
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#calendario" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
-                                    Calendario
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#altasbajas" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
-                                    Altas y Bajas
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#lengua" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
-                                    Lengua Extranjera
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#casilleros" onClick={() => setMenuOpen(false)} className="block text-white no-underline text-base font-medium py-3 px-4 transition-all rounded-md mb-1 hover:underline hover:bg-white/10">
-                                    Casilleros
-                                </a>
-                            </li>
-                        </ul>
-                    </aside>
-                </>
+                        <nav className="grid gap-3">
+                            {sections.map((s) => {
+                                const Icon = s.icon;
+                                return (
+                                    <a
+                                        key={s.id}
+                                        href={`#${s.id}`}
+                                        onClick={() => setMenuOpen(false)}
+                                        className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl text-gray-300 font-bold hover:bg-indigo-600 hover:text-white transition-all"
+                                    >
+                                        <Icon size={20} />
+                                        {s.label}
+                                    </a>
+                                );
+                            })}
+                        </nav>
+                    </div>
+                </div>
             )}
 
-            {/* Contenido principal */}
-            <main className="flex-1 max-w-[1200px] mx-auto p-6 w-full">
-                <h1 className="text-2xl font-bold mb-4 text-white">Coordinación de Tutorías</h1>
-
-                <div id="encargado" className="mb-4 py-[30px] px-[30px] border border-gray-200 rounded-lg bg-[#1e3a5f] text-white flex justify-between items-center">
-                    <p className="text-lg font-semibold">
-                        <strong>ISC Lilia Jimenez Cruz</strong>
-                    </p>
-                    <p className="text-lg font-semibold">
-                        Contacto: <a href="mailto:lilia.jimenez@upq.edu.mx" className="text-inherit underline">lilia.jimenez@upq.edu.mx</a>
-                    </p>
-                </div>
-
-                {/* Coordinación de Proyectos Integradores */}
-                <div className="border border-gray-200 rounded-lg py-5 px-5 bg-[#431d2a] text-white transition-all duration-300 flex gap-5 items-center mt-6">
-                    <div className="relative flex-1 h-[450px] rounded-md overflow-hidden">
-                        <Image
-                            src="/coordinacionPI.png"
-                            alt="Logo Proyectos"
-                            fill
-                            unoptimized
-                            style={{ objectFit: 'contain' }}
-                        />
-                    </div>
-                    <div className="flex flex-col justify-start text-center flex-1">
-                        <p className="mt-4 text-2xl font-semibold text-white text-center">
-                            <strong>Coordinación de Proyectos Integradores</strong>
-                        </p>
-                        <p className="mt-4 text-lg font-semibold text-inherit">
-                            <strong>Dra Cecilia Alvarado Salayanda</strong>
-                        </p>
-                        <p className="mt-4 text-lg font-semibold text-inherit">
-                            Contacto: <a href="mailto:cecilia.alvarado@upq.mx" className="text-inherit underline">cecilia.alvarado@upq.mx</a>
-                        </p>
-                    </div>
-                </div>
-                {/* Coordinación de Tutorías */}
-                <div id="coordinaciones" className="mt-6 py-10 px-[30px] rounded-lg bg-[#e1dfdb] border border-[#d4d2cd] flex flex-row gap-10 items-center">
-                    <div className="flex-none flex flex-col justify-center items-center text-center gap-4">
-                        <h2 className="text-[32px] font-bold text-[#431d2a] m-0 mb-3 text-left">
-                            <strong>TUTORES</strong>
-                        </h2>
-                        <h3 className="text-[28px] font-bold text-[#431d2a] m-0 text-left">
-                            <strong>MAYO-AGOSTO 2025</strong>
-                        </h3>
-                    </div>
-                    <div className="relative flex-1 h-[400px] rounded-lg overflow-hidden">
-                        <Image
-                            src="/tutores-tiid.jpg"
-                            alt="Tabla de Tutores TIID"
-                            fill
-                            unoptimized
-                            style={{ objectFit: 'contain' }}
-                        />
-                    </div>
-                </div>
-                {/*Recursamientos*/}
-                <div id="recursamientos" className="mt-6 py-[40px] px-[30px] border border-[#152a45] rounded-xl bg-[#1e3a5f] text-white shadow-lg transition-all duration-300 hover:shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -m-10 group-hover:scale-150 transition-transform duration-700"></div>
-                    <h2 className="text-3xl font-extrabold text-white text-center mb-8 tracking-tight">
-                        Proceso de Recursamientos
-                    </h2>
-                    <div className="grid md:grid-cols-2 gap-10 relative z-10">
-                        <div className="space-y-6">
-                            <div className="bg-white/10 p-5 rounded-lg border-l-4 border-amber-400">
-                                <h3 className="text-xl font-bold text-amber-400 mb-2">Periodo Crítico</h3>
-                                <p className="text-lg">Las solicitudes se recibirán del <strong>12 al 16 de mayo de 2025</strong>.</p>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold mb-4 text-blue-200 uppercase tracking-wider text-sm">Lineamientos Generales</h3>
-                                <ul className="space-y-3">
-                                    <li className="flex items-start gap-2">
-                                        <span className="text-blue-400 font-bold">•</span>
-                                        <span>Solo se permite recursar un máximo de 2 materias por cuatrimestre.</span>
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <span className="text-blue-400 font-bold">•</span>
-                                        <span>El costo por materia es de <strong>$450.00 MXN</strong>.</span>
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <span className="text-blue-400 font-bold">•</span>
-                                        <span>Indispensable no tener adeudos administrativos.</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10">
-                            <h3 className="text-xl font-bold mb-6 text-white border-b border-white/20 pb-2">Procedimiento paso a paso</h3>
-                            <div className="space-y-4">
-                                <div className="flex gap-4">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">1</div>
-                                    <p className="text-sm">Descarga el formato <strong>"Solicitud de Recursamiento"</strong> en la sección de documentos.</p>
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">2</div>
-                                    <p className="text-sm">Obtén la validación académica con tu tutor y firma del Director de Programa.</p>
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">3</div>
-                                    <p className="text-sm">Realiza el pago en el portal de finanzas o cajas de la universidad.</p>
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">4</div>
-                                    <p className="text-sm">Carga el formato firmado y tu comprobante de pago en el apartado de entregables.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/*Altas y bajas de materias*/}
-                <div id="altasbajas" className="mt-6 py-[30px] px-[30px] border border-[#d4d2cd] rounded-lg bg-[#e1dfdb]">
-                    <h2 className="mt-4 text-2xl font-semibold text-[#333] text-center">
-                        <strong>Altas y Bajas de Materias</strong>
-                    </h2>
-                    <ul className='list-disc list-inside mt-4 text-lg text-[#333]'>
-                        <li>Revisar carga académica con su tutor.</li>
-                        <li>Si tiene asignaturas reprobadas o sin cursar en el ciclo anterior, no podrá cambiar de ciclo de formación.</li>
-                        <li>Si hay materias del ciclo que cursará que no le aparecen en el SII, el tutor deberá solicitarlas con el Formato de ALTAS Y BAJAS  a la Dirección de Programa.</li>
-                        <li>No es posible dar de alta varias Estancias en el mismo cuatrimestre.</li>
-                        <li>Revisar carga académica con sus estudiantes - semana 1</li>
-                        <li>Asegurarse de que todos sus alumnos tengan su carga académica al 100% antes de cerrar el período de altas y bajas indicado en el calendario.</li>
-                        <li>Pueden solicitar ETC's de INGLÉS</li>
-                        <li>Este cuatrimestre se abrirán todos los intensivos de INGLÉS ( Motivemos a que los estudiantes salgan del rezago de inglés)</li>
-                        <li>Formulario de Registro:   <a href="https://forms.gle/6mzeEmkYbU2MboKBA" className="underline text-[#431d2a]">https://forms.gle/6mzeEmkYbU2MboKBA</a> </li>
-                        <li>Si alguien puede acreditar su inglés con TOEFL, Certificaciones o algún otro curso externo, acercarse a Lengua Extranjera para que validen el caso</li>
-                    </ul>
-                </div>
-
-                {/* Criterios para solicitar un ETC */}
-                <div id="etc" className="mt-6 py-[30px] px-[30px] border border-[#5d3338] rounded-lg bg-[#431d2a] text-white">
-                    <h2 className="mt-4 text-2xl font-semibold text-white text-center">
-                        <strong>Criterios para solicitar un ETC</strong>
-                    </h2>
-                    <ul className='list-disc list-inside mt-4 text-lg'>
-                        <li>Haber aprobado al menos dos parciales cuando cursó la asignatura por primera vez.</li>
-                        <li>No haber solicitado un ETC anteriormente para la misma asignatura.</li>
-                        <li>Tener un promedio mínimo de 7.0 en la asignatura.</li>
-                    </ul>
-                </div>
-                {/* Calendario Escolar */}
-                <div id="calendario" className="mt-6 py-[30px] px-[30px] border border-[#152a45] rounded-lg bg-[#1e3a5f] text-white">
-                    <h2 className="mt-4 text-2xl font-semibold text-white text-center">
-                        <strong>Calendario Escolar</strong>
-                    </h2>
-                    <div className="relative w-full h-[800px] rounded-md overflow-hidden mt-5 bg-white">
-                        <Image
-                            src="/calendario2025-2026.png"
-                            alt="Calendario Escolar"
-                            unoptimized
-                            fill
-                            style={{ objectFit: 'contain' }}
-                        />
-                    </div>
-                </div>
-                {/*Avisos de lengua extranjera*/}
-                <div id="lengua" className="mt-6 py-[30px] px-[30px] border border-[#d4d2cd] rounded-lg bg-[#e1dfdb] text-[#333]">
-                    <h2 className="mt-4 text-2xl font-semibold text-[#333] text-center">
-                        <strong>Avisos de Lengua Extranjera</strong>
-                    </h2>
-                    <ul className='list-disc list-inside mt-4 text-lg'>
-                        <li>
-                            Solicitar ETC's de Inglés en:
-                            <a href="https://docs.google.com/spreadsheets/d/1UmV92-deFOLvl4mZ1KyE5tYnue3bbDLACB3cYxPIhCk/edit?usp=sharing" className="underline ml-1 text-inherit">
-                                https://docs.google.com/spreadsheets/d/1UmV92-deFOLvl4mZ1KyE5tYnue3bbDLACB3cYxPIhCk/edit?usp=sharing
-                            </a>
-                        </li>
-                        <li>
-                            Intensivos de Inglés — FECHA LÍMITE PARA SOLICITAR:
-                            <ul className='list-disc list-inside mt-2 ml-4'>
-                                <li>Niveles 1-2-3 — Alumnos de 2do y 3er ciclo, generaciones anteriores — Lunes a viernes de 11:10am a 1:40pm.</li>
-                                <li>Niveles 4-5-6 — Alumnos de 3er ciclo, generaciones anteriores — Lunes a viernes de 11:10am a 1:40pm.</li>
-                                <li>Niveles 7-8-9 — Generaciones 18 y anteriores — Lunes a viernes de 6:10pm a 8:40pm.</li>
-                            </ul>
-                        </li>
-                        <li>
-                            Informes: juana.aguilera@upq.mx (Srita. Gabriela Aguilera)
-                        </li>
-                        <li>Inicio: 16 de septiembre.</li>
-                    </ul>
-                </div>
-                {/* Solicitudes de casilleros para profesores */}
-                <div id="casilleros" className="mt-6 mb-10 py-[30px] px-[30px] border border-[#5d3338] rounded-lg bg-[#431d2a] text-white">
-                    <h2 className="mt-4 text-2xl font-semibold text-white text-center">
-                        <strong>Solicitudes de Casilleros para Profesores</strong>
-                    </h2>
-                    <p className="mt-4 text-lg leading-[1.8] text-white">
-                        Solicitar en el siguiente enlace:
-                        <br />
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform " className="underline ml-1 text-white">
-                            https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform
-                        </a>
-                    </p>
-                </div>
-            </main>
-
-            {/* Botón Volver Arriba */}
+            {/* Scroll Top Button */}
             {showScrollTop && (
                 <button
                     onClick={scrollToTop}
-                    className="fixed bottom-8 right-8 bg-[#1e3a5f] text-white border-none rounded-full w-[50px] h-[50px] flex items-center justify-center cursor-pointer shadow-[0_4px_12px_rgba(30,58,95,0.3)] transition-all duration-300 z-50 transform hover:scale-110"
-                    title="Volver al inicio"
+                    className="fixed bottom-8 right-8 bg-indigo-600 text-white border-none rounded-full w-14 h-14 flex items-center justify-center cursor-pointer shadow-3xl transition-all duration-300 z-50 transform hover:scale-110 hover:shadow-indigo-500/40 active:scale-90"
+                    title="Volver arriba"
                 >
                     <ChevronUp size={24} />
                 </button>

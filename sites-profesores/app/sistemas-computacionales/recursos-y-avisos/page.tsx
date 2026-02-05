@@ -1,20 +1,33 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { AlignCenter, ArrowLeft, LogOut, ChevronUp, Menu, X } from 'lucide-react';
+import { ChevronUp, Menu, X, Mail, Phone, Users, Calendar, AlertCircle, Info, BookOpen, GraduationCap, MapPin, ExternalLink, ChevronRight, LayoutGrid, Briefcase, Check } from 'lucide-react';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
-import { text } from 'stream/consumers';
 import { useState, useEffect } from 'react';
+import SubHeader from '@/components/SubHeader';
 
-export default function RecursosAvisos() {
+export default function SistemasRecursosAvisos() {
     const router = useRouter();
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState('');
 
     useEffect(() => {
         const handleScroll = () => {
             setShowScrollTop(window.scrollY > 300);
+
+            const sections = ['encargado', 'estancias', 'proyectos', 'etc', 'calendario', 'altasbajas', 'lengua', 'casilleros'];
+            for (const id of sections) {
+                const el = document.getElementById(id);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top >= 0 && rect.top <= 300) {
+                        setActiveSection(id);
+                        break;
+                    }
+                }
+            }
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -24,550 +37,330 @@ export default function RecursosAvisos() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const sections = [
+        { id: 'encargado', label: 'Encargada Tutorías', icon: Users },
+        { id: 'estancias', label: 'Estancias y Estadías', icon: Briefcase },
+        { id: 'proyectos', label: 'Proyectos Integradores', icon: LayoutGrid },
+        { id: 'etc', label: 'Criterios ETC', icon: Info },
+        { id: 'calendario', label: 'Calendario', icon: Calendar },
+        { id: 'altasbajas', label: 'Altas y Bajas', icon: BookOpen },
+        { id: 'lengua', label: 'Inglés', icon: GraduationCap },
+        { id: 'casilleros', label: 'Casilleros', icon: MapPin },
+    ];
+
     return (
-        <div style={styles.pageContainer}>
-            <style jsx>{`
-                .sidebar-link:hover {
-                    text-decoration: underline;
-                    background-color: rgba(255, 255, 255, 0.1);
-                }
-                .menu-button:hover {
-                    background-color: #2a4a6f;
-                }
-                .close-button:hover {
-                    background-color: rgba(255, 255, 255, 0.1);
-                }
-            `}</style>
-            {/* Header con navegación */}
-            <header className="bg-white shadow-sm border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <button
-                                onClick={() => router.push('/sistemas-computacionales')}
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-all"
-                            >
-                                <ArrowLeft className="w-6 h-6 text-gray-700 cursor-pointer" />
-                            </button>
-                            <div>
-                                <h1 className="text-xl font-bold text-gray-900">Recursos y avisos</h1>
-                                <p className="text-sm text-gray-600">Sistemas computacionales</p>
+        <div className="min-h-screen w-full flex flex-col bg-[#0f172a] selection:bg-rose-500/30">
+            <SubHeader
+                title="Recursos y Avisos"
+                subtitle="Sistemas - Información Académica"
+                accentColor="#431d2a"
+                backPath="/sistemas-computacionales"
+            />
+
+            <div className="flex-1 w-full max-w-[1400px] mx-auto flex gap-8 px-4 sm:px-6 lg:px-8 py-10">
+                {/* Floating Table of Contents for Desktop */}
+                <aside className="hidden xl:block w-64 shrink-0 sticky top-32 h-fit">
+                    <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl">
+                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 px-2">Contenidos</h3>
+                        <nav className="space-y-1">
+                            {sections.map((s) => {
+                                const Icon = s.icon;
+                                return (
+                                    <a
+                                        key={s.id}
+                                        href={`#${s.id}`}
+                                        className={`
+                                            flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 group
+                                            ${activeSection === s.id ? 'bg-rose-700 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}
+                                        `}
+                                    >
+                                        <Icon size={16} className={activeSection === s.id ? 'text-white' : 'group-hover:text-rose-400'} />
+                                        {s.label}
+                                    </a>
+                                );
+                            })}
+                        </nav>
+                    </div>
+                </aside>
+
+                <div id="recursos-content" className="flex-1 min-w-0 space-y-24 animate-in fade-in duration-700">
+
+                    {/* Section: Encargado */}
+                    <section id="encargado" className="scroll-mt-32">
+                        <div className="relative p-10 bg-gradient-to-br from-rose-950/60 to-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+
+                            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+                                <div className="w-32 h-32 rounded-3xl bg-rose-700 shadow-2xl flex items-center justify-center transform group-hover:-rotate-3 transition-transform">
+                                    <Users size={48} className="text-white" />
+                                </div>
+                                <div>
+                                    <span className="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full mb-3">Dirección de Tutorías</span>
+                                    <h2 className="text-3xl font-black text-white mb-2 tracking-tight">ISC Lilia Jimenez Cruz</h2>
+                                    <div className="flex flex-col md:flex-row items-center gap-4 text-gray-400">
+                                        <a href="mailto:lilia.jimenez@upq.edu.mx" className="flex items-center gap-2 hover:text-rose-400 transition-colors font-bold text-sm">
+                                            <Mail size={16} /> lilia.jimenez@upq.edu.mx
+                                        </a>
+                                        <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
+                                        <div className="flex items-center gap-2 font-bold text-sm">
+                                            <Phone size={16} /> Ext. 120
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button
-                            onClick={() => router.push('/home')}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all cursor-pointer"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            <span>Volver al inicio</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
+                    </section>
 
-            {/* Botón para abrir menú */}
-            <div style={styles.menuButtonContainer}>
+                    {/* Section: Estancias y Estadías / Tutorías */}
+                    <section id="estancias" className="scroll-mt-32 grid md:grid-cols-2 gap-8">
+                        <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-gray-100 flex flex-col items-center text-center group">
+                            <div className="relative w-full h-48 mb-6 rounded-2xl overflow-hidden bg-rose-50 border border-rose-100 p-4">
+                                <Image
+                                    src="/coordinacionEstanciasEstadias.jpg"
+                                    alt="Estancias"
+                                    fill
+                                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                                />
+                            </div>
+                            <h3 className="text-lg font-black text-slate-900 mb-2 uppercase tracking-tighter">Estancias y Estadías</h3>
+                            <p className="text-slate-500 text-xs font-bold mb-4 uppercase">Coordinación</p>
+                            <p className="text-rose-700 font-bold text-sm">Responsable de Vinculación</p>
+                        </div>
+
+                        <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-gray-100 flex flex-col items-center text-center group">
+                            <div className="relative w-full h-48 mb-6 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 p-4">
+                                <Image
+                                    src="/coordinacionTutorias.jpg"
+                                    alt="Tutorías"
+                                    fill
+                                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                                />
+                            </div>
+                            <h3 className="text-lg font-black text-slate-900 mb-2 uppercase tracking-tighter">Acción Tutorial</h3>
+                            <p className="text-slate-500 text-xs font-bold mb-4 uppercase">Coordinación</p>
+                            <p className="text-slate-700 font-bold text-sm">Gestión de Docentes</p>
+                        </div>
+                    </section>
+
+                    {/* Section: Proyectos Integradores */}
+                    <section id="proyectos" className="scroll-mt-32">
+                        <div className="bg-gradient-to-br from-rose-900 to-slate-900 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-white/10 group">
+                            <div className="md:w-1/2 relative min-h-[400px] bg-white group-hover:scale-[1.02] transition-transform duration-1000">
+                                <Image
+                                    src="/coordinacionPI.png"
+                                    alt="Logo Proyectos"
+                                    fill
+                                    className="p-12 object-contain"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-rose-900/10"></div>
+                            </div>
+                            <div className="md:w-1/2 p-12 flex flex-col justify-center">
+                                <span className="text-rose-400 font-black text-[10px] uppercase tracking-[0.3em] mb-4 block">Coordinación General</span>
+                                <h3 className="text-3xl font-black text-white mb-6 leading-tight uppercase tracking-tighter">Proyectos <br /><span className="text-rose-400 opacity-80">Integradores</span></h3>
+                                <p className="text-white font-bold text-xl mb-6">Dra. Cecilia Alvarado Salayanda</p>
+                                <div className="space-y-4">
+                                    <a href="mailto:cecilia.alvarado@upq.mx" className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 border border-white/10 rounded-2xl text-white font-bold text-xs hover:bg-white hover:text-rose-900 transition-all">
+                                        <Mail size={14} /> Enviar Mensaje
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: ETC */}
+                    <section id="etc" className="scroll-mt-32">
+                        <div className="bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-[3rem] p-12 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-3xl"></div>
+                            <div className="flex flex-col md:flex-row gap-12 items-center">
+                                <div className="md:w-1/3">
+                                    <div className="p-6 bg-rose-700/20 border border-rose-500/30 rounded-[2rem] w-fit mb-6">
+                                        <Info className="text-rose-400" size={32} />
+                                    </div>
+                                    <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-4">Criterios <br />de <span className="text-rose-400">ETC</span></h2>
+                                    <p className="text-gray-400 text-sm font-medium leading-relaxed">Lineamientos obligatorios para la Evaluación a Título de Competencia en Sistemas.</p>
+                                </div>
+                                <div className="md:w-2/3 grid gap-4">
+                                    {[
+                                        { text: 'Aprobar al menos dos parciales en el curso ordinario.', icon: Check },
+                                        { text: 'No haber solicitado ETC previamente para la misma asignatura.', icon: Check },
+                                        { text: 'Tener un promedio mínimo de 7.0 en la asignatura.', icon: Check }
+                                    ].map((c, i) => (
+                                        <div key={i} className="flex gap-4 p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors">
+                                            <div className="w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center flex-shrink-0">
+                                                <c.icon size={14} />
+                                            </div>
+                                            <p className="text-white font-bold text-sm">{c.text}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Calendario */}
+                    <section id="calendario" className="scroll-mt-32">
+                        <div className="bg-white rounded-[3rem] border border-gray-100 shadow-2xl p-12">
+                            <div className="flex items-center justify-between mb-12">
+                                <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Cronograma Escolar</h2>
+                                <div className="px-5 py-2 bg-rose-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Vigente: 2025-2026</div>
+                            </div>
+                            <div className="relative w-full h-[600px] rounded-[2rem] overflow-hidden bg-slate-50 border border-slate-200 group">
+                                <Image
+                                    src="/calendario2025-2026.png"
+                                    alt="Calendario Escolar"
+                                    unoptimized
+                                    fill
+                                    className="object-contain p-6 group-hover:scale-105 transition-transform duration-700"
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Altas y Bajas */}
+                    <section id="altasbajas" className="scroll-mt-32">
+                        <div className="bg-gradient-to-br from-rose-900/80 to-slate-950 p-12 rounded-[3rem] border border-white/10 shadow-3xl text-white">
+                            <h2 className="text-3xl font-black mb-12 flex items-center gap-4 uppercase tracking-tighter">
+                                <div className="p-3 bg-white/10 rounded-2xl"><BookOpen size={28} /></div>
+                                Proceso Administrativo
+                            </h2>
+                            <div className="grid md:grid-cols-2 gap-12">
+                                <ul className="space-y-5">
+                                    {[
+                                        'Validación previa con tutor académico.',
+                                        'Restricción para alumnos con adeudos.',
+                                        'Uso obligatorio del formato institucional.',
+                                        'Revisión de carga al 100% en SII.'
+                                    ].map((step, i) => (
+                                        <li key={i} className="flex gap-4 items-start text-sm font-bold border-b border-white/5 pb-4">
+                                            <span className="text-rose-400">0{i + 1}</span>
+                                            {step}
+                                        </li>
+                                    ))}
+                                </ul>
+                                <div className="bg-white/5 p-8 rounded-[2rem] border border-white/10 flex flex-col justify-between">
+                                    <h4 className="text-rose-400 font-black text-[10px] uppercase tracking-widest mb-4">Registro Externo</h4>
+                                    <p className="text-gray-400 text-xs font-medium mb-8">Acceda al formulario oficial para el registro de solicitudes de altas y bajas del cuatrimestre.</p>
+                                    <a
+                                        href="https://forms.gle/6mzeEmkYbU2MboKBA"
+                                        target="_blank"
+                                        className="flex items-center justify-center gap-3 w-full py-4 bg-white text-rose-900 hover:bg-rose-100 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl"
+                                    >
+                                        Portal SII Forms <ExternalLink size={14} />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Lengua Extranjera */}
+                    <section id="lengua" className="scroll-mt-32">
+                        <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl p-12">
+                            <div className="flex items-center gap-5 mb-12">
+                                <div className="p-4 bg-rose-50 rounded-2xl text-rose-700 shadow-sm">
+                                    <GraduationCap size={32} />
+                                </div>
+                                <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Lengua Extranjera</h2>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-10">
+                                <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
+                                    <h4 className="text-slate-900 font-black text-xs uppercase tracking-widest mb-6">Información General</h4>
+                                    <div className="space-y-4">
+                                        <p className="text-slate-600 text-sm font-bold flex gap-3">
+                                            <span className="w-1.5 h-1.5 bg-rose-700 rounded-full mt-2"></span>
+                                            Exámenes TOEFL / Certificaciones acreditables.
+                                        </p>
+                                        <p className="text-slate-600 text-sm font-bold flex gap-3">
+                                            <span className="w-1.5 h-1.5 bg-rose-700 rounded-full mt-2"></span>
+                                            Intensivos de Inglés (Niveles 1 al 9).
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col justify-center">
+                                    <p className="text-slate-500 text-xs font-black uppercase tracking-widest mb-2">Contacto Directo</p>
+                                    <p className="text-slate-900 font-black text-2xl mb-1">Dra. Gabriela Aguilera</p>
+                                    <a href="mailto:juana.aguilera@upq.mx" className="text-rose-700 font-bold hover:underline">juana.aguilera@upq.mx</a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Casilleros */}
+                    <section id="casilleros" className="scroll-mt-32 pb-20">
+                        <div className="bg-slate-900 p-12 rounded-[3rem] text-white flex flex-col md:flex-row items-center gap-12 shadow-3xl">
+                            <div className="md:w-3/5">
+                                <h2 className="text-4xl font-black mb-6 uppercase tracking-tighter">Espacios de <span className="text-rose-400">Resguardo</span></h2>
+                                <p className="text-gray-400 font-medium leading-relaxed">Solicitud de casilleros exclusiva para docentes de Ingeniería en Sistemas. Optimice su espacio de trabajo institucional.</p>
+                            </div>
+                            <div className="md:w-2/5 w-full">
+                                <a
+                                    href="https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform"
+                                    target="_blank"
+                                    className="flex items-center justify-center gap-4 w-full py-6 bg-rose-700 hover:bg-rose-600 rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] transition-all transform hover:scale-105"
+                                >
+                                    <MapPin size={20} /> Solicitar Casillero
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+                </div> {/* End resources-content */}
+            </div> {/* End flex wrapper */}
+
+            {/* Mobile Menu Trigger */}
+            <div className="fixed bottom-8 left-8 xl:hidden z-50">
                 <button
                     onClick={() => setMenuOpen(!menuOpen)}
-                    style={styles.menuButton}
-                    className="menu-button"
-                    title="Tabla de contenidos"
+                    className="flex items-center justify-center bg-rose-700 text-white rounded-full w-14 h-14 shadow-2xl active:scale-95 transition-all"
                 >
                     {menuOpen ? <X size={24} /> : <Menu size={24} />}
-                    <span style={{ marginLeft: '8px' }}>Contenidos</span>
                 </button>
             </div>
 
-            {/* Menú desplegable */}
-            {menuOpen && (
-                <>
-                    <div style={styles.overlay} onClick={() => setMenuOpen(false)} />
-                    <aside style={styles.sidebarDropdown}>
-                        <div style={styles.sidebarHeader}>
-                            <h3 style={styles.sidebarTitle}>Tabla de Contenidos</h3>
-                            <button onClick={() => setMenuOpen(false)} style={styles.closeButton} className="close-button">
-                                <X size={20} />
-                            </button>
+            {/* Mobile Menu Backdrop */}
+            {
+                menuOpen && (
+                    <div
+                        className="fixed inset-0 bg-[#0f172a]/80 backdrop-blur-md z-[60] xl:hidden flex items-center justify-center p-6 animate-in fade-in"
+                        onClick={() => setMenuOpen(false)}
+                    >
+                        <div className="w-full max-w-sm bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 shadow-3xl" onClick={e => e.stopPropagation()}>
+                            <div className="flex justify-between items-center mb-8">
+                                <h3 className="text-xl font-black text-white tracking-tight uppercase">Dashboard</h3>
+                                <button onClick={() => setMenuOpen(false)} className="p-2 text-gray-400 hover:text-white"><X size={20} /></button>
+                            </div>
+                            <nav className="grid gap-3">
+                                {sections.map((s) => {
+                                    const Icon = s.icon;
+                                    return (
+                                        <a
+                                            key={s.id}
+                                            href={`#${s.id}`}
+                                            onClick={() => setMenuOpen(false)}
+                                            className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl text-gray-300 font-bold hover:bg-rose-600 hover:text-white transition-all"
+                                        >
+                                            <Icon size={20} />
+                                            {s.label}
+                                        </a>
+                                    );
+                                })}
+                            </nav>
                         </div>
-                        <ul style={styles.sidebarList}>
-                            <li>
-                                <a href="#encargado" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
-                                    Encargado
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#coordinaciones" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
-                                    Coordinaciones
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#etc" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
-                                    ETC
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#calendario" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
-                                    Calendario
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#altasbajas" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
-                                    Altas y Bajas
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#lengua" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
-                                    Lengua Extranjera
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#casilleros" style={styles.sidebarLink} className="sidebar-link" onClick={() => setMenuOpen(false)}>
-                                    Casilleros
-                                </a>
-                            </li>
-                        </ul>
-                    </aside>
-                </>
-            )}
+                    </div>
+                )
+            }
 
-            {/* Contenido principal */}
-            <main style={styles.main}>
-                <h1 className="text-2xl font-bold mb-4 text-white">Recursos y Avisos</h1>
-
-                    <div id="encargado" style={styles.contenedorEncargadoSistemas}>
-                        <p style={styles.contenedorEncargadoNombre}>
-                            <strong>ISC Lilia Jimenez Cruz</strong>
-                        </p>
-                        <p style={styles.contenedorEncargadoContacto}>
-                            Contacto: <a href="mailto:lilia.jimenez@upq.edu.mx" style={{ color: 'inherit', textDecoration: 'underline' }}>lilia.jimenez@upq.edu.mx</a>
-                        </p>
-                    </div>
-                {/* Coordinación de Estancias y Estadías, Coordinación de Tutorías */}
-                <div id="coordinaciones" style={styles.contenedorCoordinacion}>
-                    <div style={styles.tarjeta}>
-                        <div style={styles.imagenContenedor}>
-                            <Image
-                                src="/coordinacionEstanciasEstadias.jpg"
-                                alt="Logo Estancias"
-                                fill
-                                unoptimized
-                                style={{ objectFit: 'contain' }}
-                            />
-                        </div>
-
-                        <p style={styles.tarjetaTitulo}>
-                            <strong>Coordinación de Estancias y Estadías</strong>
-                        </p>
-                        <p style={styles.tarjetaTitulo}>
-                            <strong>"Nombre de la persona"</strong>
-                        </p>
-                    </div>
-                    <div style={styles.tarjeta}>
-                        <div style={styles.imagenContenedor}>
-                            <Image
-                                src="/coordinacionTutorias.jpg"
-                                alt="Logo Tutorías"
-                                fill
-                                unoptimized
-                                style={{ objectFit: 'contain' }}
-                            />
-                        </div>
-                        <p style={styles.tarjetaTitulo}>
-                            <strong>Coordinación de Tutorías</strong>
-                        </p>
-                        <p style={styles.tarjetaTitulo}>
-                            <strong>"Nombre de la persona"</strong>
-                        </p>
-                    </div>
-                </div>
-                {/* Coordinación de Proyectos Integradores */}
-                <div style={styles.tarjetaProyectos}>
-                    <div style={styles.imagenContenedorProyectos}>
-                        <Image
-                            src="/coordinacionPI.png"
-                            alt="Logo Proyectos"
-                            unoptimized
-                            fill
-                            style={{ objectFit: 'contain' }}
-                        />
-                    </div>
-                    <div style={styles.contenidoProyectos}>
-                        <p style={styles.tarjetaTituloGrande}>
-                            <strong>Coordinación de Proyectos Integradores</strong>
-                        </p>
-                        <p style={styles.tarjetaTitulo}>
-                            <strong>Dra Cecilia Alvarado Salayanda</strong>
-                        </p>
-                        <p style={styles.tarjetaTitulo}>
-                            Contacto: <a href="mailto:cecilia.alvarado@upq.mx" style={{ color: 'inherit', textDecoration: 'underline' }}>cecilia.alvarado@upq.mx</a>
-                        </p>
-                    </div>
-                </div>
-                {/* Criterios para solicitar un ETC */}
-                <div id="etc" style={styles.contenedorETC}>
-                    <h2 style={styles.tarjetaTituloGrande}>
-                        <strong>Criterios para solicitar un ETC</strong>
-                    </h2>
-                    <ul className='list-disc list-inside mt-4 text-lg'>
-                        <li>Haber aprobado al menos dos parciales cuando cursó la asignatura por primera vez.</li>
-                        <li>No haber solicitado un ETC anteriormente para la misma asignatura.</li>
-                        <li>Tener un promedio mínimo de 7.0 en la asignatura.</li>
-                    </ul>
-                </div>
-                {/* Calendario Escolar */}
-                <div id="calendario" style={styles.contenedorCalendario}>
-                    <h2 style={styles.tarjetaTituloGrande}>
-                        <strong>Calendario Escolar</strong>
-                    </h2>
-                    <div style={styles.imagenContenedorCalendario}>
-                        <Image
-                            src="/calendario2025-2026.png"
-                            alt="Calendario Escolar"
-                            unoptimized
-                            fill
-                            style={{ objectFit: 'contain' }}
-                        />
-                    </div>
-                </div>
-                {/*Altas y bajas de materias*/}
-                <div id="altasbajas" style={styles.contenedorAltasBajasMaterias}>
-                    <h2 style={styles.tarjetaTituloGrande}>
-                        <strong>Altas y Bajas de Materias</strong>
-                    </h2>
-                    <ul className='list-disc list-inside mt-4 text-lg'>
-                        <li>Revisar carga académica con su tutor.</li>
-                        <li>Si tiene asignaturas reprobadas o sin cursar en el ciclo anterior, no podrá cambiar de ciclo de formación.</li>
-                        <li>Si hay materias del ciclo que cursará que no le aparecen en el SII, el tutor deberá solicitarlas con el Formato de ALTAS Y BAJAS  a la Dirección de Programa.</li>
-                        <li>No es posible dar de alta varias Estancias en el mismo cuatrimestre.</li>
-                        <li>Revisar carga académica con sus estudiantes - semana 1</li>
-                        <li>Asegurarse de que todos sus alumnos tengan su carga académica al 100% antes de cerrar el período de altas y bajas indicado en el calendario.</li>
-                        <li>Pueden solicitar ETC's de INGLÉS</li>
-                        <li>Este cuatrimestre se abrirán todos los intensivos de INGLÉS ( Motivemos a que los estudiantes salgan del rezago de inglés)</li>
-                        <li>Formulario de Registro:   <a href="https://forms.gle/6mzeEmkYbU2MboKBA" style={{ textDecoration: 'underline', color: '#431d2a' }}>https://forms.gle/6mzeEmkYbU2MboKBA</a> </li>
-                        <li>Si alguien puede acreditar su inglés con TOEFL, Certificaciones o algún otro curso externo, acercarse a Lengua Extranjera para que validen el caso</li>
-                    </ul>
-                </div>
-                {/*Avisos de lengua extranjera*/}
-                <div id="lengua" style={styles.contenedorAvisosLenguaExtranjera}>
-                    <h2 style={styles.tarjetaTituloGrande}>
-                        <strong>Avisos de Lengua Extranjera</strong>
-                    </h2>
-                    <ul className='list-disc list-inside mt-4 text-lg'>
-                        <li>
-                            Solicitar ETC's de Inglés en:
-                            <a href="https://docs.google.com/spreadsheets/d/1UmV92-deFOLvl4mZ1KyE5tYnue3bbDLACB3cYxPIhCk/edit?usp=sharing" style={{ textDecoration: 'underline', marginLeft: 4, color: 'inherit' }}>
-                                https://docs.google.com/spreadsheets/d/1UmV92-deFOLvl4mZ1KyE5tYnue3bbDLACB3cYxPIhCk/edit?usp=sharing
-                            </a>
-                        </li>
-                        <li>
-                            Intensivos de Inglés — FECHA LÍMITE PARA SOLICITAR:
-                            <ul className='list-disc list-inside mt-2 ml-4'>
-                                <li>Niveles 1-2-3 — Alumnos de 2do y 3er ciclo, generaciones anteriores — Lunes a viernes de 11:10am a 1:40pm.</li>
-                                <li>Niveles 4-5-6 — Alumnos de 3er ciclo, generaciones anteriores — Lunes a viernes de 11:10am a 1:40pm.</li>
-                                <li>Niveles 7-8-9 — Generaciones 18 y anteriores — Lunes a viernes de 6:10pm a 8:40pm.</li>
-                            </ul>
-                        </li>
-                        <li>
-                            Informes: juana.aguilera@upq.mx (Srita. Gabriela Aguilera)
-                        </li>
-                        <li>Inicio: 16 de septiembre.</li>
-                    </ul>
-                </div>
-                {/* Solicitudes de casilleros para profesores */}
-                <div id="casilleros" style={styles.contenedorSolicitudesCasilleros}>
-                    <h2 style={styles.tarjetaTituloGrande}>
-                        <strong>Solicitudes de Casilleros para Profesores</strong>
-                    </h2>
-                    <p style={{ marginTop: '16px', fontSize: '18px', lineHeight: '1.8', color: '#333' }}>
-                        Solicitar en el siguiente enlace:
-                        <br />
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform " style={{ textDecoration: 'underline', marginLeft: 4, color: '#431d2a' }}>
-                            https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform
-                        </a>
-                    </p>
-                </div>
-            </main>
-
-            {/* Botón Volver Arriba */}
-            {showScrollTop && (
-                <button
-                    onClick={scrollToTop}
-                    style={styles.scrollTopButton}
-                    title="Volver al inicio"
-                >
-                    <ChevronUp size={24} />
-                </button>
-            )}
+            {/* Scroll Top Button */}
+            {
+                showScrollTop && (
+                    <button
+                        onClick={scrollToTop}
+                        className="fixed bottom-8 right-8 bg-rose-700 text-white border-none rounded-full w-14 h-14 flex items-center justify-center shadow-2xl transition-all duration-300 z-50 transform hover:scale-110 active:scale-90"
+                    >
+                        <ChevronUp size={24} />
+                    </button>
+                )
+            }
 
             <Footer />
-        </div>
+        </div >
     );
 }
-
-// Estilos básicos
-const styles = {
-    pageContainer: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        flex: 1,
-    },
-    main: {
-        flex: 1,
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '24px',
-        width: '100%',
-    },
-    menuButtonContainer: {
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '16px 24px 0 24px',
-        width: '100%',
-    },
-    menuButton: {
-        display: 'flex',
-        alignItems: 'center',
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '8px',
-        padding: '12px 20px',
-        fontSize: '16px',
-        fontWeight: 600,
-        cursor: 'pointer',
-        boxShadow: '0 2px 8px rgba(30, 58, 95, 0.2)',
-        transition: 'all 0.3s ease',
-    },
-    overlay: {
-        position: 'fixed' as const,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 100,
-    },
-    sidebarDropdown: {
-        position: 'fixed' as const,
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-        padding: '24px',
-        borderRadius: '12px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        zIndex: 101,
-        minWidth: '300px',
-        maxWidth: '90%',
-        maxHeight: '80vh',
-        overflowY: 'auto' as const,
-    },
-    sidebarHeader: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '20px',
-    },
-    sidebarTitle: {
-        fontSize: '18px',
-        fontWeight: 700,
-        margin: 0,
-        color: 'inherit',
-    },
-    closeButton: {
-        background: 'transparent',
-        border: 'none',
-        color: '#fff',
-        cursor: 'pointer',
-        padding: '4px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: '4px',
-        transition: 'all 0.2s',
-    },
-    sidebarList: {
-        margin: 0,
-        padding: 0,
-        listStyle: 'none',
-    },
-    sidebarLink: {
-        display: 'block',
-        color: '#fff',
-        textDecoration: 'none',
-        fontSize: '16px',
-        fontWeight: 500,
-        padding: '12px 16px',
-        transition: 'all 0.2s',
-        borderRadius: '6px',
-        marginBottom: '4px',
-    },
-    scrollTopButton: {
-        position: 'fixed' as const,
-        bottom: '32px',
-        right: '32px',
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '50%',
-        width: '50px',
-        height: '50px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        boxShadow: '0 4px 12px rgba(30, 58, 95, 0.3)',
-        transition: 'all 0.3s ease',
-        zIndex: 50,
-    },
-    contenedorEncargadoSistemas: {
-        marginBottom: 16,
-        paddingTop: '30px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #e5e7eb',
-        borderRadius: 8,
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    contenedorCoordinacion: {
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '24px',
-        marginTop: '24px',
-        padding: '24px',
-        borderRadius: 8,
-        backgroundColor: '#e1dfdb',
-    },
-    tarjeta: {
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        paddingTop: '20px',
-        paddingBottom: '20px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
-        textAlign: 'center' as const,
-        backgroundColor: '#f9f9f9',
-        transition: 'all 0.3s ease',
-    },
-    imagenContenedor: {
-        position: 'relative' as const,
-        width: '100%',
-        height: '250px',
-        borderRadius: '4px',
-        overflow: 'hidden',
-    },
-    tarjetaTitulo: {
-        marginTop: '16px',
-        fontSize: 18,
-        fontWeight: 600,
-        color: 'inherit',
-    },
-    tarjetaTituloGrande: {
-        marginTop: '16px',
-        fontSize: 24,
-        fontWeight: 600,
-        color: 'inherit',
-        textAlign: 'center' as const,
-    },
-    contenedorEncargadoNombre: {
-        fontSize: 18,
-        fontWeight: 600,
-    },
-    contenedorEncargadoContacto: {
-        fontSize: 18,
-        fontWeight: 600,
-    },
-    tarjetaProyectos: {
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        paddingTop: '20px',
-        paddingBottom: '20px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
-        backgroundColor: '#431d2a',
-        color: '#fff',
-        transition: 'all 0.3s ease',
-        display: 'flex',
-        gap: '20px',
-        alignItems: 'center',
-        marginTop: '24px',
-    },
-    imagenContenedorProyectos: {
-        position: 'relative' as const,
-        flex: 1,
-        height: '450px',
-        borderRadius: '4px',
-        overflow: 'hidden',
-    },
-    contenidoProyectos: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        justifyContent: 'flex-start',
-        textAlign: 'center' as const,
-        flex: 1,
-    },
-    contenedorETC: {
-        marginTop: '24px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #e5e7eb',
-        borderRadius: 8,
-        backgroundColor: '#e1dfdb',
-    },
-    contenedorCalendario: {
-        marginTop: '24px',
-        paddingTop: '30px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #e5e7eb',
-        borderRadius: 8,
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-    },
-    imagenContenedorCalendario: {
-        position: 'relative' as const,
-        width: '100%',
-        height: '800px',
-        borderRadius: '4px',
-        overflow: 'hidden',
-        marginTop: '20px',
-        backgroundColor: '#fff',
-    },
-    contenedorAltasBajasMaterias: {
-        marginTop: '24px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #e5e7eb',
-        borderRadius: 8,
-        backgroundColor: '#e1dfdb',
-    },
-    contenedorAvisosLenguaExtranjera: {
-        marginTop: '24px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #e5e7eb',
-        borderRadius: 8,
-        backgroundColor: '#1e3a5f',
-        color: '#fff',
-    },
-    contenedorSolicitudesCasilleros: {
-        marginTop: '24px',
-        marginBottom: '40px',
-        paddingBottom: '30px',
-        paddingLeft: '30px',
-        paddingRight: '30px',
-        border: '1px solid #e5e7eb',
-        borderRadius: 8,
-        backgroundColor: '#e1dfdb',
-    },
-};
