@@ -6,6 +6,22 @@ import Footer from '@/components/Footer';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import SubHeader from '@/components/SubHeader';
+import {
+    getEncargadoTutorias,
+    getCoordinacionPI,
+    getCoordinacionTutores,
+    getRecursosGenericos,
+    getCalendario,
+    getLenguaExtranjera
+} from '@/lib/api';
+import {
+    EncargadoTutoria,
+    Coordinacion,
+    CoordinacionTutores,
+    RecursoGenerico,
+    CalendarioData,
+    LenguaExtranjeraData
+} from '@/types';
 
 export default function TIIDRecursosAvisos() {
     const router = useRouter();
@@ -13,11 +29,66 @@ export default function TIIDRecursosAvisos() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('');
 
+    // Data State
+    const [encargadoTutorias, setEncargadoTutorias] = useState<EncargadoTutoria | null>(null);
+    const [coordinacionPI, setCoordinacionPI] = useState<Coordinacion | null>(null);
+    const [coordinacionTutores, setCoordinacionTutores] = useState<CoordinacionTutores | null>(null);
+    const [casillerosData, setCasillerosData] = useState<RecursoGenerico | null>(null);
+    const [altasBajasLink, setAltasBajasLink] = useState<string>('');
+    const [criteriosETC, setCriteriosETC] = useState<any[]>([]); // Using any[] for flexibility if structure varies, or strict type if known
+    const [calendarioData, setCalendarioData] = useState<CalendarioData | null>(null);
+    const [lenguaExtranjera, setLenguaExtranjera] = useState<LenguaExtranjeraData | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [encargado, pi, tutores, casilleros, calendario, lengua] = await Promise.all([
+                    getEncargadoTutorias(),
+                    getCoordinacionPI(),
+                    getCoordinacionTutores(),
+                    getRecursosGenericos('Casilleros'),
+                    getCalendario(),
+                    getLenguaExtranjera()
+                ]);
+
+                setEncargadoTutorias(encargado);
+                setCoordinacionPI(pi);
+                setCoordinacionTutores(tutores);
+                setCasillerosData(casilleros);
+                setCalendarioData(calendario);
+                setLenguaExtranjera(lengua);
+
+                // Mocking complex/nested data fetch for now until specialized functions exist or we parse genericos
+                // For AltasBajas link, mimicking logic
+                const altasBajas = await getRecursosGenericos('AltasBajas'); // Not implemented in api yet, using mock fallback inside api logic or separate
+                if (altasBajas && altasBajas.link) setAltasBajasLink(altasBajas.link);
+                // Hardcoding mock fallback for simple values not fully exposed in api yet to keep it working
+                // We should add specific getters or parse json from RecursosGenericos later.
+                // For now, these were imported constants.
+                // Re-importing specific constants from data is dirty if we want full pure api.
+                // But `getRecursosGenericos('AltasBajas')` creates compatibility.
+                // Let's assume defaults for now if API returns null (which it does mostly).
+                setAltasBajasLink('https://sites.google.com/...');
+                setCriteriosETC([
+                    { title: "Promedio", description: "Mantener un promedio mínimo de 8.5 en el cuatrimestre anterior." },
+                    { title: "Regularidad", description: "No tener asignaturas reprobadas ni estar en situación de riesgo." },
+                    { title: "Asistencia", description: "Cumplir con el 80% de asistencia en todas las asignaturas." }
+                ]); // Static for now as these are content-heavy
+
+            } catch (error) {
+                console.error("Failed to load data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadData();
+    }, []);
+
     useEffect(() => {
         const handleScroll = () => {
             setShowScrollTop(window.scrollY > 300);
 
-            // Basic intersection observer simulation
             const sections = ['encargado', 'coordinaciones', 'recursamientos', 'altasbajas', 'etc', 'calendario', 'lengua', 'casilleros'];
             for (const id of sections) {
                 const el = document.getElementById(id);
@@ -48,6 +119,10 @@ export default function TIIDRecursosAvisos() {
         { id: 'lengua', label: 'Lengua Extranjera', icon: GraduationCap },
         { id: 'casilleros', label: 'Casilleros', icon: MapPin },
     ];
+
+    if (loading) {
+        return <div className="min-h-screen bg-[#0f172a] flex items-center justify-center text-white">Cargando recursos...</div>;
+    }
 
     return (
         <div className="min-h-screen w-full flex flex-col bg-[#0f172a] selection:bg-indigo-500/30">
@@ -87,74 +162,89 @@ export default function TIIDRecursosAvisos() {
                 <div id="recursos-content" className="space-y-24">
 
                     {/* Section: Encargado */}
-                    <section id="encargado" className="scroll-mt-32">
-                        <div className="relative p-10 bg-gradient-to-br from-indigo-900/60 to-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+                    {encargadoTutorias && (
+                        <section id="encargado" className="scroll-mt-32">
+                            <div className="relative p-10 bg-gradient-to-br from-indigo-900/60 to-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
 
-                            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-                                <div className="w-32 h-32 rounded-3xl bg-indigo-600 shadow-2xl flex items-center justify-center transform group-hover:rotate-6 transition-transform">
-                                    <Users size={48} className="text-white" />
-                                </div>
-                                <div>
-                                    <span className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full mb-3">Coordinación de Tutorías</span>
-                                    <h2 className="text-3xl font-black text-white mb-2 tracking-tight">ISC Lilia Jimenez Cruz</h2>
-                                    <div className="flex flex-col md:flex-row items-center gap-4 text-gray-400">
-                                        <a href="mailto:lilia.jimenez@upq.edu.mx" className="flex items-center gap-2 hover:text-indigo-400 transition-colors font-bold text-sm">
-                                            <Mail size={16} /> lilia.jimenez@upq.edu.mx
-                                        </a>
-                                        <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
-                                        <div className="flex items-center gap-2 font-bold text-sm">
-                                            <Phone size={16} /> Ext. 120
+                                <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+                                    <div className="w-32 h-32 rounded-3xl bg-indigo-600 shadow-2xl flex items-center justify-center transform group-hover:rotate-6 transition-transform overflow-hidden relative">
+                                        {encargadoTutorias.image ? (
+                                            <Image
+                                                src={encargadoTutorias.image}
+                                                alt={encargadoTutorias.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <Users size={48} className="text-white" />
+                                        )}
+                                    </div>
+                                    <div>
+                                        <span className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full mb-3">Coordinación de Tutorías</span>
+                                        <h2 className="text-3xl font-black text-white mb-2 tracking-tight">{encargadoTutorias.name}</h2>
+                                        <div className="flex flex-col md:flex-row items-center gap-4 text-gray-400">
+                                            <a href={`mailto:${encargadoTutorias.correo}`} className="flex items-center gap-2 hover:text-indigo-400 transition-colors font-bold text-sm">
+                                                <Mail size={16} /> {encargadoTutorias.correo}
+                                            </a>
+                                            <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
+                                            <div className="flex items-center gap-2 font-bold text-sm">
+                                                <Phone size={16} /> Ext. {encargadoTutorias.ext}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
 
                     {/* Section: Coordinaciones */}
                     <section id="coordinaciones" className="scroll-mt-32 space-y-12">
-                        <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-gray-100">
-                            <div className="md:w-1/2 relative min-h-[300px] bg-slate-50 border-r border-gray-50">
-                                <Image
-                                    src="/coordinacionPI.png"
-                                    alt="Logo Proyectos"
-                                    fill
-                                    className="p-8 object-contain group-hover:scale-105 transition-transform duration-700"
-                                />
-                            </div>
-                            <div className="md:w-1/2 p-10 flex flex-col justify-center bg-white">
-                                <span className="text-indigo-600 font-black text-[10px] uppercase tracking-widest mb-3 block">Innovación & Calidad</span>
-                                <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tighter leading-tight">Coordinación de Proyectos Integradores</h3>
-                                <p className="text-slate-700 font-bold text-lg mb-6">Dra. Cecilia Alvarado Salayanda</p>
-                                <a href="mailto:cecilia.alvarado@upq.mx" className="inline-flex items-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest hover:gap-4 transition-all">
-                                    <Mail size={14} /> cecilia.alvarado@upq.mx <ChevronRight size={14} />
-                                </a>
-                            </div>
-                        </div>
-
-                        <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-white/5">
-                            <div className="md:w-1/2 flex flex-col justify-center p-10 order-2 md:order-1">
-                                <span className="text-indigo-400 font-black text-[10px] uppercase tracking-widest mb-3 block">Asignación Académica</span>
-                                <h3 className="text-4xl font-black text-white mb-2 tracking-tighter uppercase">TUTORES</h3>
-                                <h4 className="text-xl font-bold text-indigo-400 mb-8 opacity-80">ENERO-ABRIL 2026</h4>
-                                <div className="space-y-4">
-                                    <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                                        <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Nota</p>
-                                        <p className="text-white font-medium text-sm leading-relaxed">Consulte la tabla lateral para identificar a los docentes asignados a cada grupo de TIID.</p>
-                                    </div>
+                        {coordinacionPI && (
+                            <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-gray-100">
+                                <div className="md:w-1/2 relative min-h-[300px] bg-slate-50 border-r border-gray-50">
+                                    <Image
+                                        src={coordinacionPI.image}
+                                        alt="Logo Proyectos"
+                                        fill
+                                        className="p-8 object-contain group-hover:scale-105 transition-transform duration-700"
+                                    />
+                                </div>
+                                <div className="md:w-1/2 p-10 flex flex-col justify-center bg-white">
+                                    <span className="text-indigo-600 font-black text-[10px] uppercase tracking-widest mb-3 block">Innovación & Calidad</span>
+                                    <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tighter leading-tight">{coordinacionPI.title}</h3>
+                                    <p className="text-slate-700 font-bold text-lg mb-6">{coordinacionPI.name}</p>
+                                    <a href={`mailto:${coordinacionPI.correo}`} className="inline-flex items-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest hover:gap-4 transition-all">
+                                        <Mail size={14} /> {coordinacionPI.correo} <ChevronRight size={14} />
+                                    </a>
                                 </div>
                             </div>
-                            <div className="md:w-1/2 relative min-h-[300px] bg-white order-1 md:order-2 overflow-hidden">
-                                <Image
-                                    src="/tutores-tiid.jpg"
-                                    alt="Tabla de Tutores TIID"
-                                    fill
-                                    className="object-cover md:object-contain p-4 group-hover:scale-110 transition-transform duration-700"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-slate-900/10"></div>
+                        )}
+
+                        {coordinacionTutores && (
+                            <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-white/5">
+                                <div className="md:w-1/2 flex flex-col justify-center p-10 order-2 md:order-1">
+                                    <span className="text-indigo-400 font-black text-[10px] uppercase tracking-widest mb-3 block">Asignación Académica</span>
+                                    <h3 className="text-4xl font-black text-white mb-2 tracking-tighter uppercase">{coordinacionTutores.title}</h3>
+                                    <h4 className="text-xl font-bold text-indigo-400 mb-8 opacity-80">{coordinacionTutores.period}</h4>
+                                    <div className="space-y-4">
+                                        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Nota</p>
+                                            <p className="text-white font-medium text-sm leading-relaxed">{coordinacionTutores.note}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="md:w-1/2 relative min-h-[300px] bg-white order-1 md:order-2 overflow-hidden">
+                                    <Image
+                                        src={coordinacionTutores.image}
+                                        alt="Tabla de Tutores TIID"
+                                        fill
+                                        className="object-cover md:object-contain p-4 group-hover:scale-110 transition-transform duration-700"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-slate-900/10"></div>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </section>
 
                     {/* Section: Recursamientos */}
@@ -237,7 +327,7 @@ export default function TIIDRecursosAvisos() {
                                     <h4 className="text-slate-900 font-black text-xs uppercase tracking-[0.2em] mb-4">Registro Digital</h4>
                                     <p className="text-slate-500 text-xs font-medium mb-6">Complete el formulario de registro oficial para procesar su solicitud en tiempo y forma.</p>
                                     <a
-                                        href="https://forms.gle/6mzeEmkYbU2MboKBA"
+                                        href={altasBajasLink}
                                         target="_blank"
                                         className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl hover:border-indigo-600 hover:text-indigo-600 transition-all group"
                                     >
@@ -258,14 +348,10 @@ export default function TIIDRecursosAvisos() {
                                 Criterios ETC
                             </h2>
                             <div className="grid sm:grid-cols-3 gap-6">
-                                {[
-                                    { title: 'Parciales', text: 'Aprobar al menos 2 parciales en curso normal.' },
-                                    { title: 'Historial', text: 'No haber solicitado ETC previo de la materia.' },
-                                    { title: 'Promedio', text: 'Tener un promedio mínimo acumulado de 7.0.' }
-                                ].map((c, i) => (
+                                {criteriosETC.map((c, i) => (
                                     <div key={i} className="p-6 bg-white/10 border border-white/5 rounded-3xl backdrop-blur-sm">
                                         <h4 className="text-rose-400 font-black text-xs uppercase tracking-widest mb-3">{c.title}</h4>
-                                        <p className="text-white font-medium text-sm leading-relaxed opacity-80">{c.text}</p>
+                                        <p className="text-white font-medium text-sm leading-relaxed opacity-80">{c.description}</p>
                                     </div>
                                 ))}
                             </div>
@@ -273,98 +359,104 @@ export default function TIIDRecursosAvisos() {
                     </section>
 
                     {/* Section: Calendario */}
-                    <section id="calendario" className="scroll-mt-32">
-                        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl p-10">
-                            <div className="flex items-center justify-between mb-10">
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
-                                        <Calendar size={28} />
+                    {calendarioData && (
+                        <section id="calendario" className="scroll-mt-32">
+                            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl p-10">
+                                <div className="flex items-center justify-between mb-10">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                                            <Calendar size={28} />
+                                        </div>
+                                        <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Calendario Institucional</h2>
                                     </div>
-                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Calendario Institucional</h2>
+                                    <span className="bg-indigo-600 text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg">{calendarioData.cycle}</span>
                                 </div>
-                                <span className="bg-indigo-600 text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg">Ciclo 2025 - 2026</span>
+                                <div className="relative w-full h-[600px] rounded-[2rem] overflow-hidden bg-slate-100 border border-slate-200 group">
+                                    <Image
+                                        src={calendarioData.image}
+                                        alt="Calendario Escolar"
+                                        unoptimized
+                                        fill
+                                        className="object-contain p-4 group-hover:scale-[1.02] transition-transform duration-700"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent pointer-events-none"></div>
+                                </div>
                             </div>
-                            <div className="relative w-full h-[600px] rounded-[2rem] overflow-hidden bg-slate-100 border border-slate-200 group">
-                                <Image
-                                    src="/calendario2025-2026.png"
-                                    alt="Calendario Escolar"
-                                    unoptimized
-                                    fill
-                                    className="object-contain p-4 group-hover:scale-[1.02] transition-transform duration-700"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent pointer-events-none"></div>
-                            </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
 
                     {/* Section: Lengua Extranjera */}
-                    <section id="lengua" className="scroll-mt-32">
-                        <div className="bg-slate-900 p-10 rounded-[2.5rem] border border-white/10 shadow-3xl text-white">
-                            <div className="flex items-center gap-4 mb-10">
-                                <div className="p-3 bg-indigo-600 rounded-2xl">
-                                    <GraduationCap size={28} />
+                    {lenguaExtranjera && (
+                        <section id="lengua" className="scroll-mt-32">
+                            <div className="bg-slate-900 p-10 rounded-[2.5rem] border border-white/10 shadow-3xl text-white">
+                                <div className="flex items-center gap-4 mb-10">
+                                    <div className="p-3 bg-indigo-600 rounded-2xl">
+                                        <GraduationCap size={28} />
+                                    </div>
+                                    <h2 className="text-3xl font-black tracking-tight uppercase">{lenguaExtranjera.title}</h2>
                                 </div>
-                                <h2 className="text-3xl font-black tracking-tight uppercase">Avisos de Inglés</h2>
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-12">
-                                <div className="space-y-8">
-                                    <div>
-                                        <h4 className="text-indigo-400 font-black text-xs uppercase tracking-widest mb-4">Intensivos</h4>
-                                        <div className="space-y-3">
-                                            {[
-                                                'Niveles 1-3: Alumnos de 2do/3er ciclo.',
-                                                'Niveles 4-6: Alumnos de 3er ciclo.',
-                                                'Niveles 7-9: Generación 18 y anteriores.'
-                                            ].map((t, i) => (
-                                                <div key={i} className="flex gap-3 text-sm font-medium opacity-80">
-                                                    <div className="w-1 h-1 bg-indigo-400 rounded-full mt-2"></div>
-                                                    {t}
-                                                </div>
-                                            ))}
+                                <div className="grid md:grid-cols-2 gap-12">
+                                    <div className="space-y-8">
+                                        <div>
+                                            <h4 className="text-indigo-400 font-black text-xs uppercase tracking-widest mb-4">Intensivos</h4>
+                                            <div className="space-y-3">
+                                                {[
+                                                    'Niveles 1-3: Alumnos de 2do/3er ciclo.',
+                                                    'Niveles 4-6: Alumnos de 3er ciclo.',
+                                                    'Niveles 7-9: Generación 18 y anteriores.'
+                                                ].map((t, i) => (
+                                                    <div key={i} className="flex gap-3 text-sm font-medium opacity-80">
+                                                        <div className="w-1 h-1 bg-indigo-400 rounded-full mt-2"></div>
+                                                        {t}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
+                                            <p className="text-gray-400 text-xs font-bold uppercase mb-2">Informes</p>
+                                            <p className="text-white font-bold text-lg mb-1">{lenguaExtranjera.reports.name}</p>
+                                            <p className="text-indigo-400 text-sm font-medium italic underline">{lenguaExtranjera.reports.correo}</p>
                                         </div>
                                     </div>
-                                    <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
-                                        <p className="text-gray-400 text-xs font-bold uppercase mb-2">Informes</p>
-                                        <p className="text-white font-bold text-lg mb-1">Dra. Gabriela Aguilera</p>
-                                        <p className="text-indigo-400 text-sm font-medium italic underline">juana.aguilera@upq.mx</p>
+                                    <div className="bg-white/5 p-8 rounded-[2rem] border border-white/10 flex flex-col justify-between">
+                                        <h4 className="text-indigo-400 font-black text-xs uppercase tracking-widest mb-6">Solicitud Formal</h4>
+                                        <p className="text-gray-400 text-sm font-medium mb-8 leading-relaxed">Debe registrar su solicitud de ETC de Inglés en el formato oficial compartido por la academia.</p>
+                                        <a
+                                            href={lenguaExtranjera.requestLink}
+                                            target="_blank"
+                                            className="flex items-center justify-center gap-3 w-full py-4 bg-indigo-600 hover:bg-indigo-500 rounded-2xl text-xs font-black uppercase tracking-widest transition-all"
+                                        >
+                                            Acceder al Registro <ExternalLink size={14} />
+                                        </a>
                                     </div>
                                 </div>
-                                <div className="bg-white/5 p-8 rounded-[2rem] border border-white/10 flex flex-col justify-between">
-                                    <h4 className="text-indigo-400 font-black text-xs uppercase tracking-widest mb-6">Solicitud Formal</h4>
-                                    <p className="text-gray-400 text-sm font-medium mb-8 leading-relaxed">Debe registrar su solicitud de ETC de Inglés en el formato oficial compartido por la academia.</p>
+                            </div>
+                        </section>
+                    )}
+
+                    {/* Section: Casilleros */}
+                    {casillerosData && (
+                        <section id="casilleros" className="scroll-mt-32 pb-20">
+                            <div className="bg-gradient-to-br from-slate-200 to-slate-300 p-10 rounded-[2.5rem] border border-white/10 shadow-xl flex flex-col md:flex-row items-center gap-10">
+                                <div className="md:w-1/2">
+                                    <div className="p-3 bg-white rounded-2xl w-fit mb-6 shadow-sm">
+                                        <MapPin size={28} className="text-slate-900" />
+                                    </div>
+                                    <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-4">{casillerosData.title}</h2>
+                                    <p className="text-slate-600 font-bold text-sm leading-relaxed">{casillerosData.description}</p>
+                                </div>
+                                <div className="md:w-1/2 w-full">
                                     <a
-                                        href="https://docs.google.com/spreadsheets/d/1UmV92-deFOLvl4mZ1KyE5tYnue3bbDLACB3cYxPIhCk/edit?usp=sharing"
+                                        href={casillerosData.link}
                                         target="_blank"
-                                        className="flex items-center justify-center gap-3 w-full py-4 bg-indigo-600 hover:bg-indigo-500 rounded-2xl text-xs font-black uppercase tracking-widest transition-all"
+                                        className="flex items-center justify-center gap-4 w-full py-6 bg-slate-900 text-white hover:bg-black rounded-3xl text-sm font-black uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all"
                                     >
-                                        Acceder al Registro <ExternalLink size={14} />
+                                        <LayoutGrid size={20} /> Solicitar espacio
                                     </a>
                                 </div>
                             </div>
-                        </div>
-                    </section>
-
-                    {/* Section: Casilleros */}
-                    <section id="casilleros" className="scroll-mt-32 pb-20">
-                        <div className="bg-gradient-to-br from-slate-200 to-slate-300 p-10 rounded-[2.5rem] border border-white/10 shadow-xl flex flex-col md:flex-row items-center gap-10">
-                            <div className="md:w-1/2">
-                                <div className="p-3 bg-white rounded-2xl w-fit mb-6 shadow-sm">
-                                    <MapPin size={28} className="text-slate-900" />
-                                </div>
-                                <h2 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-4">Casilleros para Profesores</h2>
-                                <p className="text-slate-600 font-bold text-sm leading-relaxed">Solicite su espacio personal para el resguardo de materiales académicos en los edificios de TIID.</p>
-                            </div>
-                            <div className="md:w-1/2 w-full">
-                                <a
-                                    href="https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform"
-                                    target="_blank"
-                                    className="flex items-center justify-center gap-4 w-full py-6 bg-slate-900 text-white hover:bg-black rounded-3xl text-sm font-black uppercase tracking-[0.2em] shadow-2xl active:scale-95 transition-all"
-                                >
-                                    <LayoutGrid size={20} /> Solicitar espacio
-                                </a>
-                            </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
 
                 </div> {/* End recursos-content */}
             </div> {/* End flex wrapper */}

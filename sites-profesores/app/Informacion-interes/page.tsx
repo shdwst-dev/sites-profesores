@@ -5,12 +5,58 @@ import { Bell, Calendar, FileText, Users, ExternalLink, ChevronRight, Menu, X, C
 import Footer from '@/components/Footer';
 import SubHeader from '@/components/SubHeader';
 import { useState, useEffect } from 'react';
+import {
+    getComunicados,
+    getFechasImportantes,
+    getTramites,
+    getTutoresProfesores,
+    getContactos
+} from '@/lib/api';
+import {
+    Comunicado,
+    FechaImportante,
+    Tramite,
+    TutorProfesor,
+    Contacto
+} from '@/types';
 
 export default function InfoPage() {
     const router = useRouter();
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('');
+
+    // Data State
+    const [comunicados, setComunicados] = useState<Comunicado[]>([]);
+    const [fechasImportantes, setFechasImportantes] = useState<FechaImportante[]>([]);
+    const [tramites, setTramites] = useState<Tramite[]>([]);
+    const [tutoresProfesores, setTutoresProfesores] = useState<TutorProfesor[]>([]);
+    const [contactos, setContactos] = useState<Contacto[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [c, f, t, tp, co] = await Promise.all([
+                    getComunicados(),
+                    getFechasImportantes(),
+                    getTramites(),
+                    getTutoresProfesores(),
+                    getContactos()
+                ]);
+                setComunicados(c);
+                setFechasImportantes(f);
+                setTramites(t);
+                setTutoresProfesores(tp);
+                setContactos(co);
+            } catch (error) {
+                console.error("Failed to load data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadData();
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -44,59 +90,15 @@ export default function InfoPage() {
         { id: 'contactos', label: 'Contactos', icon: Users },
     ];
 
-    const fechas_importantes = [
-        { date: '12 Ene', event: 'Fecha límite: Solicitudes y Cartas ETC (Tutores)', urgent: true },
-        { date: '16 Ene', event: 'Fecha límite: Altas y bajas de materias', urgent: true },
-        { date: '17 Ene', event: 'Reunión de Academia', urgent: false },
-        { date: '20-24 Ene', event: 'Semana 3: Entrega Plan de actividades ETC', urgent: false },
-        { date: '10 Feb', event: 'Primer corte de evaluación', urgent: false }
-    ];
-
-    const comunicados = [
-        {
-            id: 1,
-            title: 'Comunicado Dirección General',
-            date: '11 de Enero de 2026',
-            content: 'Se informa sobre las nuevas políticas de movilidad académica y convenios internacionales para el año 2026.',
-            category: 'Institucional',
-            color: 'bg-blue-600'
-        },
-        {
-            id: 2,
-            title: 'Actualización Sistema de Evaluación',
-            date: '9 de Enero de 2026',
-            content: 'Se han implementado mejoras en el sistema de captura de calificaciones. Revisa el manual actualizado.',
-            category: 'Académico',
-            color: 'bg-emerald-600'
-        },
-        {
-            id: 3,
-            title: 'Convocatoria Proyectos de Investigación',
-            date: '8 de Enero de 2026',
-            content: 'Abierta la convocatoria para proyectos de investigación aplicada. Plazo de inscripción hasta el 31 de enero.',
-            category: 'Investigación',
-            color: 'bg-purple-600'
+    // Helper to determine color based on classification (optional, can be moved to data or utils)
+    const getCategoryColor = (category: string) => {
+        switch (category) {
+            case 'Institucional': return 'bg-blue-600';
+            case 'Académico': return 'bg-emerald-600';
+            case 'Investigación': return 'bg-purple-600';
+            default: return 'bg-gray-600';
         }
-    ];
-
-    const tramites_y_procedimientos = [
-        {
-            title: 'Justificantes de Estudiantes',
-            description: 'Proceso para validar justificantes médicos y administrativos'
-        },
-        {
-            title: 'Solicitud de Material Didáctico',
-            description: 'Requisitos para solicitar material y equipo de laboratorio'
-        },
-        {
-            title: 'Registro de Actividades Extracurriculares',
-            description: 'Formato para documentar actividades complementarias'
-        },
-        {
-            title: 'Asesorías y Tutorías',
-            description: 'Lineamientos para el registro de horas de asesoría'
-        }
-    ];
+    };
 
     return (
         <div className="min-h-screen flex flex-col bg-[#0f172a]">
@@ -154,8 +156,8 @@ export default function InfoPage() {
                                             className="group rounded-2xl bg-white p-6 shadow-sm hover:shadow-xl transition-all duration-300 border border-transparent hover:border-blue-100"
                                         >
                                             <div className="flex items-center justify-between mb-4">
-                                                <span className={`rounded-full ${comm.color} px-4 py-1.5 text-[10px] font-bold text-white uppercase tracking-wider`}>
-                                                    {comm.category}
+                                                <span className={`rounded-full ${getCategoryColor(comm.classification)} px-4 py-1.5 text-[10px] font-bold text-white uppercase tracking-wider`}>
+                                                    {comm.classification}
                                                 </span>
                                                 <div className="flex items-center gap-2 text-xs font-medium text-gray-400">
                                                     <Calendar className="w-4 h-4" />
@@ -163,7 +165,7 @@ export default function InfoPage() {
                                                 </div>
                                             </div>
                                             <h3 className="mb-3 text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">{comm.title}</h3>
-                                            <p className="text-gray-600 leading-relaxed">{comm.content}</p>
+                                            <p className="text-gray-600 leading-relaxed">{comm.description}</p>
                                             <div className="mt-4 pt-4 border-t border-gray-50 flex justify-end">
                                                 <button className="text-blue-600 font-bold text-sm flex items-center gap-1 hover:underline group/btn">
                                                     Leer más <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -171,6 +173,9 @@ export default function InfoPage() {
                                             </div>
                                         </div>
                                     ))}
+                                    {loading && comunicados.length === 0 && (
+                                        <div className="text-center text-gray-400 py-8">Cargando comunicados...</div>
+                                    )}
                                 </div>
                             </div>
 
@@ -183,10 +188,11 @@ export default function InfoPage() {
                                     Trámites y Procedimientos
                                 </h2>
                                 <div className="grid md:grid-cols-2 gap-6">
-                                    {tramites_y_procedimientos.map((procedure, index) => (
-                                        <div
+                                    {tramites.map((procedure, index) => (
+                                        <a
                                             key={index}
-                                            className="group relative rounded-2xl bg-white/95 p-6 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border-b-4 border-amber-500/0 hover:border-amber-500"
+                                            href={procedure.link || '#'}
+                                            className="group relative rounded-2xl bg-white/95 p-6 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border-b-4 border-amber-500/0 hover:border-amber-500 block"
                                         >
                                             <h3 className="mb-3 font-extrabold text-gray-800 text-lg group-hover:text-amber-600 transition-colors uppercase tracking-tight">{procedure.title}</h3>
                                             <p className="text-sm font-medium text-gray-600 leading-snug">{procedure.description}</p>
@@ -195,13 +201,13 @@ export default function InfoPage() {
                                                     Ver requisitos <ChevronRight className="w-3 h-3" />
                                                 </span>
                                             </div>
-                                        </div>
+                                        </a>
                                     ))}
                                 </div>
                             </div>
 
                             {/* Tutores y Profesores Section */}
-                            <div id="tutores" className="scroll-mt-32 rounded-2xl bg-[#431d2a]/30 backdrop-blur-sm border border-white/10 p-5 shadow-2xl">
+                            <div id="tutores" className="scroll-mt-32 rounded-2xl bg-[#431d2a]/30 backdrop-blur-sm border border-white/10 p-8 shadow-2xl">
                                 <div className="grid md:grid-cols-2 gap-4">
                                     {/* Tutores Box */}
                                     <div className="rounded-xl bg-white shadow-xl overflow-hidden flex flex-col group hover:-translate-y-1 transition-transform duration-300">
@@ -213,39 +219,19 @@ export default function InfoPage() {
                                                 <h2 className="text-2xl font-black text-gray-800 tracking-tighter">Tutores</h2>
                                             </div>
                                             <ul className="space-y-4">
-                                                <li className="flex items-start gap-2">
-                                                    <a
-                                                        href="https://www.youtube.com/watch?v=1oin1h4kdOg"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 font-bold text-gray-700 hover:text-[#431d2a] transition-colors"
-                                                    >
-                                                        <ExternalLink className="w-4 h-4 flex-shrink-0" />
-                                                        <span className="text-sm">¿Qué son las tutorías académicas?</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a
-                                                        href="https://www.youtube.com/watch?v=1oin1h4kdOg"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 font-bold text-gray-700 hover:text-[#431d2a] transition-colors"
-                                                    >
-                                                        <ExternalLink className="w-4 h-4 flex-shrink-0" />
-                                                        <span className="text-sm">Todo el mundo debería saber programar</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a
-                                                        href="https://www.youtube.com/watch?v=1oin1h4kdOg"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 font-bold text-gray-700 hover:text-[#431d2a] transition-colors"
-                                                    >
-                                                        <ExternalLink className="w-4 h-4 flex-shrink-0" />
-                                                        <span className="text-sm">La vida es maravillosa</span>
-                                                    </a>
-                                                </li>
+                                                {tutoresProfesores.filter(t => t.classification === 'Tutor').map((item) => (
+                                                    <li key={item.id} className="flex items-start gap-2">
+                                                        <a
+                                                            href={item.link}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-2 font-bold text-gray-700 hover:text-[#431d2a] transition-colors"
+                                                        >
+                                                            <ExternalLink className="w-4 h-4 flex-shrink-0" />
+                                                            <span className="text-sm">{item.title}</span>
+                                                        </a>
+                                                    </li>
+                                                ))}
                                                 <li className="flex items-start gap-2 text-gray-400">
                                                     <span className="text-xs italic font-medium">Recursos adicionales próximamente...</span>
                                                 </li>
@@ -279,28 +265,19 @@ export default function InfoPage() {
                                                 <h2 className="text-2xl font-black text-gray-800 tracking-tighter">Profesores</h2>
                                             </div>
                                             <ul className="space-y-4">
-                                                <li className="flex items-start gap-2">
-                                                    <a
-                                                        href="https://www.uniandes.edu.co/es/oferta-academica"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 font-bold text-gray-700 hover:text-[#1e3a5f] transition-colors"
-                                                    >
-                                                        <ExternalLink className="w-4 h-4 flex-shrink-0" />
-                                                        <span className="text-sm">Estrategias didácticas de vanguardia</span>
-                                                    </a>
-                                                </li>
-                                                <li className="flex items-start gap-2">
-                                                    <a
-                                                        href="https://www.enso.edu.co/biblionline/archivos/3280.pdf"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-2 font-bold text-gray-700 hover:text-[#1e3a5f] transition-colors"
-                                                    >
-                                                        <ExternalLink className="w-4 h-4 flex-shrink-0" />
-                                                        <span className="text-sm">Mejora de la disciplina en el aula</span>
-                                                    </a>
-                                                </li>
+                                                {tutoresProfesores.filter(t => t.classification === 'Profesor').map((item) => (
+                                                    <li key={item.id} className="flex items-start gap-2">
+                                                        <a
+                                                            href={item.link}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-2 font-bold text-gray-700 hover:text-[#1e3a5f] transition-colors"
+                                                        >
+                                                            <ExternalLink className="w-4 h-4 flex-shrink-0" />
+                                                            <span className="text-sm">{item.title}</span>
+                                                        </a>
+                                                    </li>
+                                                ))}
                                             </ul>
                                         </div>
                                     </div>
@@ -317,7 +294,7 @@ export default function InfoPage() {
                                     Fechas Importantes
                                 </h2>
                                 <div className="space-y-4">
-                                    {fechas_importantes.map((item, index) => (
+                                    {fechasImportantes.map((item, index) => (
                                         <div
                                             key={index}
                                             className={`group rounded-xl p-4 transition-all duration-300 bg-white border-l-[6px] shadow-md hover:shadow-xl hover:-translate-x-1 ${item.urgent ? 'border-red-500' : 'border-purple-500'
@@ -330,7 +307,7 @@ export default function InfoPage() {
                                                     <span className="text-[10px] font-bold uppercase">{item.date.split(' ')[1] || ''}</span>
                                                 </div>
                                                 <p className={`text-sm font-bold leading-tight ${item.urgent ? 'text-gray-900' : 'text-gray-800'}`}>
-                                                    {item.event}
+                                                    {item.title}
                                                 </p>
                                             </div>
                                         </div>
@@ -346,21 +323,13 @@ export default function InfoPage() {
                                     Contactos
                                 </h3>
                                 <div className="space-y-6">
-                                    <div className="relative z-10">
-                                        <p className="font-extrabold text-amber-900 text-sm uppercase tracking-wider mb-1">Dirección de Carrera</p>
-                                        <p className="text-amber-800 font-bold mb-1">direccion@upq.edu.mx</p>
-                                        <div className="inline-block px-2 py-0.5 bg-amber-200 rounded text-[10px] font-black text-amber-900">EXT. 100</div>
-                                    </div>
-                                    <div className="relative z-10 pt-4 border-t border-amber-900/10">
-                                        <p className="font-extrabold text-amber-900 text-sm uppercase tracking-wider mb-1">Servicios Escolares</p>
-                                        <p className="text-amber-800 font-bold mb-1">escolares@upq.edu.mx</p>
-                                        <div className="inline-block px-2 py-0.5 bg-amber-200 rounded text-[10px] font-black text-amber-900">EXT. 200</div>
-                                    </div>
-                                    <div className="relative z-10 pt-4 border-t border-amber-900/10">
-                                        <p className="font-extrabold text-amber-900 text-sm uppercase tracking-wider mb-1">Soporte Técnico</p>
-                                        <p className="text-amber-800 font-bold mb-1">soporte@upq.edu.mx</p>
-                                        <div className="inline-block px-2 py-0.5 bg-amber-200 rounded text-[10px] font-black text-amber-900">EXT. 300</div>
-                                    </div>
+                                    {contactos.map((contact, index) => (
+                                        <div key={contact.id} className={`relative z-10 ${index > 0 ? 'pt-4 border-t border-amber-900/10' : ''}`}>
+                                            <p className="font-extrabold text-amber-900 text-sm uppercase tracking-wider mb-1">{contact.title}</p>
+                                            <p className="text-amber-800 font-bold mb-1">{contact.correo}</p>
+                                            <div className="inline-block px-2 py-0.5 bg-amber-200 rounded text-[10px] font-black text-amber-900">EXT. {contact.ext}</div>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
