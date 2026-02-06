@@ -51,6 +51,7 @@ export default function SubHeader({
                         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <Home className="w-4 h-4 group-hover:scale-110 transition-transform relative z-10" />
                         <span className="font-bold text-xs uppercase tracking-widest relative z-10 hidden sm:inline">Inicio</span>
+
                     </button>
                 </div>
             </div>
