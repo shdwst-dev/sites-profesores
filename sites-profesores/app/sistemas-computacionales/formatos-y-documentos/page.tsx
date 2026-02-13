@@ -1,10 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import * as LucideIcons from 'lucide-react';
 import { Clock, Calendar, FileText, BookOpen, Table, CheckSquare, Book, Map, NotebookPen, X, Upload, Info, FileDown, ChevronRight, Check, Image as ImageIcon, FileSpreadsheet, Trash2, Menu, ChevronUp, LayoutGrid } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Footer from '@/components/Footer';
 import SubHeader from '@/components/SubHeader';
+import { getEntregables, getDocumentosDescarga } from '@/lib/api';
+import { Entregable, DocumentoDescarga } from '@/types';
 
 // Helper for file size
 const formatBytes = (bytes: number, decimals = 2) => {
@@ -14,6 +17,12 @@ const formatBytes = (bytes: number, decimals = 2) => {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+};
+
+// Helper for dynamic icons
+const getIcon = (name: string) => {
+    // @ts-ignore
+    return LucideIcons[name] || LucideIcons.File;
 };
 
 export default function SistemasFormatosDocumentos() {
@@ -55,48 +64,35 @@ export default function SistemasFormatosDocumentos() {
         { id: 'formatos', label: 'Descargas', icon: FileDown },
     ];
 
-    const entregables = [
-        {
-            titulo: 'Semana 1',
-            items: [
-                { nombre: 'Plan y Guía de asignatura firmados por estudiantes', fecha: 'Cierre: Fin de Semana 1' },
-                { nombre: 'Acta de trabajo en academia', fecha: 'Cierre: Fin de Semana 1' },
-                { nombre: 'Registrar códigos, plataformas, fechas de exámenes', fecha: 'Semana 1' }
-            ],
-        },
-        {
-            titulo: 'Plazos especiales',
-            items: [
-                { nombre: 'Altas y bajas de materias', fecha: 'Hasta el 16 de Enero de 2026' },
-            ],
-        },
-        {
-            titulo: 'Solo tutores',
-            items: [
-                { nombre: 'Solicitudes de ETC / Solo tutores', fecha: 'Cerrado: 12 de Enero de 2026' },
-                { nombre: 'Cartas de ETC / Solo tutores', fecha: 'Cerrado: 12 de Enero de 2026' },
-            ],
-        },
-        {
-            titulo: 'Semana 3',
-            items: [
-                { nombre: 'Plan de actividades ETC', fecha: 'Semana 3' },
-            ],
-        }
-    ];
+    // Data State
+    const [entregables, setEntregables] = useState<Entregable[]>([]);
+    const [descargas, setDescargas] = useState<DocumentoDescarga[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const formatos = [
-        { nombre: 'Calendario 25 - 26', icono: Calendar, url: '/formatos/calendario.pdf', color: 'bg-blue-50' },
-        { nombre: 'CARTA ETC', icono: FileText, url: '/formatos/carta-etc.pdf', color: 'bg-rose-50' },
-        { nombre: 'Formato Academia', icono: BookOpen, url: '/formatos/formato-academia.pdf', color: 'bg-orange-50' },
-        { nombre: 'Grupos y Horarios', icono: Table, url: '/formatos/grupos-horarios.pdf', color: 'bg-amber-50' },
-        { nombre: 'Guía Asignatura', icono: Book, url: '/formatos/guia-asignatura.pdf', color: 'bg-red-50' },
-        { nombre: 'Información Estancias', icono: FileText, url: '/formatos/estancias-estadias.pdf', color: 'bg-blue-50' },
-        { nombre: 'Asistencias Tutorías', icono: CheckSquare, url: '/formatos/lista-asistencias.pdf', color: 'bg-emerald-50' },
-        { nombre: 'Manuales Asignatura', icono: BookOpen, url: '/formatos/manuales.pdf', color: 'bg-rose-50' },
-        { nombre: 'Mapa Curricular', icono: Map, url: '/formatos/mapa-curricular.pdf', color: 'bg-orange-50' },
-        { nombre: 'Plan de Asignatura', icono: NotebookPen, url: '/formatos/plan-asignatura.pdf', color: 'bg-pink-50' },
-    ];
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [e, d] = await Promise.all([getEntregables(), getDocumentosDescarga()]);
+                setEntregables(e);
+                setDescargas(d);
+            } catch (error) {
+                console.error("Failed to load data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadData();
+    }, []);
+
+    const groupedEntregables = entregables.reduce((acc, curr) => {
+        const group = acc.find(g => g.titulo === curr.stage);
+        if (group) {
+            group.items.push({ nombre: curr.title, fecha: curr.deadline });
+        } else {
+            acc.push({ titulo: curr.stage, items: [{ nombre: curr.title, fecha: curr.deadline }] });
+        }
+        return acc;
+    }, [] as { titulo: string; items: { nombre: string; fecha: string }[] }[]);
 
     const handleUpload = (taskKey: string) => {
         setUploading(prev => ({ ...prev, [taskKey]: true }));
@@ -190,10 +186,10 @@ export default function SistemasFormatosDocumentos() {
                         </div>
                     </div>
 
-                    <div className="grid lg:grid-cols-3 gap-12">
+                    <div className="space-y-12">
                         {/* Left Column: Deliverables */}
-                        <div id="entregables" className="scroll-mt-32 lg:col-span-2 space-y-12">
-                            {entregables.map((grupo) => {
+                        <div id="entregables" className="scroll-mt-32 space-y-12">
+                            {groupedEntregables.map((grupo) => {
                                 const grupoKey = grupo.titulo;
 
                                 return (
@@ -346,13 +342,13 @@ export default function SistemasFormatosDocumentos() {
                                     <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Formatos</h3>
                                 </div>
 
-                                <div className="space-y-2">
-                                    {formatos.map((formato, index) => {
-                                        const Icon = formato.icono;
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {descargas.map((formato, index) => {
+                                        const Icon = getIcon(formato.icon);
                                         return (
                                             <a
                                                 key={index}
-                                                href={formato.url}
+                                                href={formato.link}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="flex items-center justify-between p-4 rounded-[1.25rem] hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100"
@@ -362,7 +358,7 @@ export default function SistemasFormatosDocumentos() {
                                                         <Icon className="text-slate-700" size={18} />
                                                     </div>
                                                     <span className="text-sm font-bold text-slate-700 group-hover:text-rose-900 transition-colors">
-                                                        {formato.nombre}
+                                                        {formato.title}
                                                     </span>
                                                 </div>
                                                 <ChevronRight className="text-slate-300 group-hover:text-rose-400 group-hover:translate-x-1 transition-all" size={16} />
@@ -371,15 +367,8 @@ export default function SistemasFormatosDocumentos() {
                                     })}
                                 </div>
 
-                                <div className="mt-8 pt-8 border-t border-slate-100">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Soporte</p>
-                                    <div className="space-y-3">
-                                        <button className="w-full text-left px-4 py-3 bg-slate-50 rounded-xl text-xs font-bold text-slate-600 hover:bg-rose-50 hover:text-rose-900 transition-colors flex items-center gap-3">
-                                            <Check size={14} /> Requisitos de firmas
-                                        </button>
-                                    </div>
-                                </div>
-                            </section>
+
+                            </section>w
                         </div>
                     </div>
                 </main>

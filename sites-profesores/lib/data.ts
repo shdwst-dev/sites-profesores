@@ -119,7 +119,7 @@ export const encargadoTutorias: EncargadoTutoria = {
     name: 'ISC Lilia Jimenez Cruz',
     correo: 'lilia.jimenez@upq.edu.mx',
     ext: '120',
-    image: '/placeholder-user.jpg' // User mentioned icon/photo
+    image: '' // User mentioned icon/photo
 };
 
 export const coordinacionPI: Coordinacion = {
@@ -165,5 +165,84 @@ export const casillerosData: RecursoGenerico = {
     type: 'Casilleros',
     title: 'Casilleros para Profesores',
     description: 'Solicite su espacio personal para el resguardo de materiales académicos en los edificios de TIID.',
+    link: 'https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform'
+};
+
+// Sistemas Computacionales
+
+export const entregablesSistemas: Entregable[] = [
+    { id: 1, stage: 'Semana 1', title: 'Plan y Guía de asignatura firmados por estudiantes', deadline: 'Cierre: Fin de Semana 1' },
+    { id: 2, stage: 'Semana 1', title: 'Acta de trabajo en academia', deadline: 'Cierre: Fin de Semana 1' },
+    { id: 3, stage: 'Semana 1', title: 'Registrar códigos, plataformas, fechas de exámenes', deadline: 'Semana 1' },
+    { id: 4, stage: 'Plazos especiales', title: 'Altas y bajas de materias', deadline: 'Hasta el 16 de Enero de 2026' },
+    { id: 5, stage: 'Solo tutores', title: 'Solicitudes de ETC / Solo tutores', deadline: 'Cerrado: 12 de Enero de 2026' },
+    { id: 6, stage: 'Solo tutores', title: 'Cartas de ETC / Solo tutores', deadline: 'Cerrado: 12 de Enero de 2026' },
+    { id: 7, stage: 'Semana 3', title: 'Plan de actividades ETC', deadline: 'Semana 3' }
+];
+
+export const descargasSistemas: DocumentoDescarga[] = [
+    { id: 1, title: 'Calendario 25 - 26', icon: 'Calendar', link: '/formatos/calendario.pdf', color: 'bg-blue-50' },
+    { id: 2, title: 'CARTA ETC', icon: 'FileText', link: '/formatos/carta-etc.pdf', color: 'bg-rose-50' },
+    { id: 3, title: 'Formato Academia', icon: 'BookOpen', link: '/formatos/formato-academia.pdf', color: 'bg-orange-50' },
+    { id: 4, title: 'Grupos y Horarios', icon: 'Table', link: '/formatos/grupos-horarios.pdf', color: 'bg-amber-50' },
+    { id: 5, title: 'Guía Asignatura', icon: 'Book', link: '/formatos/guia-asignatura.pdf', color: 'bg-red-50' },
+    { id: 6, title: 'Información Estancias', icon: 'FileText', link: '/formatos/estancias-estadias.pdf', color: 'bg-blue-50' },
+    { id: 7, title: 'Asistencias Tutorías', icon: 'CheckSquare', link: '/formatos/lista-asistencias.pdf', color: 'bg-emerald-50' },
+    { id: 8, title: 'Manuales Asignatura', icon: 'BookOpen', link: '/formatos/manuales.pdf', color: 'bg-rose-50' },
+    { id: 9, title: 'Mapa Curricular', icon: 'Map', link: '/formatos/mapa-curricular.pdf', color: 'bg-orange-50' },
+    { id: 10, title: 'Plan de Asignatura', icon: 'NotebookPen', link: '/formatos/plan-asignatura.pdf', color: 'bg-pink-50' }
+];
+
+export const encargadoTutoriasSistemas: EncargadoTutoria = {
+    id: 1,
+    name: 'ISC Lilia Jimenez Cruz',
+    correo: 'lilia.jimenez@upq.edu.mx',
+    ext: '120',
+    image: ''
+};
+
+export const coordinacionPISistemas: Coordinacion = {
+    id: 1,
+    title: 'Coordinación de Proyectos Integradores',
+    name: 'Dra. Cecilia Alvarado Salayanda',
+    correo: 'cecilia.alvarado@upq.mx',
+    image: '/coordinacionPI.png'
+};
+
+export const coordinacionTutoresSistemas: CoordinacionTutores = {
+    id: 1,
+    title: 'Acción Tutorial',
+    period: 'ENERO-ABRIL 2026',
+    image: '/coordinacionTutorias.jpg',
+    note: 'Coordinación / Gestión de Docentes'
+};
+
+export const coordinacionEstanciasSistemas: Coordinacion = {
+    id: 1,
+    title: 'Estancias y Estadías',
+    name: 'Coordinación',
+    correo: '', // No specific email in original
+    image: '/coordinacionEstanciasEstadias.jpg'
+};
+
+export const calendarioDataSistemas: CalendarioData = {
+    cycle: 'Ciclo 2025 - 2026',
+    image: '/calendario2025-2026.png'
+};
+
+export const lenguaExtranjeraSistemas: LenguaExtranjeraData = {
+    title: 'Avisos de Inglés',
+    reports: {
+        name: 'Dra. Gabriela Aguilera',
+        correo: 'juana.aguilera@upq.mx'
+    },
+    requestLink: 'https://docs.google.com/spreadsheets/d/1UmV92-deFOLvl4mZ1KyE5tYnue3bbDLACB3cYxPIhCk/edit?usp=sharing'
+};
+
+export const casillerosDataSistemas: RecursoGenerico = {
+    id: 1,
+    type: 'Casilleros',
+    title: 'Casilleros para Profesores',
+    description: 'Solicite su espacio personal para el resguardo de materiales académicos en los edificios de Sistemas.',
     link: 'https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform'
 };

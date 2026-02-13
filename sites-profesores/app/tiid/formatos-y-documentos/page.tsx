@@ -190,9 +190,9 @@ export default function TIIDFormatosDocumentos() {
                         </div>
                     </div>
 
-                    <div className="grid lg:grid-cols-3 gap-12">
+                    <div className="space-y-12">
                         {/* Left Column: Deliverables */}
-                        <div id="entregables" className="scroll-mt-32 lg:col-span-2 space-y-12">
+                        <div id="entregables" className="scroll-mt-32 space-y-12">
                             {groupedEntregables.map((grupo) => (
                                 <section key={grupo.titulo} className="animate-in slide-in-from-bottom-4 duration-500">
                                     <div className="flex items-center gap-4 mb-6">
@@ -342,7 +342,7 @@ export default function TIIDFormatosDocumentos() {
                                     <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Formatos</h3>
                                 </div>
 
-                                <div className="space-y-2">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {descargas.map((formato, index) => {
                                         const Icon = getIcon(formato.icon);
                                         return (
@@ -365,15 +365,6 @@ export default function TIIDFormatosDocumentos() {
                                             </a>
                                         );
                                     })}
-                                </div>
-
-                                <div className="mt-8 pt-8 border-t border-slate-100">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Soporte</p>
-                                    <div className="space-y-3">
-                                        <button className="w-full text-left px-4 py-3 bg-slate-50 rounded-xl text-xs font-bold text-slate-600 hover:bg-indigo-50 hover:text-indigo-900 transition-colors flex items-center gap-3">
-                                            <Check size={14} /> Requisitos de firmas
-                                        </button>
-                                    </div>
                                 </div>
                             </section>
                         </div>

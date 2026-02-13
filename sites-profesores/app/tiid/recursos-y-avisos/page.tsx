@@ -173,6 +173,7 @@ export default function TIIDRecursosAvisos() {
                                             <Image
                                                 src={encargadoTutorias.image}
                                                 alt={encargadoTutorias.name}
+                                                unoptimized
                                                 fill
                                                 className="object-cover"
                                             />
@@ -206,6 +207,7 @@ export default function TIIDRecursosAvisos() {
                                     <Image
                                         src={coordinacionPI.image}
                                         alt="Logo Proyectos"
+                                        unoptimized
                                         fill
                                         className="p-8 object-contain group-hover:scale-105 transition-transform duration-700"
                                     />
@@ -238,6 +240,7 @@ export default function TIIDRecursosAvisos() {
                                     <Image
                                         src={coordinacionTutores.image}
                                         alt="Tabla de Tutores TIID"
+                                        unoptimized
                                         fill
                                         className="object-cover md:object-contain p-4 group-hover:scale-110 transition-transform duration-700"
                                     />

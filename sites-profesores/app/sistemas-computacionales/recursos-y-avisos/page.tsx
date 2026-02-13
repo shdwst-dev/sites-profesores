@@ -7,11 +7,64 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import SubHeader from '@/components/SubHeader';
 
+import Link from 'next/link';
+import {
+    getEncargadoTutorias,
+    getCoordinacionPI,
+    getRecursosGenericos,
+    getCalendario,
+    getLenguaExtranjera
+} from '@/lib/api';
+import {
+    EncargadoTutoria,
+    Coordinacion,
+    RecursoGenerico,
+    CalendarioData,
+    LenguaExtranjeraData
+} from '@/types';
+
 export default function SistemasRecursosAvisos() {
     const router = useRouter();
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('');
+
+    // Data State
+    const [encargadoTutorias, setEncargadoTutorias] = useState<EncargadoTutoria | null>(null);
+    const [coordinacionPI, setCoordinacionPI] = useState<Coordinacion | null>(null);
+    const [calendarioData, setCalendarioData] = useState<CalendarioData | null>(null);
+    const [lenguaExtranjera, setLenguaExtranjera] = useState<LenguaExtranjeraData | null>(null);
+    const [casillerosData, setCasillerosData] = useState<RecursoGenerico | null>(null);
+    const [altasBajasLink, setAltasBajasLink] = useState<string>('https://forms.gle/6mzeEmkYbU2MboKBA');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [encargado, pi, calendario, lengua, casilleros, altasBajas] = await Promise.all([
+                    getEncargadoTutorias(),
+                    getCoordinacionPI(),
+                    getCalendario(),
+                    getLenguaExtranjera(),
+                    getRecursosGenericos('Casilleros'),
+                    getRecursosGenericos('AltasBajas')
+                ]);
+
+                setEncargadoTutorias(encargado);
+                setCoordinacionPI(pi);
+                setCalendarioData(calendario);
+                setLenguaExtranjera(lengua);
+                setCasillerosData(casilleros);
+                if (altasBajas && altasBajas.link) setAltasBajasLink(altasBajas.link);
+
+            } catch (error) {
+                console.error("Failed to load data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadData();
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -86,30 +139,43 @@ export default function SistemasRecursosAvisos() {
                 <div id="recursos-content" className="flex-1 min-w-0 space-y-24 animate-in fade-in duration-700">
 
                     {/* Section: Encargado */}
-                    <section id="encargado" className="scroll-mt-32">
-                        <div className="relative p-10 bg-gradient-to-br from-rose-950/60 to-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+                    {/* Section: Encargado */}
+                    {encargadoTutorias && (
+                        <section id="encargado" className="scroll-mt-32">
+                            <div className="relative p-10 bg-gradient-to-br from-rose-950/60 to-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
 
-                            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-                                <div className="w-32 h-32 rounded-3xl bg-rose-700 shadow-2xl flex items-center justify-center transform group-hover:-rotate-3 transition-transform">
-                                    <Users size={48} className="text-white" />
-                                </div>
-                                <div>
-                                    <span className="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full mb-3">Dirección de Tutorías</span>
-                                    <h2 className="text-3xl font-black text-white mb-2 tracking-tight">ISC Lilia Jimenez Cruz</h2>
-                                    <div className="flex flex-col md:flex-row items-center gap-4 text-gray-400">
-                                        <a href="mailto:lilia.jimenez@upq.edu.mx" className="flex items-center gap-2 hover:text-rose-400 transition-colors font-bold text-sm">
-                                            <Mail size={16} /> lilia.jimenez@upq.edu.mx
-                                        </a>
-                                        <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
-                                        <div className="flex items-center gap-2 font-bold text-sm">
-                                            <Phone size={16} /> Ext. 120
+                                <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+                                    <div className="w-32 h-32 rounded-3xl bg-rose-700 shadow-2xl flex items-center justify-center transform group-hover:-rotate-3 transition-transform overflow-hidden relative">
+                                        {encargadoTutorias.image ? (
+                                            <Image
+                                                src={encargadoTutorias.image}
+                                                alt={encargadoTutorias.name}
+                                                unoptimized
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <Users size={48} className="text-white" />
+                                        )}
+                                    </div>
+                                    <div>
+                                        <span className="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full mb-3">Dirección de Tutorías</span>
+                                        <h2 className="text-3xl font-black text-white mb-2 tracking-tight">{encargadoTutorias.name}</h2>
+                                        <div className="flex flex-col md:flex-row items-center gap-4 text-gray-400">
+                                            <a href={`mailto:${encargadoTutorias.correo}`} className="flex items-center gap-2 hover:text-rose-400 transition-colors font-bold text-sm">
+                                                <Mail size={16} /> {encargadoTutorias.correo}
+                                            </a>
+                                            <div className="hidden md:block w-1 h-1 bg-gray-700 rounded-full"></div>
+                                            <div className="flex items-center gap-2 font-bold text-sm">
+                                                <Phone size={16} /> Ext. {encargadoTutorias.ext}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
 
                     {/* Section: Estancias y Estadías / Tutorías */}
                     <section id="estancias" className="scroll-mt-32 grid md:grid-cols-2 gap-8">
@@ -118,6 +184,7 @@ export default function SistemasRecursosAvisos() {
                                 <Image
                                     src="/coordinacionEstanciasEstadias.jpg"
                                     alt="Estancias"
+                                    unoptimized
                                     fill
                                     className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
                                 />
@@ -132,6 +199,7 @@ export default function SistemasRecursosAvisos() {
                                 <Image
                                     src="/coordinacionTutorias.jpg"
                                     alt="Tutorías"
+                                    unoptimized
                                     fill
                                     className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
                                 />
@@ -143,29 +211,33 @@ export default function SistemasRecursosAvisos() {
                     </section>
 
                     {/* Section: Proyectos Integradores */}
-                    <section id="proyectos" className="scroll-mt-32">
-                        <div className="bg-gradient-to-br from-rose-900 to-slate-900 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-white/10 group">
-                            <div className="md:w-1/2 relative min-h-[400px] bg-white group-hover:scale-[1.02] transition-transform duration-1000">
-                                <Image
-                                    src="/coordinacionPI.png"
-                                    alt="Logo Proyectos"
-                                    fill
-                                    className="p-12 object-contain"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-rose-900/10"></div>
-                            </div>
-                            <div className="md:w-1/2 p-12 flex flex-col justify-center">
-                                <span className="text-rose-400 font-black text-[10px] uppercase tracking-[0.3em] mb-4 block">Coordinación General</span>
-                                <h3 className="text-3xl font-black text-white mb-6 leading-tight uppercase tracking-tighter">Proyectos <br /><span className="text-rose-400 opacity-80">Integradores</span></h3>
-                                <p className="text-white font-bold text-xl mb-6">Dra. Cecilia Alvarado Salayanda</p>
-                                <div className="space-y-4">
-                                    <a href="mailto:cecilia.alvarado@upq.mx" className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 border border-white/10 rounded-2xl text-white font-bold text-xs hover:bg-white hover:text-rose-900 transition-all">
-                                        <Mail size={14} /> Enviar Mensaje
-                                    </a>
+                    {/* Section: Proyectos Integradores */}
+                    {coordinacionPI && (
+                        <section id="proyectos" className="scroll-mt-32">
+                            <div className="bg-gradient-to-br from-rose-900 to-slate-900 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-white/10 group">
+                                <div className="md:w-1/2 relative min-h-[400px] bg-white group-hover:scale-[1.02] transition-transform duration-1000">
+                                    <Image
+                                        src={coordinacionPI.image}
+                                        alt="Logo Proyectos"
+                                        unoptimized
+                                        fill
+                                        className="p-12 object-contain"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-rose-900/10"></div>
+                                </div>
+                                <div className="md:w-1/2 p-12 flex flex-col justify-center">
+                                    <span className="text-rose-400 font-black text-[10px] uppercase tracking-[0.3em] mb-4 block">Coordinación General</span>
+                                    <h3 className="text-3xl font-black text-white mb-6 leading-tight uppercase tracking-tighter">{coordinacionPI.title}</h3>
+                                    <p className="text-white font-bold text-xl mb-6">{coordinacionPI.name}</p>
+                                    <div className="space-y-4">
+                                        <a href={`mailto:${coordinacionPI.correo}`} className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 border border-white/10 rounded-2xl text-white font-bold text-xs hover:bg-white hover:text-rose-900 transition-all">
+                                            <Mail size={14} /> Enviar Mensaje
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
 
                     {/* Section: ETC */}
                     <section id="etc" className="scroll-mt-32">
@@ -198,23 +270,26 @@ export default function SistemasRecursosAvisos() {
                     </section>
 
                     {/* Section: Calendario */}
-                    <section id="calendario" className="scroll-mt-32">
-                        <div className="bg-white rounded-[3rem] border border-gray-100 shadow-2xl p-12">
-                            <div className="flex items-center justify-between mb-12">
-                                <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Cronograma Escolar</h2>
-                                <div className="px-5 py-2 bg-rose-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Vigente: 2025-2026</div>
+                    {/* Section: Calendario */}
+                    {calendarioData && (
+                        <section id="calendario" className="scroll-mt-32">
+                            <div className="bg-white rounded-[3rem] border border-gray-100 shadow-2xl p-12">
+                                <div className="flex items-center justify-between mb-12">
+                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Cronograma Escolar</h2>
+                                    <div className="px-5 py-2 bg-rose-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Vigente: {calendarioData.cycle}</div>
+                                </div>
+                                <div className="relative w-full h-[600px] rounded-[2rem] overflow-hidden bg-slate-50 border border-slate-200 group">
+                                    <Image
+                                        src={calendarioData.image}
+                                        alt="Calendario Escolar"
+                                        unoptimized
+                                        fill
+                                        className="object-contain p-6 group-hover:scale-105 transition-transform duration-700"
+                                    />
+                                </div>
                             </div>
-                            <div className="relative w-full h-[600px] rounded-[2rem] overflow-hidden bg-slate-50 border border-slate-200 group">
-                                <Image
-                                    src="/calendario2025-2026.png"
-                                    alt="Calendario Escolar"
-                                    unoptimized
-                                    fill
-                                    className="object-contain p-6 group-hover:scale-105 transition-transform duration-700"
-                                />
-                            </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
 
                     {/* Section: Altas y Bajas */}
                     <section id="altasbajas" className="scroll-mt-32">
@@ -241,7 +316,7 @@ export default function SistemasRecursosAvisos() {
                                     <h4 className="text-rose-400 font-black text-[10px] uppercase tracking-widest mb-4">Registro Externo</h4>
                                     <p className="text-gray-400 text-xs font-medium mb-8">Acceda al formulario oficial para el registro de solicitudes de altas y bajas del cuatrimestre.</p>
                                     <a
-                                        href="https://forms.gle/6mzeEmkYbU2MboKBA"
+                                        href={altasBajasLink}
                                         target="_blank"
                                         className="flex items-center justify-center gap-3 w-full py-4 bg-white text-rose-900 hover:bg-rose-100 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl"
                                     >
@@ -253,55 +328,61 @@ export default function SistemasRecursosAvisos() {
                     </section>
 
                     {/* Section: Lengua Extranjera */}
-                    <section id="lengua" className="scroll-mt-32">
-                        <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl p-12">
-                            <div className="flex items-center gap-5 mb-12">
-                                <div className="p-4 bg-rose-50 rounded-2xl text-rose-700 shadow-sm">
-                                    <GraduationCap size={32} />
+                    {/* Section: Lengua Extranjera */}
+                    {lenguaExtranjera && (
+                        <section id="lengua" className="scroll-mt-32">
+                            <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl p-12">
+                                <div className="flex items-center gap-5 mb-12">
+                                    <div className="p-4 bg-rose-50 rounded-2xl text-rose-700 shadow-sm">
+                                        <GraduationCap size={32} />
+                                    </div>
+                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">{lenguaExtranjera.title}</h2>
                                 </div>
-                                <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Lengua Extranjera</h2>
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-10">
-                                <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
-                                    <h4 className="text-slate-900 font-black text-xs uppercase tracking-widest mb-6">Información General</h4>
-                                    <div className="space-y-4">
-                                        <p className="text-slate-600 text-sm font-bold flex gap-3">
-                                            <span className="w-1.5 h-1.5 bg-rose-700 rounded-full mt-2"></span>
-                                            Exámenes TOEFL / Certificaciones acreditables.
-                                        </p>
-                                        <p className="text-slate-600 text-sm font-bold flex gap-3">
-                                            <span className="w-1.5 h-1.5 bg-rose-700 rounded-full mt-2"></span>
-                                            Intensivos de Inglés (Niveles 1 al 9).
-                                        </p>
+                                <div className="grid md:grid-cols-2 gap-10">
+                                    <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
+                                        <h4 className="text-slate-900 font-black text-xs uppercase tracking-widest mb-6">Información General</h4>
+                                        <div className="space-y-4">
+                                            <p className="text-slate-600 text-sm font-bold flex gap-3">
+                                                <span className="w-1.5 h-1.5 bg-rose-700 rounded-full mt-2"></span>
+                                                Exámenes TOEFL / Certificaciones acreditables.
+                                            </p>
+                                            <p className="text-slate-600 text-sm font-bold flex gap-3">
+                                                <span className="w-1.5 h-1.5 bg-rose-700 rounded-full mt-2"></span>
+                                                Intensivos de Inglés (Niveles 1 al 9).
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col justify-center">
+                                        <p className="text-slate-500 text-xs font-black uppercase tracking-widest mb-2">Contacto Directo</p>
+                                        <p className="text-slate-900 font-black text-2xl mb-1">{lenguaExtranjera.reports.name}</p>
+                                        <a href={`mailto:${lenguaExtranjera.reports.correo}`} className="text-rose-700 font-bold hover:underline">{lenguaExtranjera.reports.correo}</a>
                                     </div>
                                 </div>
-                                <div className="flex flex-col justify-center">
-                                    <p className="text-slate-500 text-xs font-black uppercase tracking-widest mb-2">Contacto Directo</p>
-                                    <p className="text-slate-900 font-black text-2xl mb-1">Dra. Gabriela Aguilera</p>
-                                    <a href="mailto:juana.aguilera@upq.mx" className="text-rose-700 font-bold hover:underline">juana.aguilera@upq.mx</a>
-                                </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
 
                     {/* Section: Casilleros */}
-                    <section id="casilleros" className="scroll-mt-32 pb-20">
-                        <div className="bg-slate-900 p-12 rounded-[3rem] text-white flex flex-col md:flex-row items-center gap-12 shadow-3xl">
-                            <div className="md:w-3/5">
-                                <h2 className="text-4xl font-black mb-6 uppercase tracking-tighter">Espacios de <span className="text-rose-400">Resguardo</span></h2>
-                                <p className="text-gray-400 font-medium leading-relaxed">Solicitud de casilleros exclusiva para docentes de Ingeniería en Sistemas. Optimice su espacio de trabajo institucional.</p>
+                    {/* Section: Casilleros */}
+                    {casillerosData && (
+                        <section id="casilleros" className="scroll-mt-32 pb-20">
+                            <div className="bg-slate-900 p-12 rounded-[3rem] text-white flex flex-col md:flex-row items-center gap-12 shadow-3xl">
+                                <div className="md:w-3/5">
+                                    <h2 className="text-4xl font-black mb-6 uppercase tracking-tighter">{casillerosData.title}</h2>
+                                    <p className="text-gray-400 font-medium leading-relaxed">{casillerosData.description}</p>
+                                </div>
+                                <div className="md:w-2/5 w-full">
+                                    <a
+                                        href={casillerosData.link}
+                                        target="_blank"
+                                        className="flex items-center justify-center gap-4 w-full py-6 bg-rose-700 hover:bg-rose-600 rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] transition-all transform hover:scale-105"
+                                    >
+                                        <MapPin size={20} /> Solicitar Casillero
+                                    </a>
+                                </div>
                             </div>
-                            <div className="md:w-2/5 w-full">
-                                <a
-                                    href="https://docs.google.com/forms/d/e/1FAIpQLSejOw3kEc2K9DtocoxcX3g83LEYWTugt8H3I02LyYtM4jjgIw/viewform"
-                                    target="_blank"
-                                    className="flex items-center justify-center gap-4 w-full py-6 bg-rose-700 hover:bg-rose-600 rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] transition-all transform hover:scale-105"
-                                >
-                                    <MapPin size={20} /> Solicitar Casillero
-                                </a>
-                            </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
                 </div> {/* End resources-content */}
             </div> {/* End flex wrapper */}
 
