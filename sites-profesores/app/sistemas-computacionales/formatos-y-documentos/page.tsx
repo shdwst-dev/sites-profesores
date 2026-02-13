@@ -72,7 +72,7 @@ export default function SistemasFormatosDocumentos() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [e, d] = await Promise.all([getEntregables(), getDocumentosDescarga()]);
+                const [e, d] = await Promise.all([getEntregables('Sistemas'), getDocumentosDescarga('Sistemas')]);
                 setEntregables(e);
                 setDescargas(d);
             } catch (error) {

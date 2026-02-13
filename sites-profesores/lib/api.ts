@@ -12,12 +12,18 @@ async function fetchWithFallback<T>(
     tableName: string,
     mockData: T[],
     orderBy?: { column: string, ascending?: boolean },
-    single: boolean = false
+    single: boolean = false,
+    department?: string
 ): Promise<T | T[] | null> {
     try {
-        if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return single ? mockData[0] : mockData;
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return single ? (Array.isArray(mockData) ? mockData[0] : mockData) : mockData;
 
         let query = supabase.from(tableName).select('*');
+
+        if (department) {
+            query = query.eq('department', department);
+        }
+
         if (orderBy) {
             query = query.order(orderBy.column, { ascending: orderBy.ascending ?? true });
         }
@@ -26,18 +32,28 @@ async function fetchWithFallback<T>(
 
         if (error) {
             console.error(`Error fetching ${tableName}:`, error);
-            return single ? (Array.isArray(mockData) ? mockData[0] : mockData) : mockData;
+            // Return mock if error, but cast to T[] or T correctly
+            if (single) {
+                return Array.isArray(mockData) ? mockData[0] : mockData;
+            }
+            return mockData;
         }
 
         if (!data || data.length === 0) {
-            // Fallback if table is empty (dev mode convenience)
-            return single ? (Array.isArray(mockData) ? mockData[0] : mockData) : mockData;
+            // Fallback if table is empty
+            if (single) {
+                return Array.isArray(mockData) ? mockData[0] : mockData;
+            }
+            return mockData;
         }
 
         return single ? data[0] : data;
     } catch (e) {
         console.error(`Exception fetching ${tableName}:`, e);
-        return single ? (Array.isArray(mockData) ? mockData[0] : mockData) : mockData;
+        if (single) {
+            return Array.isArray(mockData) ? mockData[0] : mockData;
+        }
+        return mockData;
     }
 }
 
@@ -65,50 +81,58 @@ export const getContactos = async (): Promise<Contacto[]> => {
 
 // TIID
 
-export const getEntregables = async (): Promise<Entregable[]> => {
-    // Note: Database might sore them differently, but assuming flat list matching type
-    return (await fetchWithFallback('entregables', mocks.entregables)) as Entregable[];
+// TIID & Sistemas Generics
+
+export const getEntregables = async (department: string = 'TIID'): Promise<Entregable[]> => {
+    const mock = department === 'Sistemas' ? mocks.entregablesSistemas : mocks.entregables;
+    return (await fetchWithFallback('entregables', mock, undefined, false, department)) as Entregable[];
 };
 
-export const getDocumentosDescarga = async (): Promise<DocumentoDescarga[]> => {
-    return (await fetchWithFallback('documentos_descarga', mocks.descargas)) as DocumentoDescarga[];
+export const getDocumentosDescarga = async (department: string = 'TIID'): Promise<DocumentoDescarga[]> => {
+    const mock = department === 'Sistemas' ? mocks.descargasSistemas : mocks.descargas;
+    return (await fetchWithFallback('documentos_descarga', mock, undefined, false, department)) as DocumentoDescarga[];
 };
 
-export const getEncargadoTutorias = async (): Promise<EncargadoTutoria> => {
-    // If table has multiple, we take the first active one, or just first one
-    const data = await fetchWithFallback('encargados_tutorias', [mocks.encargadoTutorias], undefined, true);
+export const getEncargadoTutorias = async (department: string = 'TIID'): Promise<EncargadoTutoria> => {
+    const mock = department === 'Sistemas' ? [mocks.encargadoTutoriasSistemas] : [mocks.encargadoTutorias];
+    const data = await fetchWithFallback('encargados_tutorias', mock, undefined, true, department);
     return data as EncargadoTutoria;
 };
 
-export const getCoordinaciones = async (): Promise<Coordinacion[]> => {
-    // Assuming table 'coordinaciones' has all of them.
-    // Mock has specific vars: coordinacionPI. 
-    // We might need to filter or return list. 
-    // The Page uses specific coordinations. For now, let's return the Mock Object wrapped in array if DB fails.
-    // In DB, 'coordinaciones' table should contain rows for 'Proyectos', etc.
-    // The page expects a specific structure. Let's assume we fetch all and find the right ones in the component, or genericize.
-    // For now, returning the mock single object as a list for compatibility if standard fetch is used.
-
-    // Actually, getCoordinacionPI is better.
-    return [mocks.coordinacionPI]; // Placeholder until generic logic is clearer
+export const getCoordinaciones = async (department: string = 'TIID'): Promise<Coordinacion[]> => {
+    const mock = department === 'Sistemas' ? [mocks.coordinacionPISistemas] : [mocks.coordinacionPI];
+    return (await fetchWithFallback('coordinaciones', mock, undefined, false, department)) as Coordinacion[];
 };
 
-export const getCoordinacionPI = async (): Promise<Coordinacion> => {
-    const data = await fetchWithFallback('coordinaciones', [mocks.coordinacionPI]);
-    return Array.isArray(data) ? data.find(c => c.title.includes('Proyectos')) || mocks.coordinacionPI : data as Coordinacion;
+export const getCoordinacionPI = async (department: string = 'TIID'): Promise<Coordinacion> => {
+    const mock = department === 'Sistemas' ? [mocks.coordinacionPISistemas] : [mocks.coordinacionPI];
+    const data = await fetchWithFallback('coordinaciones', mock, undefined, false, department);
+
+    // If fetching logic returns array, find the PI one, else return single/mock
+    if (Array.isArray(data)) {
+        return data.find(c => c.title.toLowerCase().includes('proyectos')) || mock[0];
+    }
+    return data as Coordinacion;
 };
 
-export const getCoordinacionTutores = async (): Promise<CoordinacionTutores> => {
-    const data = await fetchWithFallback('coordinaciones_tutores', [mocks.coordinacionTutores], undefined, true);
+export const getCoordinacionTutores = async (department: string = 'TIID'): Promise<CoordinacionTutores> => {
+    const mock = department === 'Sistemas' ? [mocks.coordinacionTutoresSistemas] : [mocks.coordinacionTutores];
+    const data = await fetchWithFallback('coordinaciones_tutores', mock, undefined, true, department);
     return data as CoordinacionTutores;
 };
 
-export const getRecursosGenericos = async (type: string): Promise<RecursoGenerico | null> => {
-    // This supports Casilleros, AltasBajas, etc. which might be single rows in a 'recursos_genericos' table
+export const getRecursosGenericos = async (type: string, department: string = 'TIID'): Promise<RecursoGenerico | null> => {
+    const mockCasilleros = department === 'Sistemas' ? mocks.casillerosDataSistemas : mocks.casillerosData;
+
+    // If type is not handled in mocks (like AltasBajas which is often just a link), return null if checking mocks
+    // But fetchWithFallback handles array of mocks. 
+    // We can simulate fetchWithFallback behavior manually or update fetchWithFallback to filter by two columns?
+    // fetchWithFallback only filters by department. 
+    // So we use Supabase directly for this specific query as it has 2 filters (type AND department)
+
     try {
         if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-            if (type === 'Casilleros') return mocks.casillerosData;
-            // Add other mock mappings if needed, or return null
+            if (type === 'Casilleros') return mockCasilleros;
             return null;
         }
 
@@ -116,26 +140,46 @@ export const getRecursosGenericos = async (type: string): Promise<RecursoGeneric
             .from('recursos_genericos')
             .select('*')
             .eq('type', type)
+            .eq('department', department)
             .single();
 
         if (error || !data) {
-            if (type === 'Casilleros') return mocks.casillerosData;
+            if (type === 'Casilleros') return mockCasilleros;
             return null;
         }
         return data as RecursoGenerico;
     } catch {
-        if (type === 'Casilleros') return mocks.casillerosData;
+        if (type === 'Casilleros') return mockCasilleros;
         return null;
     }
 };
 
-export const getCalendario = async (): Promise<CalendarioData> => {
-    const data = await fetchWithFallback('calendario_escolar', [mocks.calendarioData], undefined, true);
+export const getCalendario = async (department: string = 'TIID'): Promise<CalendarioData> => {
+    const mock = department === 'Sistemas' ? [mocks.calendarioDataSistemas] : [mocks.calendarioData];
+    const data = await fetchWithFallback('calendario_escolar', mock, undefined, true, department);
     return data as CalendarioData;
 };
 
-export const getLenguaExtranjera = async (): Promise<LenguaExtranjeraData> => {
-    const data = await fetchWithFallback('lengua_extranjera', [mocks.lenguaExtranjera], undefined, true);
-    return data as LenguaExtranjeraData;
+export const getLenguaExtranjera = async (department: string = 'TIID'): Promise<LenguaExtranjeraData> => {
+    const mock = department === 'Sistemas' ? [mocks.lenguaExtranjeraSistemas] : [mocks.lenguaExtranjera];
+    const rawData = await fetchWithFallback('lengua_extranjera', mock, undefined, true, department);
+
+    if (!rawData) return mock[0];
+
+    // Map DB flat structure to nested object if necessary
+    const r = rawData as any;
+    // Check if it has DB specific columns
+    if ('report_name' in r) {
+        return {
+            title: r.title,
+            reports: {
+                name: r.report_name,
+                correo: r.report_email
+            },
+            requestLink: r.request_link
+        } as LenguaExtranjeraData;
+    }
+
+    return rawData as LenguaExtranjeraData;
 };
 

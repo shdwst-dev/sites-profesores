@@ -42,12 +42,12 @@ export default function SistemasRecursosAvisos() {
         const loadData = async () => {
             try {
                 const [encargado, pi, calendario, lengua, casilleros, altasBajas] = await Promise.all([
-                    getEncargadoTutorias(),
-                    getCoordinacionPI(),
-                    getCalendario(),
-                    getLenguaExtranjera(),
-                    getRecursosGenericos('Casilleros'),
-                    getRecursosGenericos('AltasBajas')
+                    getEncargadoTutorias('Sistemas'),
+                    getCoordinacionPI('Sistemas'),
+                    getCalendario('Sistemas'),
+                    getLenguaExtranjera('Sistemas'),
+                    getRecursosGenericos('Casilleros', 'Sistemas'),
+                    getRecursosGenericos('AltasBajas', 'Sistemas')
                 ]);
 
                 setEncargadoTutorias(encargado);
