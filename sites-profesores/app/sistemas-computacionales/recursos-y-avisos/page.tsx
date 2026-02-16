@@ -71,20 +71,34 @@ export default function SistemasRecursosAvisos() {
             setShowScrollTop(window.scrollY > 300);
 
             const sections = ['encargado', 'estancias', 'proyectos', 'etc', 'calendario', 'altasbajas', 'lengua', 'casilleros'];
+            const candidates: string[] = [];
+
             for (const id of sections) {
                 const el = document.getElementById(id);
                 if (el) {
                     const rect = el.getBoundingClientRect();
                     if (rect.top >= 0 && rect.top <= 300) {
-                        setActiveSection(id);
-                        break;
+                        candidates.push(id);
                     }
                 }
             }
+
+            if (candidates.length > 0) {
+                setActiveSection(prev => {
+                    if (candidates.includes(prev)) return prev;
+                    return candidates[0];
+                });
+            }
         };
+
+        handleScroll();
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [loading]);
+
+    const handleSectionClick = (id: string, e: React.MouseEvent) => {
+        setActiveSection(id);
+    };
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -105,7 +119,7 @@ export default function SistemasRecursosAvisos() {
         <div className="min-h-screen w-full flex flex-col bg-[#0f172a] selection:bg-rose-500/30">
             <SubHeader
                 title="Recursos y Avisos"
-                subtitle="Sistemas - Información Académica"
+                subtitle={activeSection ? sections.find(s => s.id === activeSection)?.label : "Sistemas - Información Académica"}
                 accentColor="#431d2a"
                 backPath="/sistemas-computacionales"
             />
@@ -122,6 +136,7 @@ export default function SistemasRecursosAvisos() {
                                     <a
                                         key={s.id}
                                         href={`#${s.id}`}
+                                        onClick={(e) => handleSectionClick(s.id, e)}
                                         className={`
                                             flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 group
                                             ${activeSection === s.id ? 'bg-rose-700 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}
@@ -415,7 +430,10 @@ export default function SistemasRecursosAvisos() {
                                         <a
                                             key={s.id}
                                             href={`#${s.id}`}
-                                            onClick={() => setMenuOpen(false)}
+                                            onClick={(e) => {
+                                                setMenuOpen(false);
+                                                handleSectionClick(s.id, e);
+                                            }}
                                             className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl text-gray-300 font-bold hover:bg-rose-600 hover:text-white transition-all"
                                         >
                                             <Icon size={20} />

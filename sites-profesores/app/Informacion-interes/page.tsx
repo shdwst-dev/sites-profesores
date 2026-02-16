@@ -63,23 +63,44 @@ export default function InfoPage() {
             setShowScrollTop(window.scrollY > 300);
 
             const sections = ['comunicados', 'tramites', 'tutores', 'fechas', 'contactos'];
+            const candidates: string[] = [];
+
             for (const id of sections) {
                 const el = document.getElementById(id);
                 if (el) {
                     const rect = el.getBoundingClientRect();
+                    // Check if section header is in the viewport "activation zone"
                     if (rect.top >= 0 && rect.top <= 300) {
-                        setActiveSection(id);
-                        break;
+                        candidates.push(id);
                     }
                 }
             }
+
+            if (candidates.length > 0) {
+                setActiveSection(prev => {
+                    // Hysteresis: If current active section is still a candidate, keep it.
+                    // This prevents jumping between side-by-side sections like Comunicados and Fechas.
+                    if (candidates.includes(prev)) return prev;
+                    return candidates[0];
+                });
+            }
         };
+
+        // Initial check to set active section on load
+        handleScroll();
+
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [loading]); // Re-run when data loads and layout stabilizes
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleSectionClick = (id: string, e: React.MouseEvent) => {
+        // e.preventDefault(); // Default anchor behavior is good for accessibility/history, but strictly not needed if we want custom scroll. 
+        // Allowing default behavior handles the scroll. We just need to update state.
+        setActiveSection(id);
     };
 
     const sections = [
@@ -104,7 +125,7 @@ export default function InfoPage() {
         <div className="min-h-screen flex flex-col bg-[#0f172a]">
             <SubHeader
                 title="Información de Interés"
-                subtitle="Comunicados y Fechas"
+                subtitle={activeSection ? sections.find(s => s.id === activeSection)?.label : "Comunicados y Fechas"}
                 accentColor="#1e3a5f"
                 backPath="/home"
             />
@@ -121,6 +142,7 @@ export default function InfoPage() {
                                     <a
                                         key={s.id}
                                         href={`#${s.id}`}
+                                        onClick={(e) => handleSectionClick(s.id, e)}
                                         className={`
                                             flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 group
                                             ${activeSection === s.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}
@@ -360,7 +382,10 @@ export default function InfoPage() {
                                     <a
                                         key={s.id}
                                         href={`#${s.id}`}
-                                        onClick={() => setMenuOpen(false)}
+                                        onClick={(e) => {
+                                            setMenuOpen(false);
+                                            handleSectionClick(s.id, e);
+                                        }}
                                         className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl text-gray-300 font-bold hover:bg-indigo-600 hover:text-white transition-all"
                                     >
                                         <Icon size={20} />
