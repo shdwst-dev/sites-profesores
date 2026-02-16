@@ -9,6 +9,7 @@ import SubHeader from '@/components/SubHeader';
 import {
     getEncargadoTutorias,
     getCoordinacionPI,
+    getCoordinacionEstancias,
     getCoordinacionTutores,
     getRecursosGenericos,
     getCalendario,
@@ -32,6 +33,7 @@ export default function TIIDRecursosAvisos() {
     // Data State
     const [encargadoTutorias, setEncargadoTutorias] = useState<EncargadoTutoria | null>(null);
     const [coordinacionPI, setCoordinacionPI] = useState<Coordinacion | null>(null);
+    const [coordinacionEstancias, setCoordinacionEstancias] = useState<Coordinacion | null>(null);
     const [coordinacionTutores, setCoordinacionTutores] = useState<CoordinacionTutores | null>(null);
     const [casillerosData, setCasillerosData] = useState<RecursoGenerico | null>(null);
     const [altasBajasLink, setAltasBajasLink] = useState<string>('');
@@ -43,9 +45,10 @@ export default function TIIDRecursosAvisos() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [encargado, pi, tutores, casilleros, calendario, lengua] = await Promise.all([
+                const [encargado, pi, estancias, tutores, casilleros, calendario, lengua] = await Promise.all([
                     getEncargadoTutorias(),
                     getCoordinacionPI(),
+                    getCoordinacionEstancias(),
                     getCoordinacionTutores(),
                     getRecursosGenericos('Casilleros'),
                     getCalendario(),
@@ -54,6 +57,7 @@ export default function TIIDRecursosAvisos() {
 
                 setEncargadoTutorias(encargado);
                 setCoordinacionPI(pi);
+                setCoordinacionEstancias(estancias);
                 setCoordinacionTutores(tutores);
                 setCasillerosData(casilleros);
                 setCalendarioData(calendario);
@@ -216,9 +220,11 @@ export default function TIIDRecursosAvisos() {
 
                     {/* Section: Coordinaciones */}
                     <section id="coordinaciones" className="scroll-mt-32 space-y-12">
+                        {/* Proyecto integrador */}
+                        {/* Proyecto integrador */}
                         {coordinacionPI && (
-                            <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-gray-100">
-                                <div className="md:w-1/2 relative min-h-[300px] bg-slate-50 border-r border-gray-50">
+                            <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-gray-100 group">
+                                <div className="md:w-1/2 relative min-h-[300px] bg-slate-50 border-b md:border-b-0 md:border-r border-gray-50">
                                     <Image
                                         src={coordinacionPI.image}
                                         alt="Logo Proyectos"
@@ -237,10 +243,35 @@ export default function TIIDRecursosAvisos() {
                                 </div>
                             </div>
                         )}
+                        {/* Estancias y estadías */}
+                        {coordinacionEstancias && (
+                            <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col-reverse md:flex-row border border-gray-100 group">
+                                <div className="md:w-1/2 p-10 flex flex-col justify-center bg-white">
+                                    <span className="text-indigo-600 font-black text-[10px] uppercase tracking-widest mb-3 block">Vinculación Académica</span>
+                                    <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tighter leading-tight">{coordinacionEstancias.title}</h3>
+                                    <p className="text-slate-700 font-bold text-lg mb-6">{coordinacionEstancias.name}</p>
+                                    {coordinacionEstancias.correo && (
+                                        <a href={`mailto:${coordinacionEstancias.correo}`} className="inline-flex items-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest hover:gap-4 transition-all">
+                                            <Mail size={14} /> {coordinacionEstancias.correo} <ChevronRight size={14} />
+                                        </a>
+                                    )}
+                                </div>
+                                <div className="md:w-1/2 relative min-h-[300px] bg-slate-50 border-b md:border-b-0 md:border-l border-gray-50">
+                                    <Image
+                                        src={coordinacionEstancias.image}
+                                        alt="Logo Estancias"
+                                        unoptimized
+                                        fill
+                                        className="p-8 object-contain group-hover:scale-105 transition-transform duration-700"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
 
                         {coordinacionTutores && (
-                            <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-white/5">
-                                <div className="md:w-1/2 flex flex-col justify-center p-10 order-2 md:order-1">
+                            <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-white/5">
+                                <div className="lg:w-2/5 flex flex-col justify-center p-10 relative">
                                     <span className="text-indigo-400 font-black text-[10px] uppercase tracking-widest mb-3 block">Asignación Académica</span>
                                     <h3 className="text-4xl font-black text-white mb-2 tracking-tighter uppercase">{coordinacionTutores.title}</h3>
                                     <h4 className="text-xl font-bold text-indigo-400 mb-8 opacity-80">{coordinacionTutores.period}</h4>
@@ -251,15 +282,40 @@ export default function TIIDRecursosAvisos() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="md:w-1/2 relative min-h-[300px] bg-white order-1 md:order-2 overflow-hidden">
-                                    <Image
-                                        src={coordinacionTutores.image}
-                                        alt="Tabla de Tutores TIID"
-                                        unoptimized
-                                        fill
-                                        className="object-cover md:object-contain p-4 group-hover:scale-110 transition-transform duration-700"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-slate-900/10"></div>
+                                <div className={`lg:w-3/5 relative flex flex-col ${coordinacionTutores.tutors ? 'bg-slate-900/50' : 'bg-white min-h-[300px]'}`}>
+                                    {coordinacionTutores.tutors ? (
+                                        <div className="flex-1 w-full overflow-x-auto">
+                                            <table className="w-full text-left border-collapse">
+                                                <thead>
+                                                    <tr className="bg-indigo-500/20">
+                                                        <th className="p-6 text-base font-black uppercase tracking-widest border-b border-indigo-500/50 w-32 sticky top-0 backdrop-blur-sm z-10 text-indigo-200">Grupo</th>
+                                                        <th className="p-6 text-base font-black uppercase tracking-widest border-b border-indigo-500/50 sticky top-0 backdrop-blur-sm z-10 text-indigo-200">Tutor/a</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-white/5">
+                                                    {coordinacionTutores.tutors.map((t, idx) => (
+                                                        <tr key={idx} className="hover:bg-white/5 transition-colors group">
+                                                            <td className="p-6 text-white font-bold text-sm border-r border-white/5">{t.group}</td>
+                                                            <td className="p-6 text-gray-300 font-medium text-sm group-hover:text-white transition-colors">{t.tutor}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        coordinacionTutores.image && (
+                                            <>
+                                                <Image
+                                                    src={coordinacionTutores.image}
+                                                    alt="Tabla de Tutores TIID"
+                                                    unoptimized
+                                                    fill
+                                                    className="object-cover md:object-contain p-4 group-hover:scale-110 transition-transform duration-700"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-slate-900/10 pointer-events-none"></div>
+                                            </>
+                                        )
+                                    )}
                                 </div>
                             </div>
                         )}

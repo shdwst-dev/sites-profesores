@@ -167,17 +167,17 @@ export default function TIIDFormatosDocumentos() {
                         <div className="lg:col-span-2 bg-gradient-to-br from-indigo-900/40 to-slate-900/40 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-sm relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
                             <h2 className="text-3xl font-black text-white mb-6 uppercase tracking-tight">
-                                Gestión de <span className="text-indigo-400">Entregables</span>
+                                Guía de <span className="text-indigo-400">Uso</span>
                             </h2>
                             <p className="text-gray-400 font-medium mb-8 max-w-2xl leading-relaxed">
-                                Asegúrese de cargar sus documentos en los formatos correctos (PDF preferentemente). Cada sección tiene fechas límites estrictas que deben respetarse para el correcto seguimiento académico.
+                                Por favor, asegúrese de cargar sus documentos en los formatos correctos (PDF preferentemente). Cada sección tiene fechas límites estrictas que deben respetarse para el correcto seguimiento académico.
                             </p>
 
                             <div className="grid sm:grid-cols-3 gap-4">
                                 {[
-                                    { step: '01', title: 'Seleccionar', desc: 'Elige tus archivos locales.' },
-                                    { step: '02', title: 'Verificar', desc: 'Revisa nombres y formatos.' },
-                                    { step: '03', title: 'Cargar', desc: 'Sube a la nube de Drive.' }
+                                    { step: 'Paso 1', title: 'Seleccionar', desc: 'Elige tus archivos locales.' },
+                                    { step: 'Paso 2', title: 'Verificar', desc: 'Revisar los nombres y formatos de los archivos.' },
+                                    { step: 'Paso 3', title: 'Cargar', desc: 'El archivo se sube a la nube de Drive.' }
                                 ].map((s) => (
                                     <div key={s.step} className="bg-white/5 border border-white/10 rounded-2xl p-4">
                                         <span className="text-indigo-500 font-black text-xl mb-2 block">{s.step}</span>
@@ -196,12 +196,6 @@ export default function TIIDFormatosDocumentos() {
                             <p className="text-slate-600 font-medium text-sm leading-relaxed mb-6">
                                 Los archivos se sincronizan automáticamente con la carpeta compartida de la coordinación. No es necesario enviar correos de confirmación.
                             </p>
-                            <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></div>
-                                    <span className="text-indigo-900 font-bold text-xs uppercase tracking-widest">Sincronización Activa</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
 

@@ -67,12 +67,18 @@ export interface Coordinacion {
   correo: string;
 }
 
+export interface TutorGroup {
+  group: string;
+  tutor: string;
+}
+
 export interface CoordinacionTutores {
   id: string | number;
-  image: string;
+  image?: string;
   title: string;
   period: string; // 'Enero-Abril 2026'
   note?: string;
+  tutors?: TutorGroup[];
 }
 
 export interface RecursoGenerico {

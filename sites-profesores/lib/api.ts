@@ -31,7 +31,7 @@ async function fetchWithFallback<T>(
         const { data, error } = await query;
 
         if (error) {
-            console.error(`Error fetching ${tableName}:`, error);
+            console.warn(`Error fetching ${tableName}:`, error);
             // Return mock if error, but cast to T[] or T correctly
             if (single) {
                 return Array.isArray(mockData) ? mockData[0] : mockData;
@@ -115,10 +115,32 @@ export const getCoordinacionPI = async (department: string = 'TIID'): Promise<Co
     return data as Coordinacion;
 };
 
+export const getCoordinacionEstancias = async (department: string = 'TIID'): Promise<Coordinacion> => {
+    const mock = department === 'Sistemas' ? [mocks.coordinacionEstanciasSistemas] : [mocks.coordinacionEstancias];
+    const data = await fetchWithFallback('coordinaciones_estancias', mock, undefined, false, department);
+
+    // Similar handling if it returns an array
+    if (Array.isArray(data)) {
+        return data[0] || mock[0];
+    }
+    return data as Coordinacion;
+};
+
 export const getCoordinacionTutores = async (department: string = 'TIID'): Promise<CoordinacionTutores> => {
     const mock = department === 'Sistemas' ? [mocks.coordinacionTutoresSistemas] : [mocks.coordinacionTutores];
     const data = await fetchWithFallback('coordinaciones_tutores', mock, undefined, true, department);
-    return data as CoordinacionTutores;
+
+    // Fallback merge: If DB returns data but lacks 'tutors' (because DB schema isn't updated yet),
+    // use the local mock tutors to ensure the table renders as requested.
+    const result = data as CoordinacionTutores;
+    if (result && !result.tutors && mock[0].tutors) {
+        return {
+            ...result,
+            tutors: mock[0].tutors
+        };
+    }
+
+    return result;
 };
 
 export const getRecursosGenericos = async (type: string, department: string = 'TIID'): Promise<RecursoGenerico | null> => {

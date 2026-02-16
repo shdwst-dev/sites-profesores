@@ -165,17 +165,17 @@ export default function SistemasFormatosDocumentos() {
                         <div className="lg:col-span-2 bg-gradient-to-br from-rose-900/40 to-slate-900/40 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-sm relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
                             <h2 className="text-3xl font-black text-white mb-6 uppercase tracking-tight">
-                                Gestión de <span className="text-rose-400">Entregables</span>
+                                Guía de <span className="text-rose-400">Uso</span>
                             </h2>
                             <p className="text-gray-400 font-medium mb-8 max-w-2xl leading-relaxed">
-                                Plataforma oficial para la carga de documentación de la carrera de Sistemas Computacionales. Por favor, asegúrese de que sus archivos sigan la nomenclatura institucional.
+                                Por favor, asegúrese de cargar sus documentos en los formatos correctos (PDF preferentemente). Cada sección tiene fechas límites estrictas que deben respetarse para el correcto seguimiento académico.
                             </p>
 
                             <div className="grid sm:grid-cols-3 gap-4">
                                 {[
-                                    { step: '01', title: 'Seleccionar', desc: 'Elige tus archivos locales.' },
-                                    { step: '02', title: 'Verificar', desc: 'Revisa nombres y formatos.' },
-                                    { step: '03', title: 'Cargar', desc: 'Sube a la nube de Drive.' }
+                                    { step: 'Paso 1', title: 'Seleccionar', desc: 'Elige tus archivos locales.' },
+                                    { step: 'Paso 2', title: 'Verificar', desc: 'Revisar los nombres y formatos de los archivos.' },
+                                    { step: 'Paso 3', title: 'Cargar', desc: 'El archivo se sube a la nube de Drive.' }
                                 ].map((s) => (
                                     <div key={s.step} className="bg-white/5 border border-white/10 rounded-2xl p-4">
                                         <span className="text-rose-500 font-black text-xl mb-2 block">{s.step}</span>
@@ -190,16 +190,10 @@ export default function SistemasFormatosDocumentos() {
                             <div className="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center mb-6">
                                 <Info className="text-rose-600" size={24} />
                             </div>
-                            <h3 className="text-xl font-black text-slate-900 mb-4 tracking-tighter uppercase">Guía de Uso</h3>
+                            <h3 className="text-xl font-black text-slate-900 mb-4 tracking-tighter uppercase">Nota importante</h3>
                             <p className="text-slate-600 font-medium text-sm leading-relaxed mb-6">
-                                Todos los formatos descargables están actualizados al ciclo Enero-Abril 2026. Verifique la vigencia antes de imprimir.
+                                Los archivos se sincronizan automáticamente con la carpeta compartida de la coordinación. No es necesario enviar correos de confirmación.
                             </p>
-                            <div className="p-4 bg-rose-50 rounded-2xl border border-rose-100">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-2 h-2 bg-rose-600 rounded-full animate-pulse"></div>
-                                    <span className="text-rose-900 font-bold text-xs uppercase tracking-widest">Servidor Operativo</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
 

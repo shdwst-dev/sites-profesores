@@ -130,12 +130,29 @@ export const coordinacionPI: Coordinacion = {
     image: '/coordinacionPI.png'
 };
 
+export const coordinacionEstancias: Coordinacion = {
+    id: 2,
+    title: 'Estancias y Estadías',
+    name: 'Coordinación',
+    correo: 'estancias@upq.mx', // Placeholder, using generic if unknown
+    image: '/coordinacionEstanciasEstadias.jpg'
+};
+
 export const coordinacionTutores: CoordinacionTutores = {
     id: 1,
     title: 'TUTORES',
     period: 'ENERO-ABRIL 2026',
     image: '/tutores-tiid.jpg',
-    note: 'Consulte la tabla lateral para identificar a los docentes asignados a cada grupo de TIID.'
+    note: 'Consulte la tabla lateral para identificar a los docentes asignados a cada grupo de TIID.',
+    tutors: [
+        { group: 'TIID-211', tutor: 'Ana Laura Lira Cortes' },
+        { group: 'TIID-212', tutor: 'Adela Becerra Chávez' },
+        { group: 'TIID-213', tutor: 'Cecilia Alvarado Salayandia' },
+        { group: 'TIID-214', tutor: 'Adela Becerra Chávez' },
+        { group: 'TIID-215', tutor: 'Cecilia Alvarado Salayandia' },
+        { group: 'TIID-216', tutor: 'Villa Tiburcio José Francisco' },
+        { group: 'TIID-217', tutor: 'Villa Tiburcio José Francisco' }
+    ]
 };
 
 export const altasBajasLink = 'https://forms.gle/6mzeEmkYbU2MboKBA';
