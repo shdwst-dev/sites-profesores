@@ -166,11 +166,6 @@ export default function InfoPage() {
                                             </div>
                                             <h3 className="mb-3 text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">{comm.title}</h3>
                                             <p className="text-gray-600 leading-relaxed">{comm.description}</p>
-                                            <div className="mt-4 pt-4 border-t border-gray-50 flex justify-end">
-                                                <button className="text-blue-600 font-bold text-sm flex items-center gap-1 hover:underline group/btn">
-                                                    Leer más <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                                                </button>
-                                            </div>
                                         </div>
                                     ))}
                                     {loading && comunicados.length === 0 && (
