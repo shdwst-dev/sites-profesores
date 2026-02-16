@@ -74,7 +74,7 @@ INSERT INTO coordinaciones (title, name, correo, image, department) VALUES
 -- 7. Coordinaciones Tutores
 INSERT INTO coordinaciones_tutores (title, period, note, image, department) VALUES
 ('TUTORES', 'ENERO-ABRIL 2026', 'Consulte la tabla lateral para identificar a los docentes asignados a cada grupo de TIID.', '/tutores-tiid.jpg', 'TIID'),
-('Acción Tutorial', 'ENERO-ABRIL 2026', 'Coordinación / Gestión de Docentes', '/coordinacionTutorias.jpg', 'Sistemas');
+('Tutores', 'ENERO-ABRIL 2026', 'Coordinación / Gestión de Docentes', '/coordinacionTutorias.jpg', 'Sistemas');
 
 -- 8. Calendario Escolar
 INSERT INTO calendario_escolar (cycle, image, department) VALUES

@@ -11,6 +11,8 @@ import Link from 'next/link';
 import {
     getEncargadoTutorias,
     getCoordinacionPI,
+    getCoordinacionEstancias,
+    getCoordinacionTutores,
     getRecursosGenericos,
     getCalendario,
     getLenguaExtranjera
@@ -18,6 +20,7 @@ import {
 import {
     EncargadoTutoria,
     Coordinacion,
+    CoordinacionTutores,
     RecursoGenerico,
     CalendarioData,
     LenguaExtranjeraData
@@ -32,6 +35,8 @@ export default function SistemasRecursosAvisos() {
     // Data State
     const [encargadoTutorias, setEncargadoTutorias] = useState<EncargadoTutoria | null>(null);
     const [coordinacionPI, setCoordinacionPI] = useState<Coordinacion | null>(null);
+    const [coordinacionEstancias, setCoordinacionEstancias] = useState<Coordinacion | null>(null);
+    const [coordinacionTutores, setCoordinacionTutores] = useState<CoordinacionTutores | null>(null);
     const [calendarioData, setCalendarioData] = useState<CalendarioData | null>(null);
     const [lenguaExtranjera, setLenguaExtranjera] = useState<LenguaExtranjeraData | null>(null);
     const [casillerosData, setCasillerosData] = useState<RecursoGenerico | null>(null);
@@ -41,9 +46,11 @@ export default function SistemasRecursosAvisos() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [encargado, pi, calendario, lengua, casilleros, altasBajas] = await Promise.all([
+                const [encargado, pi, estancias, tutores, calendario, lengua, casilleros, altasBajas] = await Promise.all([
                     getEncargadoTutorias('Sistemas'),
                     getCoordinacionPI('Sistemas'),
+                    getCoordinacionEstancias('Sistemas'),
+                    getCoordinacionTutores('Sistemas'),
                     getCalendario('Sistemas'),
                     getLenguaExtranjera('Sistemas'),
                     getRecursosGenericos('Casilleros', 'Sistemas'),
@@ -52,6 +59,8 @@ export default function SistemasRecursosAvisos() {
 
                 setEncargadoTutorias(encargado);
                 setCoordinacionPI(pi);
+                setCoordinacionEstancias(estancias);
+                setCoordinacionTutores(tutores);
                 setCalendarioData(calendario);
                 setLenguaExtranjera(lengua);
                 setCasillerosData(casilleros);
@@ -70,7 +79,7 @@ export default function SistemasRecursosAvisos() {
         const handleScroll = () => {
             setShowScrollTop(window.scrollY > 300);
 
-            const sections = ['encargado', 'estancias', 'proyectos', 'etc', 'calendario', 'altasbajas', 'lengua', 'casilleros'];
+            const sections = ['encargado', 'coordinaciones', 'recursamientos', 'altasbajas', 'etc', 'calendario', 'lengua', 'casilleros'];
             const candidates: string[] = [];
 
             for (const id of sections) {
@@ -105,13 +114,13 @@ export default function SistemasRecursosAvisos() {
     };
 
     const sections = [
-        { id: 'encargado', label: 'Encargada Tutorías', icon: Users },
-        { id: 'estancias', label: 'Estancias y Estadías', icon: Briefcase },
-        { id: 'proyectos', label: 'Proyectos Integradores', icon: LayoutGrid },
-        { id: 'etc', label: 'Criterios ETC', icon: Info },
-        { id: 'calendario', label: 'Calendario', icon: Calendar },
+        { id: 'encargado', label: 'Encargada de Tutorías', icon: Users },
+        { id: 'coordinaciones', label: 'Coordinaciones', icon: LayoutGrid },
+        { id: 'recursamientos', label: 'Recursamientos', icon: AlertCircle },
         { id: 'altasbajas', label: 'Altas y Bajas', icon: BookOpen },
-        { id: 'lengua', label: 'Inglés', icon: GraduationCap },
+        { id: 'etc', label: 'Criterios ETC', icon: Info },
+        { id: 'calendario', label: 'Calendario Escolar', icon: Calendar },
+        { id: 'lengua', label: 'Lengua Extranjera', icon: GraduationCap },
         { id: 'casilleros', label: 'Casilleros', icon: MapPin },
     ];
 
@@ -192,119 +201,158 @@ export default function SistemasRecursosAvisos() {
                         </section>
                     )}
 
-                    {/* Section: Estancias y Estadías / Tutorías */}
-                    <section id="estancias" className="scroll-mt-32 grid md:grid-cols-2 gap-8">
-                        <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-gray-100 flex flex-col items-center text-center group">
-                            <div className="relative w-full h-48 mb-6 rounded-2xl overflow-hidden bg-rose-50 border border-rose-100 p-4">
-                                <Image
-                                    src="/coordinacionEstanciasEstadias.jpg"
-                                    alt="Estancias"
-                                    unoptimized
-                                    fill
-                                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-                                />
-                            </div>
-                            <h3 className="text-lg font-black text-slate-900 mb-2 uppercase tracking-tighter">Estancias y Estadías</h3>
-                            <p className="text-slate-500 text-xs font-bold mb-4 uppercase">Coordinación</p>
-                            <p className="text-rose-700 font-bold text-sm">Responsable de Vinculación</p>
-                        </div>
-
-                        <div className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-gray-100 flex flex-col items-center text-center group">
-                            <div className="relative w-full h-48 mb-6 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 p-4">
-                                <Image
-                                    src="/coordinacionTutorias.jpg"
-                                    alt="Tutorías"
-                                    unoptimized
-                                    fill
-                                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-                                />
-                            </div>
-                            <h3 className="text-lg font-black text-slate-900 mb-2 uppercase tracking-tighter">Acción Tutorial</h3>
-                            <p className="text-slate-500 text-xs font-bold mb-4 uppercase">Coordinación</p>
-                            <p className="text-slate-700 font-bold text-sm">Gestión de Docentes</p>
-                        </div>
-                    </section>
-
-                    {/* Section: Proyectos Integradores */}
-                    {/* Section: Proyectos Integradores */}
-                    {coordinacionPI && (
-                        <section id="proyectos" className="scroll-mt-32">
-                            <div className="bg-gradient-to-br from-rose-900 to-slate-900 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-white/10 group">
-                                <div className="md:w-1/2 relative min-h-[400px] bg-white group-hover:scale-[1.02] transition-transform duration-1000">
+                    {/* Section: Coordinaciones */}
+                    <section id="coordinaciones" className="scroll-mt-32 space-y-12">
+                        {/* Proyecto integrador */}
+                        {coordinacionPI && (
+                            <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row border border-gray-100 group">
+                                <div className="md:w-1/2 relative min-h-[300px] bg-rose-50 border-b md:border-b-0 md:border-r border-gray-50">
                                     <Image
                                         src={coordinacionPI.image}
                                         alt="Logo Proyectos"
                                         unoptimized
                                         fill
-                                        className="p-12 object-contain"
+                                        className="p-8 object-contain group-hover:scale-105 transition-transform duration-700"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-rose-900/10"></div>
                                 </div>
-                                <div className="md:w-1/2 p-12 flex flex-col justify-center">
-                                    <span className="text-rose-400 font-black text-[10px] uppercase tracking-[0.3em] mb-4 block">Coordinación General</span>
-                                    <h3 className="text-3xl font-black text-white mb-6 leading-tight uppercase tracking-tighter">{coordinacionPI.title}</h3>
-                                    <p className="text-white font-bold text-xl mb-6">{coordinacionPI.name}</p>
-                                    <div className="space-y-4">
-                                        <a href={`mailto:${coordinacionPI.correo}`} className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 border border-white/10 rounded-2xl text-white font-bold text-xs hover:bg-white hover:text-rose-900 transition-all">
-                                            <Mail size={14} /> Enviar Mensaje
-                                        </a>
-                                    </div>
+                                <div className="md:w-1/2 p-10 flex flex-col justify-center bg-white">
+                                    <span className="text-rose-600 font-black text-[10px] uppercase tracking-widest mb-3 block">Innovación & Calidad</span>
+                                    <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tighter leading-tight">{coordinacionPI.title}</h3>
+                                    <p className="text-slate-700 font-bold text-lg mb-6">{coordinacionPI.name}</p>
+                                    <a href={`mailto:${coordinacionPI.correo}`} className="inline-flex items-center gap-2 text-rose-600 font-black text-xs uppercase tracking-widest hover:gap-4 transition-all">
+                                        <Mail size={14} /> {coordinacionPI.correo} <ChevronRight size={14} />
+                                    </a>
                                 </div>
                             </div>
-                        </section>
-                    )}
+                        )}
 
-                    {/* Section: ETC */}
-                    <section id="etc" className="scroll-mt-32">
-                        <div className="bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-[3rem] p-12 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-3xl"></div>
-                            <div className="flex flex-col md:flex-row gap-12 items-center">
-                                <div className="md:w-1/3">
-                                    <div className="p-6 bg-rose-700/20 border border-rose-500/30 rounded-[2rem] w-fit mb-6">
-                                        <Info className="text-rose-400" size={32} />
-                                    </div>
-                                    <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-4">Criterios <br />de <span className="text-rose-400">ETC</span></h2>
-                                    <p className="text-gray-400 text-sm font-medium leading-relaxed">Lineamientos obligatorios para la Evaluación a Título de Competencia en Sistemas.</p>
+                        {/* Estancias y estadías */}
+                        {coordinacionEstancias && (
+                            <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col-reverse md:flex-row border border-gray-100 group">
+                                <div className="md:w-1/2 p-10 flex flex-col justify-center bg-white">
+                                    <span className="text-rose-600 font-black text-[10px] uppercase tracking-widest mb-3 block">Vinculación Académica</span>
+                                    <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tighter leading-tight">{coordinacionEstancias.title}</h3>
+                                    <p className="text-slate-700 font-bold text-lg mb-6">{coordinacionEstancias.name}</p>
+                                    {coordinacionEstancias.correo && (
+                                        <a href={`mailto:${coordinacionEstancias.correo}`} className="inline-flex items-center gap-2 text-rose-600 font-black text-xs uppercase tracking-widest hover:gap-4 transition-all">
+                                            <Mail size={14} /> {coordinacionEstancias.correo} <ChevronRight size={14} />
+                                        </a>
+                                    )}
                                 </div>
-                                <div className="md:w-2/3 grid gap-4">
+                                <div className="md:w-1/2 relative min-h-[300px] bg-rose-50 border-b md:border-b-0 md:border-l border-gray-50">
+                                    <Image
+                                        src={coordinacionEstancias.image}
+                                        alt="Logo Estancias"
+                                        unoptimized
+                                        fill
+                                        className="p-8 object-contain group-hover:scale-105 transition-transform duration-700"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tutores Table */}
+                        {coordinacionTutores && (
+                            <div className="bg-gradient-to-br from-slate-900 to-rose-950 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-white/5">
+                                <div className="lg:w-2/5 flex flex-col justify-center p-10 relative">
+                                    <span className="text-rose-400 font-black text-[10px] uppercase tracking-widest mb-3 block">Asignación Académica</span>
+                                    <h3 className="text-4xl font-black text-white mb-2 tracking-tighter uppercase">{coordinacionTutores.title}</h3>
+                                    <h4 className="text-xl font-bold text-rose-400 mb-8 opacity-80">{coordinacionTutores.period}</h4>
+                                    <div className="space-y-4">
+                                        <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                            <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Nota</p>
+                                            <p className="text-white font-medium text-sm leading-relaxed">{coordinacionTutores.note}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={`lg:w-3/5 relative flex flex-col ${coordinacionTutores.tutors ? 'bg-slate-900/50' : 'bg-white min-h-[300px]'}`}>
+                                    {coordinacionTutores.tutors ? (
+                                        <div className="flex-1 w-full overflow-x-auto">
+                                            <table className="w-full text-left border-collapse">
+                                                <thead>
+                                                    <tr className="bg-rose-500/20">
+                                                        <th className="p-6 text-base font-black uppercase tracking-widest border-b border-rose-500/50 w-32 sticky top-0 backdrop-blur-sm z-10 text-rose-200">Grupo</th>
+                                                        <th className="p-6 text-base font-black uppercase tracking-widest border-b border-rose-500/50 sticky top-0 backdrop-blur-sm z-10 text-rose-200">Tutor/a</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-white/5">
+                                                    {coordinacionTutores.tutors.map((t, idx) => (
+                                                        <tr key={idx} className="hover:bg-white/5 transition-colors group">
+                                                            <td className="p-6 text-white font-bold text-sm border-r border-white/5">{t.group}</td>
+                                                            <td className="p-6 text-gray-300 font-medium text-sm group-hover:text-white transition-colors">{t.tutor}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        coordinacionTutores.image && (
+                                            <>
+                                                <Image
+                                                    src={coordinacionTutores.image}
+                                                    alt="Tabla de Tutores Sistemas"
+                                                    unoptimized
+                                                    fill
+                                                    className="object-cover md:object-contain p-4 group-hover:scale-110 transition-transform duration-700"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-slate-900/10 pointer-events-none"></div>
+                                            </>
+                                        )
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </section>
+
+                    {/* Section: Recursamientos */}
+                    <section id="recursamientos" className="scroll-mt-32">
+                        <div className="p-10 bg-rose-600 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+                            {/* Background Decoration */}
+                            <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-white/10 rounded-full blur-[80px] group-hover:scale-110 transition-transform duration-1000"></div>
+
+                            <div className="relative z-10 flex flex-col md:flex-row gap-12">
+                                <div className="md:w-1/2">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+                                        <AlertCircle size={14} /> Atención Académica
+                                    </div>
+                                    <h2 className="text-4xl font-black text-white mb-6 uppercase tracking-tighter leading-none">Proceso de <br /><span className="text-rose-200">Recursamientos</span></h2>
+                                    <p className="text-rose-100 font-medium leading-relaxed mb-8">
+                                        Para aquellos alumnos que requieren retomar asignaturas, se ha establecido un calendario y normativa específica.
+                                    </p>
+
+                                    <div className="space-y-6">
+                                        <div className="bg-white/10 border border-white/20 p-6 rounded-[2rem]">
+                                            <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                <Calendar size={14} /> Fecha Límite
+                                            </h4>
+                                            <p className="text-white text-xl font-bold">12 al 16 de Mayo, 2025</p>
+                                        </div>
+                                        <div className="bg-white/15 p-6 rounded-[2rem]">
+                                            <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                <AlertCircle size={14} /> Costo Unitario
+                                            </h4>
+                                            <p className="text-white text-xl font-bold">$450.00 MXN</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="md:w-1/2 space-y-4">
+                                    <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4">Pasos a seguir</h4>
                                     {[
-                                        { text: 'Aprobar al menos dos parciales en el curso ordinario.', icon: Check },
-                                        { text: 'No haber solicitado ETC previamente para la misma asignatura.', icon: Check },
-                                        { text: 'Tener un promedio mínimo de 7.0 en la asignatura.', icon: Check }
-                                    ].map((c, i) => (
-                                        <div key={i} className="flex gap-4 p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors">
-                                            <div className="w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center flex-shrink-0">
-                                                <c.icon size={14} />
-                                            </div>
-                                            <p className="text-white font-bold text-sm">{c.text}</p>
+                                        { step: '01', text: 'Descarga de Solicitud en portal de documentos.' },
+                                        { step: '02', text: 'Obtención de firma de tutor y Director de Programa.' },
+                                        { step: '03', text: 'Pago oficial en portal de finanzas institucional.' },
+                                        { step: '04', text: 'Carga de comprobante y solicitud firmada.' }
+                                    ].map((step) => (
+                                        <div key={step.step} className="flex gap-4 p-4 bg-white/10 rounded-2xl hover:bg-white/20 transition-colors border border-white/5">
+                                            <span className="text-rose-300 font-black text-sm">{step.step}</span>
+                                            <p className="text-white text-sm font-bold leading-snug">{step.text}</p>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         </div>
                     </section>
-
-                    {/* Section: Calendario */}
-                    {/* Section: Calendario */}
-                    {calendarioData && (
-                        <section id="calendario" className="scroll-mt-32">
-                            <div className="bg-white rounded-[3rem] border border-gray-100 shadow-2xl p-12">
-                                <div className="flex items-center justify-between mb-12">
-                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Cronograma Escolar</h2>
-                                    <div className="px-5 py-2 bg-rose-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Vigente: {calendarioData.cycle}</div>
-                                </div>
-                                <div className="relative w-full h-[600px] rounded-[2rem] overflow-hidden bg-slate-50 border border-slate-200 group">
-                                    <Image
-                                        src={calendarioData.image}
-                                        alt="Calendario Escolar"
-                                        unoptimized
-                                        fill
-                                        className="object-contain p-6 group-hover:scale-105 transition-transform duration-700"
-                                    />
-                                </div>
-                            </div>
-                        </section>
-                    )}
 
                     {/* Section: Altas y Bajas */}
                     <section id="altasbajas" className="scroll-mt-32">
@@ -341,6 +389,57 @@ export default function SistemasRecursosAvisos() {
                             </div>
                         </div>
                     </section>
+
+                    {/* Section: ETC */}
+                    <section id="etc" className="scroll-mt-32">
+                        <div className="bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-[3rem] p-12 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-3xl"></div>
+                            <div className="flex flex-col md:flex-row gap-12 items-center">
+                                <div className="md:w-1/3">
+                                    <div className="p-6 bg-rose-700/20 border border-rose-500/30 rounded-[2rem] w-fit mb-6">
+                                        <Info className="text-rose-400" size={32} />
+                                    </div>
+                                    <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-4">Criterios <br />de <span className="text-rose-400">ETC</span></h2>
+                                    <p className="text-gray-400 text-sm font-medium leading-relaxed">Lineamientos obligatorios para la Evaluación a Título de Competencia en Sistemas.</p>
+                                </div>
+                                <div className="md:w-2/3 grid gap-4">
+                                    {[
+                                        { text: 'Aprobar al menos dos parciales en el curso ordinario.', icon: Check },
+                                        { text: 'No haber solicitado ETC previamente para la misma asignatura.', icon: Check },
+                                        { text: 'Tener un promedio mínimo de 7.0 en la asignatura.', icon: Check }
+                                    ].map((c, i) => (
+                                        <div key={i} className="flex gap-4 p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors">
+                                            <div className="w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center flex-shrink-0">
+                                                <c.icon size={14} />
+                                            </div>
+                                            <p className="text-white font-bold text-sm">{c.text}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section: Calendario */}
+                    {calendarioData && (
+                        <section id="calendario" className="scroll-mt-32">
+                            <div className="bg-white rounded-[3rem] border border-gray-100 shadow-2xl p-12">
+                                <div className="flex items-center justify-between mb-12">
+                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Cronograma Escolar</h2>
+                                    <div className="px-5 py-2 bg-rose-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Vigente: {calendarioData.cycle}</div>
+                                </div>
+                                <div className="relative w-full h-[600px] rounded-[2rem] overflow-hidden bg-slate-50 border border-slate-200 group">
+                                    <Image
+                                        src={calendarioData.image}
+                                        alt="Calendario Escolar"
+                                        unoptimized
+                                        fill
+                                        className="object-contain p-6 group-hover:scale-105 transition-transform duration-700"
+                                    />
+                                </div>
+                            </div>
+                        </section>
+                    )}
 
                     {/* Section: Lengua Extranjera */}
                     {/* Section: Lengua Extranjera */}

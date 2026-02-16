@@ -228,17 +228,22 @@ export const coordinacionPISistemas: Coordinacion = {
 
 export const coordinacionTutoresSistemas: CoordinacionTutores = {
     id: 1,
-    title: 'Acción Tutorial',
+    title: 'Tutores',
     period: 'ENERO-ABRIL 2026',
     image: '/coordinacionTutorias.jpg',
-    note: 'Coordinación / Gestión de Docentes'
+    note: 'Coordinación / Gestión de Docentes',
+    tutors: [
+        { group: 'SIST-211', tutor: 'Docente Asignado 1' },
+        { group: 'SIST-212', tutor: 'Docente Asignado 2' },
+        { group: 'SIST-213', tutor: 'Docente Asignado 3' }
+    ]
 };
 
 export const coordinacionEstanciasSistemas: Coordinacion = {
     id: 1,
     title: 'Estancias y Estadías',
     name: 'Coordinación',
-    correo: '', // No specific email in original
+    correo: 'estancias.sistemas@upq.mx',
     image: '/coordinacionEstanciasEstadias.jpg'
 };
 
