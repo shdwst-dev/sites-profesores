@@ -164,11 +164,13 @@ export const criteriosETC = [
 ];
 
 export const calendarioData: CalendarioData = {
+    id: 1,
     cycle: 'Ciclo 2025 - 2026',
     image: '/calendario2025-2026.png'
 };
 
 export const lenguaExtranjera: LenguaExtranjeraData = {
+    id: 1,
     title: 'Avisos de Inglés',
     reports: {
         name: 'Dra. Gabriela Aguilera',
@@ -248,11 +250,13 @@ export const coordinacionEstanciasSistemas: Coordinacion = {
 };
 
 export const calendarioDataSistemas: CalendarioData = {
+    id: 1,
     cycle: 'Ciclo 2025 - 2026',
     image: '/calendario2025-2026.png'
 };
 
 export const lenguaExtranjeraSistemas: LenguaExtranjeraData = {
+    id: 1,
     title: 'Avisos de Inglés',
     reports: {
         name: 'Dra. Gabriela Aguilera',

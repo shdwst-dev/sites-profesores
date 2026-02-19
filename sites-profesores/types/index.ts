@@ -90,11 +90,13 @@ export interface RecursoGenerico {
 }
 
 export interface CalendarioData {
+  id?: string | number;
   image: string;
   cycle: string;
 }
 
 export interface LenguaExtranjeraData {
+  id?: string | number;
   title: string;
   reports: {
     name: string;

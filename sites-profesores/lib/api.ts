@@ -205,3 +205,127 @@ export const getLenguaExtranjera = async (department: string = 'TIID'): Promise<
     return rawData as LenguaExtranjeraData;
 };
 
+// Helper to handle Mock ID (Number) vs Real ID (UUID)
+// If ID is number, we assume it's mock data and we need to INSERT a new row.
+// If ID is string (UUID), we UPDATE.
+// Helper to handle Mock ID (Number) vs Real ID (UUID)
+// If ID is number, we assume it's mock data and we need to INSERT a new row.
+// If ID is string (UUID), we UPDATE.
+async function saveToSupabase(tableName: string, id: string | number, data: any, department: string = 'TIID') {
+    console.log(`[saveToSupabase] Attempting to save to ${tableName}. ID: ${id}, Dept: ${department}`);
+
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+        console.error('[saveToSupabase] No Supabase URL found in environment variables.');
+        throw new Error('No configuration for database found (NEXT_PUBLIC_SUPABASE_URL missing).');
+    }
+
+    if (typeof id === 'number') {
+        console.log('[saveToSupabase] ID is number (mock), attempting INSERT...');
+        const { id: _, ...insertData } = data;
+        const payload = { ...insertData, department };
+
+        // Ensure tutors is saved if present (assuming JSONB column exists)
+        // if (Array.isArray(payload.tutors)) {
+        //    delete payload.tutors;
+        // }
+
+        const { data: inserted, error } = await supabase.from(tableName).insert([payload]).select();
+        if (error) {
+            console.error('[saveToSupabase] Insert Error:', error);
+            throw error;
+        }
+        console.log('[saveToSupabase] Insert Success:', inserted);
+    } else {
+        console.log('[saveToSupabase] ID is string (UUID), attempting UPDATE...');
+        const { id: _, ...updateData } = data;
+        const { data: updated, error } = await supabase.from(tableName).update(updateData).eq('id', id).select();
+        if (error) {
+            console.error('[saveToSupabase] Update Error:', error.message, error.details || '', error.hint || '');
+            throw error;
+        }
+        console.log('[saveToSupabase] Update Success:', updated);
+    }
+}
+
+export const updateEncargadoTutorias = async (id: string | number, data: Partial<EncargadoTutoria>, department = 'TIID') => {
+    await saveToSupabase('encargados_tutorias', id, data, department);
+};
+
+export const updateCoordinacion = async (id: string | number, data: Partial<Coordinacion>, department = 'TIID') => {
+    await saveToSupabase('coordinaciones', id, data, department);
+};
+
+export const updateCoordinacionTutores = async (id: string | number, data: Partial<CoordinacionTutores>, department = 'TIID') => {
+    // We now allow saving tutors array directly
+    await saveToSupabase('coordinaciones_tutores', id, data, department);
+};
+
+export const updateRecursoGenerico = async (id: string | number, data: Partial<RecursoGenerico>, department = 'TIID') => {
+    await saveToSupabase('recursos_genericos', id, data, department);
+};
+
+export const updateCalendario = async (id: string | number, data: Partial<CalendarioData>, department = 'TIID') => {
+    await saveToSupabase('calendario_escolar', id, data, department);
+};
+
+export const updateLenguaExtranjera = async (id: string | number, data: Partial<LenguaExtranjeraData>, department = 'TIID') => {
+    const updateData: any = { ...data };
+
+    // Transform nested objects to flat columns
+    if (data.reports) {
+        updateData.report_name = data.reports.name;
+        updateData.report_email = data.reports.correo;
+        delete updateData.reports;
+    }
+    if (data.requestLink) {
+        updateData.request_link = data.requestLink;
+        delete updateData.requestLink;
+    }
+
+    await saveToSupabase('lengua_extranjera', id, updateData, department);
+};
+
+// Generic Delete Helper
+async function deleteFromSupabase(tableName: string, id: string | number) {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return;
+
+    // If mock data (number id), we can't really delete from server unless we track it, 
+    // but usually we just return success for UI simulation if dev mode.
+    if (typeof id === 'number') {
+        console.warn('Cannot delete mock data from server.');
+        return;
+    }
+
+    const { error } = await supabase.from(tableName).delete().eq('id', id);
+    if (error) {
+        console.error(`Error deleting from ${tableName}:`, error);
+        throw error;
+    }
+}
+
+// Entregables CRUD
+export const createEntregable = async (data: Omit<Entregable, 'id'>, department = 'TIID') => {
+    await saveToSupabase('entregables', Date.now(), data, department); // Use dummy ID for saveToSupabase logic which handles insert
+};
+
+export const updateEntregable = async (id: string | number, data: Partial<Entregable>, department = 'TIID') => {
+    await saveToSupabase('entregables', id, data, department);
+};
+
+export const deleteEntregable = async (id: string | number) => {
+    await deleteFromSupabase('entregables', id);
+};
+
+// Documentos Descarga CRUD
+export const createDocumentoDescarga = async (data: Omit<DocumentoDescarga, 'id'>, department = 'TIID') => {
+    await saveToSupabase('documentos_descarga', Date.now(), data, department);
+};
+
+export const updateDocumentoDescarga = async (id: string | number, data: Partial<DocumentoDescarga>, department = 'TIID') => {
+    await saveToSupabase('documentos_descarga', id, data, department);
+};
+
+export const deleteDocumentoDescarga = async (id: string | number) => {
+    await deleteFromSupabase('documentos_descarga', id);
+};
+
