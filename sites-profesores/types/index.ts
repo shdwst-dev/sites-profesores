@@ -86,7 +86,8 @@ export interface RecursoGenerico {
   title: string;
   description?: string;
   link?: string;
-  type: 'AltasBajas' | 'CriteriosETC' | 'Casilleros';
+  type: 'AltasBajas' | 'CriteriosETC' | 'Casilleros' | 'Recursamientos';
+  content?: any; // JSONB storage for flexible data
 }
 
 export interface CalendarioData {

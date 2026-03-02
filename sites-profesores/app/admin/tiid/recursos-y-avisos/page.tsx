@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Loader2, CheckCircle, AlertCircle, Users, LayoutGrid, Calendar, GraduationCap, MapPin, AlignLeft } from 'lucide-react';
+import { Save, Loader2, CheckCircle, AlertCircle, Users, LayoutGrid, Calendar, GraduationCap, MapPin, AlignLeft, BookOpen, Info } from 'lucide-react';
 import {
     getEncargadoTutorias,
     getCoordinacionPI,
@@ -51,6 +51,9 @@ export default function AdminTIIDRecursos() {
     const [calendario, setCalendario] = useState<CalendarioData | null>(null);
     const [lengua, setLengua] = useState<LenguaExtranjeraData | null>(null);
     const [casilleros, setCasilleros] = useState<RecursoGenerico | null>(null);
+    const [recursamientos, setRecursamientos] = useState<RecursoGenerico | null>(null);
+    const [altasBajas, setAltasBajas] = useState<RecursoGenerico | null>(null);
+    const [criteriosETC, setCriteriosETC] = useState<RecursoGenerico | null>(null);
     const [entregables, setEntregables] = useState<Entregable[]>([]);
     const [descargas, setDescargas] = useState<DocumentoDescarga[]>([]);
 
@@ -61,14 +64,17 @@ export default function AdminTIIDRecursos() {
     const loadData = async () => {
         try {
             setLoading(true);
-            const [e, p, est, t, c, l, ca] = await Promise.all([
+            const [e, p, est, t, c, l, ca, rec, ab, crit] = await Promise.all([
                 getEncargadoTutorias('TIID'),
                 getCoordinacionPI('TIID'),
                 getCoordinacionEstancias('TIID'),
                 getCoordinacionTutores('TIID'),
                 getCalendario('TIID'),
                 getLenguaExtranjera('TIID'),
-                getRecursosGenericos('Casilleros', 'TIID')
+                getRecursosGenericos('Casilleros', 'TIID'),
+                getRecursosGenericos('Recursamientos', 'TIID'),
+                getRecursosGenericos('AltasBajas', 'TIID'),
+                getRecursosGenericos('CriteriosETC', 'TIID')
             ]);
             setEncargado(e);
             setPi(p);
@@ -77,6 +83,11 @@ export default function AdminTIIDRecursos() {
             setCalendario(c);
             setLengua(l);
             setCasilleros(ca);
+
+            // Initialize defaults if missing
+            setRecursamientos(rec || { id: Date.now(), title: 'Proceso de Recursamientos', type: 'Recursamientos', content: { date: 'Fecha...', cost: 'Costo...' } });
+            setAltasBajas(ab || { id: Date.now(), title: 'Portal de Registro', type: 'AltasBajas', link: '' });
+            setCriteriosETC(crit || { id: Date.now(), title: 'Criterios ETC', type: 'CriteriosETC', content: [] });
 
             // Fetch lists separately to avoid breaking Promise.all if one fails (optional, but safer)
             const ent = await getEntregables('TIID');
@@ -305,6 +316,118 @@ export default function AdminTIIDRecursos() {
                         <Button
                             loading={saving === 'pi'}
                             onClick={() => handleSave('pi', async () => updateCoordinacion(pi.id, pi))}
+                        />
+                    </div>
+                </section>
+            )}
+
+            {/* Recursamientos */}
+            {recursamientos && (
+                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
+                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
+                        <div className="p-3 bg-indigo-600 rounded-xl"><AlertCircle size={20} className="text-white" /></div>
+                        <h2 className="text-xl font-bold text-white">Recursamientos</h2>
+                    </div>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <Input label="Fecha Límite" value={recursamientos.content?.date || ''} onChange={v => setRecursamientos({ ...recursamientos, content: { ...recursamientos.content, date: v } })} />
+                        <Input label="Costo" value={recursamientos.content?.cost || ''} onChange={v => setRecursamientos({ ...recursamientos, content: { ...recursamientos.content, cost: v } })} />
+                    </div>
+                    <div className="w-full">
+                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Pasos a Seguir (JSON)</label>
+                        <textarea
+                            className="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white resize-y min-h-[100px] focus:outline-none focus:border-indigo-500 transition-colors font-mono text-xs"
+                            value={recursamientos.content?.steps ? JSON.stringify(recursamientos.content.steps, null, 2) : '[]'}
+                            onChange={e => {
+                                try {
+                                    const steps = JSON.parse(e.target.value);
+                                    setRecursamientos({ ...recursamientos, content: { ...recursamientos.content, steps } });
+                                } catch (err) {
+                                    // Allow typing invalid json momentarily, maybe store in separate state if strict
+                                }
+                            }}
+                            placeholder='[{"step": "01", "text": "..."}]'
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Edite el JSON array directamente para los pasos.</p>
+                    </div>
+                    <div className="flex justify-end pt-4">
+                        <Button
+                            loading={saving === 'recursamientos'}
+                            onClick={() => handleSave('recursamientos', async () => updateRecursoGenerico(recursamientos.id, recursamientos))}
+                        />
+                    </div>
+                </section>
+            )}
+
+            {/* Altas y Bajas */}
+            {altasBajas && (
+                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
+                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
+                        <div className="p-3 bg-indigo-600 rounded-xl"><BookOpen size={20} className="text-white" /></div>
+                        <h2 className="text-xl font-bold text-white">Altas y Bajas</h2>
+                    </div>
+                    <div className="grid md:grid-cols-1 gap-6">
+                        <Input label="Link de Portal de Registro" value={altasBajas.link || ''} onChange={v => setAltasBajas({ ...altasBajas, link: v })} />
+                    </div>
+                    <div className="flex justify-end pt-4">
+                        <Button
+                            loading={saving === 'altasTest'}
+                            onClick={() => handleSave('altasTest', async () => updateRecursoGenerico(altasBajas.id, altasBajas))}
+                        />
+                    </div>
+                </section>
+            )}
+
+            {/* Criterios ETC */}
+            {criteriosETC && (
+                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
+                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
+                        <div className="p-3 bg-indigo-600 rounded-xl"><Info size={20} className="text-white" /></div>
+                        <div className="flex-1">
+                            <h2 className="text-xl font-bold text-white">Criterios ETC</h2>
+                        </div>
+                        <button
+                            onClick={() => {
+                                const list = Array.isArray(criteriosETC.content) ? criteriosETC.content : [];
+                                setCriteriosETC({ ...criteriosETC, content: [...list, { title: 'Nuevo Criterio', description: 'Descripción' }] });
+                            }}
+                            className="text-sm flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors"
+                        >
+                            <Plus size={16} /> Añadir Criterio
+                        </button>
+                    </div>
+                    <div className="space-y-4">
+                        {(Array.isArray(criteriosETC.content) ? criteriosETC.content : []).map((c: any, idx: number) => (
+                            <div key={idx} className="bg-slate-900/50 p-4 rounded-xl border border-white/5 grid gap-2">
+                                <div className="flex justify-between">
+                                    <h4 className="text-white font-bold text-sm">Criterio #{idx + 1}</h4>
+                                    <button
+                                        onClick={() => {
+                                            const list = [...(criteriosETC.content as any[])];
+                                            list.splice(idx, 1);
+                                            setCriteriosETC({ ...criteriosETC, content: list });
+                                        }}
+                                        className="text-red-400 hover:text-red-300"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                                <Input label="Título" value={c.title} onChange={v => {
+                                    const list = [...(criteriosETC.content as any[])];
+                                    list[idx] = { ...list[idx], title: v };
+                                    setCriteriosETC({ ...criteriosETC, content: list });
+                                }} />
+                                <Input label="Descripción" value={c.description} onChange={v => {
+                                    const list = [...(criteriosETC.content as any[])];
+                                    list[idx] = { ...list[idx], description: v };
+                                    setCriteriosETC({ ...criteriosETC, content: list });
+                                }} />
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex justify-end pt-4">
+                        <Button
+                            loading={saving === 'criteriosETC'}
+                            onClick={() => handleSave('criteriosETC', async () => updateRecursoGenerico(criteriosETC.id, criteriosETC))}
                         />
                     </div>
                 </section>
