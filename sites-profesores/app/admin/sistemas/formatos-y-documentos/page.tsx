@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Save, Loader2, CheckCircle, AlertCircle, Calendar, BookOpen, Plus, Trash2 } from 'lucide-react';
+import Input from '@/components/admin/Input';
 import {
     getEntregables,
     getDocumentosDescarga,
@@ -220,21 +221,6 @@ export default function AdminSistemasFormatosDocumentos() {
                     ))}
                 </div>
             </section>
-        </div>
-    );
-}
-
-// Subcomponents for cleaner code
-function Input({ label, value, onChange }: { label: string, value: string, onChange: (val: string) => void }) {
-    return (
-        <div className="w-full">
-            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">{label}</label>
-            <input
-                type="text"
-                className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-rose-500 transition-colors"
-                value={value}
-                onChange={e => onChange(e.target.value)}
-            />
         </div>
     );
 }

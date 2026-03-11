@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Save, Loader2, CheckCircle, AlertCircle, Users, LayoutGrid, Calendar, GraduationCap, MapPin, AlignLeft, BookOpen, Info } from 'lucide-react';
+import Input from '@/components/admin/Input';
+import { default as Button } from '@/components/admin/SaveButton';
 import {
     getEncargadoTutorias,
     getCoordinacionPI,
@@ -457,33 +459,5 @@ export default function AdminTIIDRecursos() {
             )}
 
         </div>
-    );
-}
-
-// Subcomponents for cleaner code
-function Input({ label, value, onChange }: { label: string, value: string, onChange: (val: string) => void }) {
-    return (
-        <div className="w-full">
-            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">{label}</label>
-            <input
-                type="text"
-                className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
-                value={value}
-                onChange={e => onChange(e.target.value)}
-            />
-        </div>
-    );
-}
-
-function Button({ loading, onClick }: { loading: boolean, onClick: () => void }) {
-    return (
-        <button
-            onClick={onClick}
-            disabled={loading}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 text-white px-6 py-3 rounded-xl font-bold transition-all active:scale-95"
-        >
-            {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-            {loading ? 'Guardando...' : 'Guardar Cambios'}
-        </button>
     );
 }

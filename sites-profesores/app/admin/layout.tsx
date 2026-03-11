@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Home, FileText, Settings, LogOut, LayoutDashboard, Database, BookOpen, Info } from 'lucide-react';
+import LogoutButton from '@/components/admin/LogoutButton';
 
 export default function AdminLayout({
     children,
@@ -48,10 +49,7 @@ export default function AdminLayout({
                 </nav>
 
                 <div className="p-4 border-t border-white/10">
-                    <Link href="/" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-red-500/10 hover:text-red-400 rounded-xl transition-all">
-                        <LogOut size={18} />
-                        <span className="font-medium text-sm">Salir al Sitio</span>
-                    </Link>
+                    <LogoutButton />
                 </div>
             </aside>
 

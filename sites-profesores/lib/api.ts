@@ -117,11 +117,11 @@ export const getCoordinacionPI = async (department: string = 'TIID'): Promise<Co
 
 export const getCoordinacionEstancias = async (department: string = 'TIID'): Promise<Coordinacion> => {
     const mock = department === 'Sistemas' ? [mocks.coordinacionEstanciasSistemas] : [mocks.coordinacionEstancias];
-    const data = await fetchWithFallback('coordinaciones_estancias', mock, undefined, false, department);
+    const data = await fetchWithFallback('coordinaciones', mock, undefined, false, department);
 
-    // Similar handling if it returns an array
+    // Filter for the Estancias coordination entry
     if (Array.isArray(data)) {
-        return data[0] || mock[0];
+        return data.find(c => c.title.toLowerCase().includes('estancias')) || mock[0];
     }
     return data as Coordinacion;
 };
