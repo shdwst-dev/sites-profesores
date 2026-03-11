@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Home, FileText, Settings, LogOut, LayoutDashboard, Database } from 'lucide-react';
+import { Home, FileText, Settings, LogOut, LayoutDashboard, Database, BookOpen } from 'lucide-react';
 
 export default function AdminLayout({
     children,
@@ -21,12 +21,20 @@ export default function AdminLayout({
 
                 <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                     <p className="px-4 text-xs font-bold text-gray-500 uppercase tracking-widest mt-4 mb-2">TIID</p>
+                    <Link href="/admin/tiid/formatos-y-documentos" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                        <BookOpen size={18} />
+                        <span className="font-medium text-sm">Formatos y Documentos</span>
+                    </Link>
                     <Link href="/admin/tiid/recursos-y-avisos" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                         <FileText size={18} />
                         <span className="font-medium text-sm">Recursos y Avisos</span>
                     </Link>
 
                     <p className="px-4 text-xs font-bold text-gray-500 uppercase tracking-widest mt-8 mb-2">Sistemas</p>
+                    <Link href="/admin/sistemas/formatos-y-documentos" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                        <BookOpen size={18} />
+                        <span className="font-medium text-sm">Formatos y Documentos</span>
+                    </Link>
                     <Link href="/admin/sistemas/recursos-y-avisos" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                         <Database size={18} />
                         <span className="font-medium text-sm">Recursos y Avisos</span>

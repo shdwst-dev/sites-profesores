@@ -1,43 +1,19 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import * as LucideIcons from 'lucide-react';
-import {
-    Clock, Calendar, FileText, CheckSquare, X, Upload, Info, FileDown,
-    ChevronRight, Check, Image as ImageIcon, FileSpreadsheet, Trash2, Menu, ChevronUp
-} from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Calendar, BookOpen, ExternalLink, ChevronUp, Menu, X } from 'lucide-react';
 import Footer from '@/components/Footer';
+import { useState, useEffect } from 'react';
 import SubHeader from '@/components/SubHeader';
 import { getEntregables, getDocumentosDescarga } from '@/lib/api';
 import { Entregable, DocumentoDescarga } from '@/types';
 
-// Helper for file size
-const formatBytes = (bytes: number, decimals = 2) => {
-    if (!+bytes) return '0 Bytes';
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-};
-
-// Helper for dynamic icons
-const getIcon = (name: string) => {
-    // @ts-ignore
-    return LucideIcons[name] || LucideIcons.File;
-};
-
 export default function TIIDFormatosDocumentos() {
     const router = useRouter();
-    const [selectedFiles, setSelectedFiles] = useState<{ [key: string]: File[] }>({});
-    const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
-    const [success, setSuccess] = useState<{ [key: string]: boolean }>({});
-    const [menuOpen, setMenuOpen] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('');
 
-    // Data State
     const [entregables, setEntregables] = useState<Entregable[]>([]);
     const [descargas, setDescargas] = useState<DocumentoDescarga[]>([]);
     const [loading, setLoading] = useState(true);
@@ -45,9 +21,13 @@ export default function TIIDFormatosDocumentos() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [e, d] = await Promise.all([getEntregables(), getDocumentosDescarga()]);
-                setEntregables(e);
-                setDescargas(d);
+                const [ent, desc] = await Promise.all([
+                    getEntregables('TIID'),
+                    getDocumentosDescarga('TIID')
+                ]);
+
+                setEntregables(ent);
+                setDescargas(desc);
             } catch (error) {
                 console.error("Failed to load data", error);
             } finally {
@@ -61,10 +41,10 @@ export default function TIIDFormatosDocumentos() {
         const handleScroll = () => {
             setShowScrollTop(window.scrollY > 300);
 
-            const sections = ['instrucciones', 'entregables', 'formatos'];
+            const sectionsList = ['entregables', 'descargas'];
             const candidates: string[] = [];
 
-            for (const id of sections) {
+            for (const id of sectionsList) {
                 const el = document.getElementById(id);
                 if (el) {
                     const rect = el.getBoundingClientRect();
@@ -96,40 +76,19 @@ export default function TIIDFormatosDocumentos() {
     };
 
     const sections = [
-        { id: 'instrucciones', label: 'Guía de Uso', icon: Info },
-        { id: 'entregables', label: 'Entregables Semanales', icon: CheckSquare },
-        { id: 'formatos', label: 'Descargas', icon: FileDown },
+        { id: 'entregables', label: 'Entregables', icon: Calendar },
+        { id: 'descargas', label: 'Descargas', icon: BookOpen },
     ];
 
-    // Grouping entregables by stage to match UI structure
-    const groupedEntregables = entregables.reduce((acc, curr) => {
-        const group = acc.find(g => g.titulo === curr.stage);
-        if (group) {
-            group.items.push({ nombre: curr.title, fecha: curr.deadline });
-        } else {
-            acc.push({ titulo: curr.stage, items: [{ nombre: curr.title, fecha: curr.deadline }] });
-        }
-        return acc;
-    }, [] as { titulo: string; items: { nombre: string; fecha: string }[] }[]);
-
-    const handleUpload = (taskKey: string) => {
-        setUploading(prev => ({ ...prev, [taskKey]: true }));
-        // Simular subida
-        setTimeout(() => {
-            setUploading(prev => ({ ...prev, [taskKey]: false }));
-            setSuccess(prev => ({ ...prev, [taskKey]: true }));
-            setSelectedFiles(prev => ({ ...prev, [taskKey]: [] }));
-            setTimeout(() => {
-                setSuccess(prev => ({ ...prev, [taskKey]: false }));
-            }, 3000);
-        }, 1500);
-    };
+    if (loading) {
+        return <div className="min-h-screen bg-[#0f172a] flex items-center justify-center text-white">Cargando recursos...</div>;
+    }
 
     return (
-        <div className="min-h-screen w-full flex flex-col bg-[#0f172a]">
+        <div className="min-h-screen w-full flex flex-col bg-[#0f172a] selection:bg-indigo-500/30">
             <SubHeader
                 title="Formatos y Documentos"
-                subtitle={activeSection ? sections.find(s => s.id === activeSection)?.label : "TIID - Gestión Documental"}
+                subtitle={activeSection ? sections.find(s => s.id === activeSection)?.label : "TIID - Recursos Oficiales"}
                 accentColor="#1e3a5f"
                 backPath="/tiid"
             />
@@ -161,224 +120,64 @@ export default function TIIDFormatosDocumentos() {
                     </div>
                 </aside>
 
-                <main className="flex-1 min-w-0 animate-in fade-in duration-700">
-                    {/* Hero / Instructions Section */}
-                    <div id="instrucciones" className="scroll-mt-32 grid lg:grid-cols-3 gap-8 mb-16">
-                        <div className="lg:col-span-2 bg-gradient-to-br from-indigo-900/40 to-slate-900/40 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-sm relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
-                            <h2 className="text-3xl font-black text-white mb-6 uppercase tracking-tight">
-                                Guía de <span className="text-indigo-400">Uso</span>
-                            </h2>
-                            <p className="text-gray-400 font-medium mb-8 max-w-2xl leading-relaxed">
-                                Por favor, asegúrese de cargar sus documentos en los formatos correctos (PDF preferentemente). Cada sección tiene fechas límites estrictas que deben respetarse para el correcto seguimiento académico.
-                            </p>
+                <div id="formatos-content" className="space-y-24 w-full">
 
-                            <div className="grid sm:grid-cols-3 gap-4">
-                                {[
-                                    { step: 'Paso 1', title: 'Seleccionar', desc: 'Elige tus archivos locales.' },
-                                    { step: 'Paso 2', title: 'Verificar', desc: 'Revisar los nombres y formatos de los archivos.' },
-                                    { step: 'Paso 3', title: 'Cargar', desc: 'El archivo se sube a la nube de Drive.' }
-                                ].map((s) => (
-                                    <div key={s.step} className="bg-white/5 border border-white/10 rounded-2xl p-4">
-                                        <span className="text-indigo-500 font-black text-xl mb-2 block">{s.step}</span>
-                                        <h4 className="text-white font-bold text-sm mb-1 uppercase tracking-wider">{s.title}</h4>
-                                        <p className="text-gray-500 text-xs leading-tight">{s.desc}</p>
+                    {/* Section: Entregables */}
+                    {entregables.length > 0 && (
+                        <section id="entregables" className="scroll-mt-32">
+                            <div className="bg-gradient-to-br from-indigo-900/40 to-slate-900 border border-white/10 p-10 rounded-[2.5rem] shadow-2xl overflow-hidden group">
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                                        <Calendar size={28} />
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-gray-100 flex flex-col justify-center">
-                            <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6">
-                                <Info className="text-indigo-600" size={24} />
-                            </div>
-                            <h3 className="text-xl font-black text-slate-900 mb-4 tracking-tighter uppercase">Nota importante</h3>
-                            <p className="text-slate-600 font-medium text-sm leading-relaxed mb-6">
-                                Los archivos se sincronizan automáticamente con la carpeta compartida de la coordinación. No es necesario enviar correos de confirmación.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="space-y-12">
-                        {/* Left Column: Deliverables */}
-                        <div id="entregables" className="scroll-mt-32 space-y-12">
-                            {groupedEntregables.map((grupo) => (
-                                <section key={grupo.titulo} className="animate-in slide-in-from-bottom-4 duration-500">
-                                    <div className="flex items-center gap-4 mb-6">
-                                        <div className="p-3 bg-indigo-500/20 rounded-2xl border border-indigo-500/20">
-                                            <Calendar className="text-indigo-400" size={24} />
-                                        </div>
-                                        <h3 className="text-2xl font-black text-white tracking-tight uppercase">
-                                            {grupo.titulo}
-                                        </h3>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        {grupo.items.map((item, itemIdx) => {
-                                            const taskKey = `${grupo.titulo}-${itemIdx}`;
-                                            const currentFiles = selectedFiles[taskKey] || [];
-                                            const isUploading = uploading[taskKey];
-                                            const isSuccess = success[taskKey];
-
-                                            return (
-                                                <div
-                                                    key={item.nombre}
-                                                    className="group bg-slate-900/40 backdrop-blur-md border border-white/5 hover:border-indigo-500/30 rounded-3xl p-6 transition-all duration-300"
-                                                >
-                                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                                        <div className="flex-1">
-                                                            <h4 className="text-lg font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors leading-tight">
-                                                                {item.nombre}
-                                                            </h4>
-                                                            <div className="flex items-center gap-2 text-gray-500 text-xs font-bold uppercase tracking-widest">
-                                                                <Clock size={12} />
-                                                                {item.fecha}
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-3">
-                                                            <label className={`
-                                                            flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-widest cursor-pointer transition-all active:scale-95
-                                                            ${currentFiles.length > 0
-                                                                    ? 'bg-indigo-600 text-white shadow-lg'
-                                                                    : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
-                                                                }
-                                                        `}>
-                                                                <Upload size={14} />
-                                                                {currentFiles.length > 0 ? `${currentFiles.length} Seleccionados` : 'Elegir'}
-                                                                <input
-                                                                    type="file"
-                                                                    multiple
-                                                                    className="hidden"
-                                                                    onChange={(e) => {
-                                                                        if (e.target.files) {
-                                                                            setSelectedFiles({
-                                                                                ...selectedFiles,
-                                                                                [taskKey]: Array.from(e.target.files)
-                                                                            });
-                                                                        }
-                                                                    }}
-                                                                />
-                                                            </label>
-
-                                                            <button
-                                                                onClick={() => handleUpload(taskKey)}
-                                                                disabled={currentFiles.length === 0 || isUploading}
-                                                                className={`
-                                                                flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all
-                                                                ${isSuccess
-                                                                        ? 'bg-emerald-500 text-white'
-                                                                        : currentFiles.length > 0
-                                                                            ? 'bg-white text-[#0f172a] hover:bg-indigo-400'
-                                                                            : 'bg-white/5 text-gray-700 cursor-not-allowed border border-white/5'
-                                                                    }
-                                                            `}
-                                                            >
-                                                                {isUploading ? (
-                                                                    <div className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
-                                                                ) : isSuccess ? (
-                                                                    <Check size={14} />
-                                                                ) : (
-                                                                    'Subir'
-                                                                )}
-                                                            </button>
-
-                                                            {currentFiles.length > 0 && !isUploading && (
-                                                                <button
-                                                                    onClick={() => setSelectedFiles({ ...selectedFiles, [taskKey]: [] })}
-                                                                    className="p-2 text-red-400 hover:bg-red-400/10 rounded-full transition-colors"
-                                                                >
-                                                                    <X size={16} />
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    {/* File Preview */}
-                                                    {currentFiles.length > 0 && (
-                                                        <div className="mt-6 pt-6 border-t border-white/5 grid gap-3">
-                                                            {currentFiles.map((f, i) => {
-                                                                // Determine icon
-                                                                const isImage = f.type.startsWith('image/');
-                                                                const isPdf = f.type === 'application/pdf';
-                                                                const Icon = isImage ? ImageIcon : (isPdf ? FileText : FileSpreadsheet);
-
-                                                                return (
-                                                                    <div key={i} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors group/file">
-                                                                        <div className="flex items-center gap-4">
-                                                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isImage ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                                                                                <Icon size={20} />
-                                                                            </div>
-                                                                            <div>
-                                                                                <p className="text-white text-sm font-medium truncate max-w-[200px]">{f.name}</p>
-                                                                                <p className="text-gray-500 text-xs font-bold uppercase">{formatBytes(f.size)}</p>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        {!isUploading && (
-                                                                            <button
-                                                                                onClick={() => {
-                                                                                    const newFiles = [...currentFiles];
-                                                                                    newFiles.splice(i, 1);
-                                                                                    setSelectedFiles({ ...selectedFiles, [taskKey]: newFiles });
-                                                                                }}
-                                                                                className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all opacity-0 group-hover/file:opacity-100"
-                                                                                title="Eliminar archivo"
-                                                                            >
-                                                                                <Trash2 size={16} />
-                                                                            </button>
-                                                                        )}
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </section>
-                            ))}
-                        </div>
-
-                        {/* Right Column: PDF Formats */}
-                        <div id="formatos" className="scroll-mt-32 space-y-8">
-                            <section className="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-gray-100">
-                                <div className="flex items-center gap-3 mb-8">
-                                    <div className="p-2 bg-indigo-600 rounded-xl">
-                                        <FileDown className="text-white" size={20} />
-                                    </div>
-                                    <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Formatos</h3>
+                                    <h2 className="text-3xl font-black text-white tracking-tight uppercase">Entregables</h2>
                                 </div>
+                                <div className="space-y-4">
+                                    {entregables.map((item, idx) => (
+                                        <div key={idx} className="flex flex-col md:flex-row gap-6 p-6 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors">
+                                            <div className="md:w-1/4">
+                                                <span className="text-indigo-400 font-black text-xs uppercase tracking-widest">{item.stage}</span>
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-white font-bold">{item.title}</p>
+                                            </div>
+                                            <div className="md:w-1/4">
+                                                <span className="text-emerald-400 font-bold text-sm bg-emerald-500/10 px-4 py-2 rounded-full inline-block">{item.deadline}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
+                    )}
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {descargas.map((formato, index) => {
-                                        const Icon = getIcon(formato.icon);
+                    {/* Section: Descargas */}
+                    {descargas.length > 0 && (
+                        <section id="descargas" className="scroll-mt-32">
+                            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl p-10">
+                                <div className="flex items-center gap-4 mb-10">
+                                    <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                                        <BookOpen size={28} />
+                                    </div>
+                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Formatos de Descarga</h2>
+                                </div>
+                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {descargas.map((item, idx) => {
                                         return (
-                                            <a
-                                                key={index}
-                                                href={formato.link}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center justify-between p-4 rounded-[1.25rem] hover:bg-slate-50 transition-all group border border-transparent hover:border-slate-100"
-                                            >
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`w-10 h-10 ${formato.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                                                        <Icon className="text-slate-700" size={18} />
-                                                    </div>
-                                                    <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-900 transition-colors">
-                                                        {formato.title}
-                                                    </span>
+                                            <a key={idx} href={item.link} target="_blank" className={`p-6 rounded-3xl border ${item.color || 'bg-slate-50 border-slate-100 hover:border-indigo-300'} transition-all group hover:scale-[1.02] shadow-sm flex flex-col items-center text-center gap-4`}>
+                                                <div className="bg-white p-4 rounded-full shadow-sm text-indigo-600 group-hover:scale-110 transition-transform">
+                                                    <ExternalLink size={24} />
                                                 </div>
-                                                <ChevronRight className="text-slate-300 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" size={16} />
+                                                <h4 className="font-bold text-slate-800 text-sm">{item.title}</h4>
                                             </a>
                                         );
                                     })}
                                 </div>
-                            </section>
-                        </div>
-                    </div>
-                </main>
+                            </div>
+                        </section>
+                    )}
+
+                </div>
             </div>
 
             {/* Mobile Menu Trigger */}

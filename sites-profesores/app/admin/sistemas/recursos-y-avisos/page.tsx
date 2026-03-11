@@ -25,11 +25,10 @@ import {
     CalendarioData,
     LenguaExtranjeraData
 } from '@/types';
-import Link from 'next/link';
 import { Plus, Trash2 } from 'lucide-react';
 import FileInput from '@/components/admin/FileInput';
 
-export default function AdminTIIDRecursos() {
+export default function AdminSistemasRecursos() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState<string | null>(null);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -54,16 +53,16 @@ export default function AdminTIIDRecursos() {
         try {
             setLoading(true);
             const [e, p, est, t, c, l, ca, rec, ab, crit] = await Promise.all([
-                getEncargadoTutorias('TIID'),
-                getCoordinacionPI('TIID'),
-                getCoordinacionEstancias('TIID'),
-                getCoordinacionTutores('TIID'),
-                getCalendario('TIID'),
-                getLenguaExtranjera('TIID'),
-                getRecursosGenericos('Casilleros', 'TIID'),
-                getRecursosGenericos('Recursamientos', 'TIID'),
-                getRecursosGenericos('AltasBajas', 'TIID'),
-                getRecursosGenericos('CriteriosETC', 'TIID')
+                getEncargadoTutorias('Sistemas'),
+                getCoordinacionPI('Sistemas'),
+                getCoordinacionEstancias('Sistemas'),
+                getCoordinacionTutores('Sistemas'),
+                getCalendario('Sistemas'),
+                getLenguaExtranjera('Sistemas'),
+                getRecursosGenericos('Casilleros', 'Sistemas'),
+                getRecursosGenericos('Recursamientos', 'Sistemas'),
+                getRecursosGenericos('AltasBajas', 'Sistemas'),
+                getRecursosGenericos('CriteriosETC', 'Sistemas')
             ]);
             setEncargado(e);
             setPi(p);
@@ -107,8 +106,8 @@ export default function AdminTIIDRecursos() {
         <div className="space-y-10 pb-20">
             <header className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-white">Editar Recursos TIID</h1>
-                    <p className="text-gray-400">Actualiza la información visible en la página de Recursos y Avisos.</p>
+                    <h1 className="text-3xl font-black text-white">Editar Recursos Sistemas</h1>
+                    <p className="text-gray-400">Actualiza la información visible en la página de Recursos y Avisos de Sistemas Computacionales.</p>
                 </div>
                 {message && (
                     <div className={`px-4 py-2 rounded-lg flex items-center gap-2 ${message.type === 'success' ? 'bg-green-500/20 text-green-400 border border-green-500/50' : 'bg-red-500/20 text-red-400 border border-red-500/50'}`}>
@@ -130,12 +129,12 @@ export default function AdminTIIDRecursos() {
                         <Input label="Nombre" value={encargado.name} onChange={v => setEncargado({ ...encargado, name: v })} />
                         <Input label="Correo" value={encargado.correo} onChange={v => setEncargado({ ...encargado, correo: v })} />
                         <Input label="Extensión" value={encargado.ext} onChange={v => setEncargado({ ...encargado, ext: v })} />
-                        <FileInput label="URL Imagen" value={encargado.image || ''} onChange={v => setEncargado({ ...encargado, image: v })} accept="image/*" department="TIID" />
+                        <FileInput label="URL Imagen" value={encargado.image || ''} onChange={v => setEncargado({ ...encargado, image: v })} accept="image/*" department="Sistemas" />
                     </div>
                     <div className="flex justify-end pt-4">
                         <Button
                             loading={saving === 'encargado'}
-                            onClick={() => handleSave('encargado', async () => updateEncargadoTutorias(encargado.id, encargado))}
+                            onClick={() => handleSave('encargado', async () => updateEncargadoTutorias(encargado.id, encargado, 'Sistemas'))}
                         />
                     </div>
                 </section>
@@ -152,12 +151,12 @@ export default function AdminTIIDRecursos() {
                         <Input label="Título" value={pi.title} onChange={v => setPi({ ...pi, title: v })} />
                         <Input label="Nombre del Coordinador" value={pi.name} onChange={v => setPi({ ...pi, name: v })} />
                         <Input label="Correo" value={pi.correo} onChange={v => setPi({ ...pi, correo: v })} />
-                        <FileInput label="URL Imagen" value={pi.image} onChange={v => setPi({ ...pi, image: v })} accept="image/*" department="TIID" />
+                        <FileInput label="URL Imagen" value={pi.image} onChange={v => setPi({ ...pi, image: v })} accept="image/*" department="Sistemas" />
                     </div>
                     <div className="flex justify-end pt-4">
                         <Button
                             loading={saving === 'pi'}
-                            onClick={() => handleSave('pi', async () => updateCoordinacion(pi.id, pi))}
+                            onClick={() => handleSave('pi', async () => updateCoordinacion(pi.id, pi, 'Sistemas'))}
                         />
                     </div>
                 </section>
@@ -194,7 +193,7 @@ export default function AdminTIIDRecursos() {
                     <div className="flex justify-end pt-4">
                         <Button
                             loading={saving === 'recursamientos'}
-                            onClick={() => handleSave('recursamientos', async () => updateRecursoGenerico(recursamientos.id, recursamientos))}
+                            onClick={() => handleSave('recursamientos', async () => updateRecursoGenerico(recursamientos.id, recursamientos, 'Sistemas'))}
                         />
                     </div>
                 </section>
@@ -213,7 +212,7 @@ export default function AdminTIIDRecursos() {
                     <div className="flex justify-end pt-4">
                         <Button
                             loading={saving === 'altasTest'}
-                            onClick={() => handleSave('altasTest', async () => updateRecursoGenerico(altasBajas.id, altasBajas))}
+                            onClick={() => handleSave('altasTest', async () => updateRecursoGenerico(altasBajas.id, altasBajas, 'Sistemas'))}
                         />
                     </div>
                 </section>
@@ -269,7 +268,7 @@ export default function AdminTIIDRecursos() {
                     <div className="flex justify-end pt-4">
                         <Button
                             loading={saving === 'criteriosETC'}
-                            onClick={() => handleSave('criteriosETC', async () => updateRecursoGenerico(criteriosETC.id, criteriosETC))}
+                            onClick={() => handleSave('criteriosETC', async () => updateRecursoGenerico(criteriosETC.id, criteriosETC, 'Sistemas'))}
                         />
                     </div>
                 </section>
@@ -286,12 +285,12 @@ export default function AdminTIIDRecursos() {
                         <Input label="Título" value={estancias.title} onChange={v => setEstancias({ ...estancias, title: v })} />
                         <Input label="Nombre del Coordinador" value={estancias.name} onChange={v => setEstancias({ ...estancias, name: v })} />
                         <Input label="Correo" value={estancias.correo} onChange={v => setEstancias({ ...estancias, correo: v })} />
-                        <FileInput label="URL Imagen" value={estancias.image} onChange={v => setEstancias({ ...estancias, image: v })} accept="image/*" department="TIID" />
+                        <FileInput label="URL Imagen" value={estancias.image} onChange={v => setEstancias({ ...estancias, image: v })} accept="image/*" department="Sistemas" />
                     </div>
                     <div className="flex justify-end pt-4">
                         <Button
                             loading={saving === 'estancias'}
-                            onClick={() => handleSave('estancias', async () => updateCoordinacion(estancias.id, estancias))}
+                            onClick={() => handleSave('estancias', async () => updateCoordinacion(estancias.id, estancias, 'Sistemas'))}
                         />
                     </div>
                 </section>
@@ -307,7 +306,7 @@ export default function AdminTIIDRecursos() {
                     <div className="grid md:grid-cols-2 gap-6">
                         <Input label="Título" value={tutores.title} onChange={v => setTutores({ ...tutores, title: v })} />
                         <Input label="Periodo" value={tutores.period} onChange={v => setTutores({ ...tutores, period: v })} />
-                        <FileInput label="URL Imagen (si no hay tabla)" value={tutores.image || ''} onChange={v => setTutores({ ...tutores, image: v })} accept="image/*" department="TIID" />
+                        <FileInput label="URL Imagen (si no hay tabla)" value={tutores.image || ''} onChange={v => setTutores({ ...tutores, image: v })} accept="image/*" department="Sistemas" />
                     </div>
 
                     {/* Lista de Tutores */}
@@ -380,7 +379,7 @@ export default function AdminTIIDRecursos() {
                     <div className="flex justify-end pt-4">
                         <Button
                             loading={saving === 'tutores'}
-                            onClick={() => handleSave('tutores', async () => updateCoordinacionTutores(tutores.id, tutores))}
+                            onClick={() => handleSave('tutores', async () => updateCoordinacionTutores(tutores.id, tutores, 'Sistemas'))}
                         />
                     </div>
                 </section>
@@ -395,12 +394,12 @@ export default function AdminTIIDRecursos() {
                     </div>
                     <div className="grid md:grid-cols-2 gap-6">
                         <Input label="Ciclo" value={calendario.cycle} onChange={v => setCalendario({ ...calendario, cycle: v })} />
-                        <FileInput label="URL Imagen" value={calendario.image} onChange={v => setCalendario({ ...calendario, image: v })} accept="image/*" department="TIID" />
+                        <FileInput label="URL Imagen" value={calendario.image} onChange={v => setCalendario({ ...calendario, image: v })} accept="image/*" department="Sistemas" />
                     </div>
                     <div className="flex justify-end pt-4">
                         <Button
                             loading={saving === 'calendario'}
-                            onClick={() => handleSave('calendario', async () => updateCalendario(calendario.id!, calendario))}
+                            onClick={() => handleSave('calendario', async () => updateCalendario(calendario.id!, calendario, 'Sistemas'))}
                         />
                     </div>
                 </section>
@@ -422,7 +421,7 @@ export default function AdminTIIDRecursos() {
                     <div className="flex justify-end pt-4">
                         <Button
                             loading={saving === 'lengua'}
-                            onClick={() => handleSave('lengua', async () => updateLenguaExtranjera(lengua.id!, lengua))}
+                            onClick={() => handleSave('lengua', async () => updateLenguaExtranjera(lengua.id!, lengua, 'Sistemas'))}
                         />
                     </div>
                 </section>
@@ -450,7 +449,7 @@ export default function AdminTIIDRecursos() {
                     <div className="flex justify-end pt-4">
                         <Button
                             loading={saving === 'casilleros'}
-                            onClick={() => handleSave('casilleros', async () => updateRecursoGenerico(casilleros.id, casilleros))}
+                            onClick={() => handleSave('casilleros', async () => updateRecursoGenerico(casilleros.id, casilleros, 'Sistemas'))}
                         />
                     </div>
                 </section>

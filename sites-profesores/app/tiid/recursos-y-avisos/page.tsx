@@ -62,8 +62,6 @@ export default function TIIDRecursosAvisos() {
                 setCasillerosData(casilleros);
                 setCalendarioData(calendario);
                 setLenguaExtranjera(lengua);
-
-                // Mocking complex/nested data fetch for now until specialized functions exist or we parse genericos
                 // For AltasBajas link, mimicking logic
                 const altasBajas = await getRecursosGenericos('AltasBajas'); // Not implemented in api yet, using mock fallback inside api logic or separate
                 if (altasBajas && altasBajas.link) setAltasBajasLink(altasBajas.link);
@@ -79,7 +77,6 @@ export default function TIIDRecursosAvisos() {
                     { title: "Regularidad", description: "No tener asignaturas reprobadas ni estar en situación de riesgo." },
                     { title: "Asistencia", description: "Cumplir con el 80% de asistencia en todas las asignaturas." }
                 ]); // Static for now as these are content-heavy
-
             } catch (error) {
                 console.error("Failed to load data", error);
             } finally {
