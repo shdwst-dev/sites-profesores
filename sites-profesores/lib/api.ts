@@ -329,3 +329,68 @@ export const deleteDocumentoDescarga = async (id: string | number) => {
     await deleteFromSupabase('documentos_descarga', id);
 };
 
+// Comunicados CRUD
+export const createComunicado = async (data: Omit<Comunicado, 'id'>) => {
+    await saveToSupabase('comunicados', Date.now(), data);
+};
+
+export const updateComunicado = async (id: string | number, data: Partial<Comunicado>) => {
+    await saveToSupabase('comunicados', id, data);
+};
+
+export const deleteComunicado = async (id: string | number) => {
+    await deleteFromSupabase('comunicados', id);
+};
+
+// Fechas Importantes CRUD
+export const createFechaImportante = async (data: Omit<FechaImportante, 'id'>) => {
+    await saveToSupabase('fechas_importantes', Date.now(), data);
+};
+
+export const updateFechaImportante = async (id: string | number, data: Partial<FechaImportante>) => {
+    await saveToSupabase('fechas_importantes', id, data);
+};
+
+export const deleteFechaImportante = async (id: string | number) => {
+    await deleteFromSupabase('fechas_importantes', id);
+};
+
+// Tramites CRUD
+export const createTramite = async (data: Omit<Tramite, 'id'>) => {
+    await saveToSupabase('tramites', Date.now(), data);
+};
+
+export const updateTramite = async (id: string | number, data: Partial<Tramite>) => {
+    await saveToSupabase('tramites', id, data);
+};
+
+export const deleteTramite = async (id: string | number) => {
+    await deleteFromSupabase('tramites', id);
+};
+
+// Tutores/Profesores CRUD
+export const createTutorProfesor = async (data: Omit<TutorProfesor, 'id'>) => {
+    await saveToSupabase('tutores_profesores', Date.now(), data);
+};
+
+export const updateTutorProfesor = async (id: string | number, data: Partial<TutorProfesor>) => {
+    await saveToSupabase('tutores_profesores', id, data);
+};
+
+export const deleteTutorProfesor = async (id: string | number) => {
+    await deleteFromSupabase('tutores_profesores', id);
+};
+
+// Contactos CRUD
+export const createContacto = async (data: Omit<Contacto, 'id'>) => {
+    await saveToSupabase('contactos', Date.now(), data);
+};
+
+export const updateContacto = async (id: string | number, data: Partial<Contacto>) => {
+    await saveToSupabase('contactos', id, data);
+};
+
+export const deleteContacto = async (id: string | number) => {
+    await deleteFromSupabase('contactos', id);
+};
+
