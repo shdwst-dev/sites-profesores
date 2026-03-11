@@ -37,7 +37,12 @@ export default function TIIDRecursosAvisos() {
     const [coordinacionTutores, setCoordinacionTutores] = useState<CoordinacionTutores | null>(null);
     const [casillerosData, setCasillerosData] = useState<RecursoGenerico | null>(null);
     const [altasBajasLink, setAltasBajasLink] = useState<string>('');
-    const [criteriosETC, setCriteriosETC] = useState<any[]>([]); // Using any[] for flexibility if structure varies, or strict type if known
+    const [altasBajasRules, setAltasBajasRules] = useState<string[]>([]);
+    const [criteriosETC, setCriteriosETC] = useState<any[]>([]);
+    const [recursamientosSteps, setRecursamientosSteps] = useState<{ step: string; text: string }[]>([]);
+    const [recursamientosFecha, setRecursamientosFecha] = useState<string>('');
+    const [recursamientosCosto, setRecursamientosCosto] = useState<string>('');
+    const [lenguaExNiveles, setLenguaExNiveles] = useState<string[]>([]);
     const [calendarioData, setCalendarioData] = useState<CalendarioData | null>(null);
     const [lenguaExtranjera, setLenguaExtranjera] = useState<LenguaExtranjeraData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -45,14 +50,17 @@ export default function TIIDRecursosAvisos() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [encargado, pi, estancias, tutores, casilleros, calendario, lengua] = await Promise.all([
+                const [encargado, pi, estancias, tutores, casilleros, calendario, lengua, altasBajas, criterios, recursamientos] = await Promise.all([
                     getEncargadoTutorias(),
                     getCoordinacionPI(),
                     getCoordinacionEstancias(),
                     getCoordinacionTutores(),
                     getRecursosGenericos('Casilleros'),
                     getCalendario(),
-                    getLenguaExtranjera()
+                    getLenguaExtranjera(),
+                    getRecursosGenericos('AltasBajas'),
+                    getRecursosGenericos('CriteriosETC'),
+                    getRecursosGenericos('Recursamientos')
                 ]);
 
                 setEncargadoTutorias(encargado);
@@ -62,21 +70,48 @@ export default function TIIDRecursosAvisos() {
                 setCasillerosData(casilleros);
                 setCalendarioData(calendario);
                 setLenguaExtranjera(lengua);
-                // For AltasBajas link, mimicking logic
-                const altasBajas = await getRecursosGenericos('AltasBajas'); // Not implemented in api yet, using mock fallback inside api logic or separate
+
+                // Altas y Bajas
                 if (altasBajas && altasBajas.link) setAltasBajasLink(altasBajas.link);
-                // Hardcoding mock fallback for simple values not fully exposed in api yet to keep it working
-                // We should add specific getters or parse json from RecursosGenericos later.
-                // For now, these were imported constants.
-                // Re-importing specific constants from data is dirty if we want full pure api.
-                // But `getRecursosGenericos('AltasBajas')` creates compatibility.
-                // Let's assume defaults for now if API returns null (which it does mostly).
-                setAltasBajasLink('https://sites.google.com/...');
-                setCriteriosETC([
-                    { title: "Promedio", description: "Mantener un promedio mínimo de 8.5 en el cuatrimestre anterior." },
-                    { title: "Regularidad", description: "No tener asignaturas reprobadas ni estar en situación de riesgo." },
-                    { title: "Asistencia", description: "Cumplir con el 80% de asistencia en todas las asignaturas." }
-                ]); // Static for now as these are content-heavy
+                else setAltasBajasLink('https://forms.gle/6mzeEmkYbU2MboKBA');
+                if (altasBajas?.content?.rules) setAltasBajasRules(altasBajas.content.rules);
+                else setAltasBajasRules([
+                    'Revisión obligatoria de carga académica con tutor.',
+                    'Restricción de cambio de ciclo con materias reprobadas.',
+                    'Solicitud formal mediante formato de ALTAS Y BAJAS.',
+                    'Prohibición de múltiples estancias simultáneas.'
+                ]);
+
+                // Criterios ETC
+                if (criterios?.content?.criterios) setCriteriosETC(criterios.content.criterios);
+                else setCriteriosETC([
+                    { title: 'Parciales', description: 'Aprobar al menos 2 parciales en curso normal.' },
+                    { title: 'Historial', description: 'No haber solicitado ETC previo de la materia.' },
+                    { title: 'Promedio', description: 'Tener un promedio mínimo acumulado de 7.0.' }
+                ]);
+
+                // Recursamientos
+                if (recursamientos?.content?.steps) setRecursamientosSteps(recursamientos.content.steps);
+                else setRecursamientosSteps([
+                    { step: '01', text: 'Descarga de Solicitud en portal de documentos.' },
+                    { step: '02', text: 'Obtención de firma de tutor y Director de Programa.' },
+                    { step: '03', text: 'Pago oficial en portal de finanzas institucional.' },
+                    { step: '04', text: 'Carga de comprobante y solicitud firmada.' }
+                ]);
+                if (recursamientos?.content?.fecha) setRecursamientosFecha(recursamientos.content.fecha);
+                else setRecursamientosFecha('12 al 16 de Mayo, 2025');
+                if (recursamientos?.content?.costo) setRecursamientosCosto(recursamientos.content.costo);
+                else setRecursamientosCosto('$450.00 MXN');
+
+                // Lengua Extranjera niveles
+                if (lengua?.reports && (recursamientos?.content?.niveles || criterios?.content)) {
+                    // niveles from lengua content if available
+                }
+                setLenguaExNiveles([
+                    'Niveles 1-3: Alumnos de 2do/3er ciclo.',
+                    'Niveles 4-6: Alumnos de 3er ciclo.',
+                    'Niveles 7-9: Generación 18 y anteriores.'
+                ]);
             } catch (error) {
                 console.error("Failed to load data", error);
             } finally {
@@ -339,25 +374,20 @@ export default function TIIDRecursosAvisos() {
                                             <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
                                                 <Calendar size={14} /> Fecha Límite
                                             </h4>
-                                            <p className="text-white text-xl font-bold">12 al 16 de Mayo, 2025</p>
+                                            <p className="text-white text-xl font-bold">{recursamientosFecha}</p>
                                         </div>
                                         <div className="bg-white/15 p-6 rounded-[2rem]">
                                             <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
                                                 <AlertCircle size={14} /> Costo Unitario
                                             </h4>
-                                            <p className="text-white text-xl font-bold">$450.00 MXN</p>
+                                            <p className="text-white text-xl font-bold">{recursamientosCosto}</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="md:w-1/2 space-y-4">
                                     <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4">Pasos a seguir</h4>
-                                    {[
-                                        { step: '01', text: 'Descarga de Solicitud en portal de documentos.' },
-                                        { step: '02', text: 'Obtención de firma de tutor y Director de Programa.' },
-                                        { step: '03', text: 'Pago oficial en portal de finanzas institucional.' },
-                                        { step: '04', text: 'Carga de comprobante y solicitud firmada.' }
-                                    ].map((step) => (
+                                    {recursamientosSteps.map((step) => (
                                         <div key={step.step} className="flex gap-4 p-4 bg-white/10 rounded-2xl hover:bg-white/20 transition-colors border border-white/5">
                                             <span className="text-indigo-300 font-black text-sm">{step.step}</span>
                                             <p className="text-white text-sm font-bold leading-snug">{step.text}</p>
@@ -380,12 +410,7 @@ export default function TIIDRecursosAvisos() {
                             </div>
                             <div className="grid md:grid-cols-2 gap-10">
                                 <div className="space-y-6">
-                                    {[
-                                        'Revisión obligatoria de carga académica con tutor.',
-                                        'Restricción de cambio de ciclo con materias reprobadas.',
-                                        'Solicitud formal mediante formato de ALTAS Y BAJAS.',
-                                        'Prohibición de múltiples estancias simultáneas.'
-                                    ].map((text, i) => (
+                                    {altasBajasRules.map((text, i) => (
                                         <div key={i} className="flex gap-4 items-start">
                                             <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                                                 <Check size={14} />
@@ -471,11 +496,7 @@ export default function TIIDRecursosAvisos() {
                                         <div>
                                             <h4 className="text-indigo-400 font-black text-xs uppercase tracking-widest mb-4">Intensivos</h4>
                                             <div className="space-y-3">
-                                                {[
-                                                    'Niveles 1-3: Alumnos de 2do/3er ciclo.',
-                                                    'Niveles 4-6: Alumnos de 3er ciclo.',
-                                                    'Niveles 7-9: Generación 18 y anteriores.'
-                                                ].map((t, i) => (
+                                                {lenguaExNiveles.map((t, i) => (
                                                     <div key={i} className="flex gap-3 text-sm font-medium opacity-80">
                                                         <div className="w-1 h-1 bg-indigo-400 rounded-full mt-2"></div>
                                                         {t}

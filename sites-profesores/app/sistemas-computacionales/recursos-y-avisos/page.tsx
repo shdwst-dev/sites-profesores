@@ -41,12 +41,18 @@ export default function SistemasRecursosAvisos() {
     const [lenguaExtranjera, setLenguaExtranjera] = useState<LenguaExtranjeraData | null>(null);
     const [casillerosData, setCasillerosData] = useState<RecursoGenerico | null>(null);
     const [altasBajasLink, setAltasBajasLink] = useState<string>('https://forms.gle/6mzeEmkYbU2MboKBA');
+    const [altasBajasRules, setAltasBajasRules] = useState<string[]>([]);
+    const [criteriosETC, setCriteriosETC] = useState<{ text: string; icon: any }[]>([]);
+    const [recursamientosSteps, setRecursamientosSteps] = useState<{ step: string; text: string }[]>([]);
+    const [recursamientosFecha, setRecursamientosFecha] = useState<string>('');
+    const [recursamientosCosto, setRecursamientosCosto] = useState<string>('');
+    const [lenguaExInfo, setLenguaExInfo] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [encargado, pi, estancias, tutores, calendario, lengua, casilleros, altasBajas] = await Promise.all([
+                const [encargado, pi, estancias, tutores, calendario, lengua, casilleros, altasBajas, criterios, recursamientos] = await Promise.all([
                     getEncargadoTutorias('Sistemas'),
                     getCoordinacionPI('Sistemas'),
                     getCoordinacionEstancias('Sistemas'),
@@ -54,7 +60,9 @@ export default function SistemasRecursosAvisos() {
                     getCalendario('Sistemas'),
                     getLenguaExtranjera('Sistemas'),
                     getRecursosGenericos('Casilleros', 'Sistemas'),
-                    getRecursosGenericos('AltasBajas', 'Sistemas')
+                    getRecursosGenericos('AltasBajas', 'Sistemas'),
+                    getRecursosGenericos('CriteriosETC', 'Sistemas'),
+                    getRecursosGenericos('Recursamientos', 'Sistemas')
                 ]);
 
                 setEncargadoTutorias(encargado);
@@ -64,7 +72,46 @@ export default function SistemasRecursosAvisos() {
                 setCalendarioData(calendario);
                 setLenguaExtranjera(lengua);
                 setCasillerosData(casilleros);
+
+                // Altas y Bajas
                 if (altasBajas && altasBajas.link) setAltasBajasLink(altasBajas.link);
+                if (altasBajas?.content?.rules) setAltasBajasRules(altasBajas.content.rules);
+                else setAltasBajasRules([
+                    'Validación previa con tutor académico.',
+                    'Restricción para alumnos con adeudos.',
+                    'Uso obligatorio del formato institucional.',
+                    'Revisión de carga al 100% en SII.'
+                ]);
+
+                // Criterios ETC
+                if (criterios?.content?.criterios) {
+                    setCriteriosETC(criterios.content.criterios.map((c: any) => ({ text: c.description || c.text, icon: Check })));
+                } else {
+                    setCriteriosETC([
+                        { text: 'Aprobar al menos dos parciales en el curso ordinario.', icon: Check },
+                        { text: 'No haber solicitado ETC previamente para la misma asignatura.', icon: Check },
+                        { text: 'Tener un promedio mínimo de 7.0 en la asignatura.', icon: Check }
+                    ]);
+                }
+
+                // Recursamientos
+                if (recursamientos?.content?.steps) setRecursamientosSteps(recursamientos.content.steps);
+                else setRecursamientosSteps([
+                    { step: '01', text: 'Descarga de Solicitud en portal de documentos.' },
+                    { step: '02', text: 'Obtención de firma de tutor y Director de Programa.' },
+                    { step: '03', text: 'Pago oficial en portal de finanzas institucional.' },
+                    { step: '04', text: 'Carga de comprobante y solicitud firmada.' }
+                ]);
+                if (recursamientos?.content?.fecha) setRecursamientosFecha(recursamientos.content.fecha);
+                else setRecursamientosFecha('12 al 16 de Mayo, 2025');
+                if (recursamientos?.content?.costo) setRecursamientosCosto(recursamientos.content.costo);
+                else setRecursamientosCosto('$450.00 MXN');
+
+                // Lengua Extranjera info
+                setLenguaExInfo([
+                    'Exámenes TOEFL / Certificaciones acreditables.',
+                    'Intensivos de Inglés (Niveles 1 al 9).'
+                ]);
 
             } catch (error) {
                 console.error("Failed to load data", error);
@@ -325,25 +372,20 @@ export default function SistemasRecursosAvisos() {
                                             <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
                                                 <Calendar size={14} /> Fecha Límite
                                             </h4>
-                                            <p className="text-white text-xl font-bold">12 al 16 de Mayo, 2025</p>
+                                            <p className="text-white text-xl font-bold">{recursamientosFecha}</p>
                                         </div>
                                         <div className="bg-white/15 p-6 rounded-[2rem]">
                                             <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
                                                 <AlertCircle size={14} /> Costo Unitario
                                             </h4>
-                                            <p className="text-white text-xl font-bold">$450.00 MXN</p>
+                                            <p className="text-white text-xl font-bold">{recursamientosCosto}</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="md:w-1/2 space-y-4">
                                     <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4">Pasos a seguir</h4>
-                                    {[
-                                        { step: '01', text: 'Descarga de Solicitud en portal de documentos.' },
-                                        { step: '02', text: 'Obtención de firma de tutor y Director de Programa.' },
-                                        { step: '03', text: 'Pago oficial en portal de finanzas institucional.' },
-                                        { step: '04', text: 'Carga de comprobante y solicitud firmada.' }
-                                    ].map((step) => (
+                                    {recursamientosSteps.map((step) => (
                                         <div key={step.step} className="flex gap-4 p-4 bg-white/10 rounded-2xl hover:bg-white/20 transition-colors border border-white/5">
                                             <span className="text-rose-300 font-black text-sm">{step.step}</span>
                                             <p className="text-white text-sm font-bold leading-snug">{step.text}</p>
@@ -363,12 +405,7 @@ export default function SistemasRecursosAvisos() {
                             </h2>
                             <div className="grid md:grid-cols-2 gap-12">
                                 <ul className="space-y-5">
-                                    {[
-                                        'Validación previa con tutor académico.',
-                                        'Restricción para alumnos con adeudos.',
-                                        'Uso obligatorio del formato institucional.',
-                                        'Revisión de carga al 100% en SII.'
-                                    ].map((step, i) => (
+                                    {altasBajasRules.map((step, i) => (
                                         <li key={i} className="flex gap-4 items-start text-sm font-bold border-b border-white/5 pb-4">
                                             <span className="text-rose-400">0{i + 1}</span>
                                             {step}
@@ -403,11 +440,7 @@ export default function SistemasRecursosAvisos() {
                                     <p className="text-gray-400 text-sm font-medium leading-relaxed">Lineamientos obligatorios para la Evaluación a Título de Competencia en Sistemas.</p>
                                 </div>
                                 <div className="md:w-2/3 grid gap-4">
-                                    {[
-                                        { text: 'Aprobar al menos dos parciales en el curso ordinario.', icon: Check },
-                                        { text: 'No haber solicitado ETC previamente para la misma asignatura.', icon: Check },
-                                        { text: 'Tener un promedio mínimo de 7.0 en la asignatura.', icon: Check }
-                                    ].map((c, i) => (
+                                    {criteriosETC.map((c, i) => (
                                         <div key={i} className="flex gap-4 p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors">
                                             <div className="w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center flex-shrink-0">
                                                 <c.icon size={14} />
@@ -456,14 +489,12 @@ export default function SistemasRecursosAvisos() {
                                     <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
                                         <h4 className="text-slate-900 font-black text-xs uppercase tracking-widest mb-6">Información General</h4>
                                         <div className="space-y-4">
-                                            <p className="text-slate-600 text-sm font-bold flex gap-3">
-                                                <span className="w-1.5 h-1.5 bg-rose-700 rounded-full mt-2"></span>
-                                                Exámenes TOEFL / Certificaciones acreditables.
-                                            </p>
-                                            <p className="text-slate-600 text-sm font-bold flex gap-3">
-                                                <span className="w-1.5 h-1.5 bg-rose-700 rounded-full mt-2"></span>
-                                                Intensivos de Inglés (Niveles 1 al 9).
-                                            </p>
+                                            {lenguaExInfo.map((info, i) => (
+                                                <p key={i} className="text-slate-600 text-sm font-bold flex gap-3">
+                                                    <span className="w-1.5 h-1.5 bg-rose-700 rounded-full mt-2"></span>
+                                                    {info}
+                                                </p>
+                                            ))}
                                         </div>
                                     </div>
                                     <div className="flex flex-col justify-center">
