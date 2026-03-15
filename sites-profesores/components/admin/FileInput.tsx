@@ -7,9 +7,10 @@ interface FileInputProps {
     onChange: (url: string) => void;
     accept?: string;
     department?: string;
+    category?: string;
 }
 
-export default function FileInput({ label, value, onChange, accept = "*", department = "General" }: FileInputProps) {
+export default function FileInput({ label, value, onChange, accept = "*", department = "General", category = "General" }: FileInputProps) {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -24,6 +25,7 @@ export default function FileInput({ label, value, onChange, accept = "*", depart
         const formData = new FormData();
         formData.append('file', file);
         formData.append('department', department);
+        formData.append('category', category);
 
         try {
             // Se llamará a la API de Drive aquí
@@ -64,7 +66,7 @@ export default function FileInput({ label, value, onChange, accept = "*", depart
                 <div className="flex gap-2">
                     <input
                         type="text"
-                        className="flex-1 bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors text-sm"
+                        className="flex-1 min-w-0 bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors text-sm"
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder="URL del archivo o subir uno nuevo..."
@@ -75,10 +77,17 @@ export default function FileInput({ label, value, onChange, accept = "*", depart
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={uploading}
-                        className="px-4 py-2 bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/40 hover:text-white border border-indigo-500/30 rounded-xl transition-all flex items-center justify-center min-w-[48px]"
+                        className={`px-4 py-2 rounded-xl transition-all flex items-center justify-center shrink-0 min-w-[48px] ${
+                            uploading 
+                                ? 'bg-indigo-600/40 text-white cursor-wait relative overflow-hidden border border-indigo-500/50' 
+                                : 'bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600/40 hover:text-white border border-indigo-500/30'
+                        }`}
                         title="Subir archivo"
                     >
-                        {uploading ? <Loader2 size={18} className="animate-spin" /> : <UploadCloud size={18} />}
+                        {uploading && (
+                            <div className="absolute inset-0 bg-indigo-500/20 animate-pulse"></div>
+                        )}
+                        {uploading ? <Loader2 size={18} className="animate-spin relative z-10" /> : <UploadCloud size={18} />}
                     </button>
 
                     <input
