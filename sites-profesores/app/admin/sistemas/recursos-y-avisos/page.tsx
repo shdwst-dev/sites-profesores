@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Loader2, CheckCircle, AlertCircle, Users, LayoutGrid, Calendar, GraduationCap, MapPin, AlignLeft, BookOpen, Info } from 'lucide-react';
+import { Save, Loader2, CheckCircle, AlertCircle, Users, LayoutGrid, Calendar, GraduationCap, MapPin, AlignLeft, BookOpen, Info, Edit2, X } from 'lucide-react';
 import Input from '@/components/admin/Input';
-import { default as Button } from '@/components/admin/SaveButton';
 import {
     getEncargadoTutorias,
     getCoordinacionPI,
@@ -27,12 +26,11 @@ import {
     CalendarioData,
     LenguaExtranjeraData
 } from '@/types';
-import { Plus, Trash2 } from 'lucide-react';
 import FileInput from '@/components/admin/FileInput';
 
 export default function AdminSistemasRecursos() {
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState<string | null>(null);
+    const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     // Data State
@@ -46,6 +44,11 @@ export default function AdminSistemasRecursos() {
     const [recursamientos, setRecursamientos] = useState<RecursoGenerico | null>(null);
     const [altasBajas, setAltasBajas] = useState<RecursoGenerico | null>(null);
     const [criteriosETC, setCriteriosETC] = useState<RecursoGenerico | null>(null);
+
+    // Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState<string | null>(null);
+    const [formData, setFormData] = useState<any>({});
 
     useEffect(() => {
         loadData();
@@ -66,18 +69,16 @@ export default function AdminSistemasRecursos() {
                 getRecursosGenericos('AltasBajas', 'Sistemas'),
                 getRecursosGenericos('CriteriosETC', 'Sistemas')
             ]);
-            setEncargado(e);
-            setPi(p);
-            setEstancias(est);
-            setTutores(t);
-            setCalendario(c);
-            setLengua(l);
-            setCasilleros(ca);
-
-            // Initialize defaults if missing
-            setRecursamientos(rec || { id: Date.now(), title: 'Proceso de Recursamientos', type: 'Recursamientos', content: { date: 'Fecha...', cost: 'Costo...' } });
-            setAltasBajas(ab || { id: Date.now(), title: 'Portal de Registro', type: 'AltasBajas', link: '' });
-            setCriteriosETC(crit || { id: Date.now(), title: 'Criterios ETC', type: 'CriteriosETC', content: [] });
+            setEncargado(e || { id: Date.now(), title: 'Encargada de Tutorías', type: 'EncargadoTutoria', name: '', correo: '', ext: '', image: '', department: 'Sistemas' });
+            setPi(p || { id: Date.now(), title: 'Coordinación PI', type: 'Coordinacion', name: '', correo: '', image: '', department: 'Sistemas' });
+            setEstancias(est || { id: Date.now(), title: 'Coordinación Estancias', type: 'Coordinacion', name: '', correo: '', image: '', department: 'Sistemas' });
+            setTutores(t || { id: Date.now(), title: 'Coordinación de Tutores', type: 'CoordinacionTutores', period: '', image: '', tutors: [], note: '', department: 'Sistemas' });
+            setCalendario(c || { id: Date.now(), title: 'Calendario Escolar', type: 'Calendario', cycle: '', image: '', department: 'Sistemas' });
+            setLengua(l || { id: Date.now(), title: 'Lengua Extranjera', type: 'LenguaExtranjera', requestLink: '', reports: { name: '', correo: '' }, department: 'Sistemas' });
+            setCasilleros(ca || { id: Date.now(), title: 'Casilleros', type: 'Casilleros', link: '', description: '', department: 'Sistemas' });
+            setRecursamientos(rec || { id: Date.now(), title: 'Proceso de Recursamientos', type: 'Recursamientos', content: { date: '', cost: '', steps: [] }, department: 'Sistemas' });
+            setAltasBajas(ab || { id: Date.now(), title: 'Portal de Altas y Bajas', type: 'AltasBajas', link: '', department: 'Sistemas' });
+            setCriteriosETC(crit || { id: Date.now(), title: 'Criterios ETC', type: 'CriteriosETC', content: [], department: 'Sistemas' });
         } catch (error) {
             console.error("Error loading data", error);
             setMessage({ type: 'error', text: 'Error al cargar los datos. Recargue la página.' });
@@ -86,377 +87,337 @@ export default function AdminSistemasRecursos() {
         }
     };
 
-    const handleSave = async (section: string, action: () => Promise<void>) => {
+    const showMessage = (type: 'success' | 'error', text: string) => {
+        setMessage({ type, text });
+        setTimeout(() => setMessage(null), 3000);
+    };
+
+    const handleOpenModal = (section: string, data: any) => {
+        setActiveSection(section);
+        setFormData(JSON.parse(JSON.stringify(data)));
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setActiveSection(null);
+        setFormData({});
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
         try {
-            setSaving(section);
-            setMessage(null);
-            await action();
-            setMessage({ type: 'success', text: 'Cambios guardados correctamente.' });
-            // Optional: Reload data to confirm? usually not needed if local state is updated
+            if (activeSection === 'encargado') await updateEncargadoTutorias(formData.id, formData, 'Sistemas');
+            if (activeSection === 'pi') await updateCoordinacion(formData.id, formData, 'Sistemas');
+            if (activeSection === 'estancias') await updateCoordinacion(formData.id, formData, 'Sistemas');
+            if (activeSection === 'tutores') await updateCoordinacionTutores(formData.id, formData, 'Sistemas');
+            if (activeSection === 'calendario') await updateCalendario(formData.id, formData, 'Sistemas');
+            if (activeSection === 'lengua') await updateLenguaExtranjera(formData.id, formData, 'Sistemas');
+            if (activeSection === 'casilleros') await updateRecursoGenerico(formData.id, formData, 'Sistemas');
+            if (activeSection === 'recursamientos') await updateRecursoGenerico(formData.id, formData, 'Sistemas');
+            if (activeSection === 'altasTest') await updateRecursoGenerico(formData.id, formData, 'Sistemas');
+            if (activeSection === 'criteriosETC') await updateRecursoGenerico(formData.id, formData, 'Sistemas');
+
+            await loadData();
+            showMessage('success', 'Cambios guardados correctamente.');
+            handleCloseModal();
         } catch (error) {
-            console.error(error);
-            setMessage({ type: 'error', text: 'Error al guardar los cambios.' });
+            console.error("Error saving:", error);
+            showMessage('error', 'Error al guardar los cambios.');
         } finally {
-            setSaving(null);
-            setTimeout(() => setMessage(null), 3000);
+            setSaving(false);
         }
     };
 
     if (loading) return <div className="flex justify-center items-center h-96 text-white"><Loader2 className="animate-spin" /> Cargando...</div>;
 
+    const renderCard = (
+        section: string,
+        icon: React.ReactNode,
+        title: string,
+        description: string,
+        data: any,
+        color: string = 'rose'
+    ) => {
+        const txtColor = color === 'rose' ? 'text-rose-400' : 'text-indigo-400';
+        const bgColor = color === 'rose' ? 'bg-rose-600' : 'bg-indigo-600';
+
+        return (
+            <div className={`bg-slate-900 border border-${color}-500/20 rounded-2xl p-6 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-in fade-in duration-500`}>
+                <div className="flex items-center gap-4">
+                    <div className={`p-3 ${bgColor} rounded-xl`}>{icon}</div>
+                    <div>
+                        <h2 className="text-xl font-bold text-white tracking-tight">{title}</h2>
+                        <p className="text-sm text-gray-400">{description}</p>
+                    </div>
+                </div>
+                <button
+                    onClick={() => handleOpenModal(section, data)}
+                    className={`flex items-center gap-2 ${txtColor} hover:bg-white/5 px-4 py-2 rounded-xl text-sm font-bold transition-all border border-transparent`}
+                >
+                    <Edit2 size={16} /> Editar Configuración
+                </button>
+            </div>
+        );
+    };
+
+
     return (
-        <div className="space-y-10 pb-20">
-            <header className="flex justify-between items-center mb-8">
+        <div className="space-y-10 pb-20 selection:bg-rose-500/30">
+            <header className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-white">Editar Recursos Sistemas</h1>
-                    <p className="text-gray-400">Actualiza la información visible en la página de Recursos y Avisos de Sistemas Computacionales.</p>
+                    <h1 className="text-3xl font-black text-white tracking-tight uppercase">Recursos Sistemas</h1>
+                    <p className="text-sm text-gray-400 mt-1">Actualiza la información visible en la página de Recursos y Avisos de Sistemas.</p>
                 </div>
                 {message && (
-                    <div className={`px-4 py-2 rounded-lg flex items-center gap-2 ${message.type === 'success' ? 'bg-green-500/20 text-green-400 border border-green-500/50' : 'bg-red-500/20 text-red-400 border border-red-500/50'}`}>
+                    <div className={`px-4 py-3 rounded-xl flex items-center gap-3 animate-in fade-in duration-300 font-medium shadow-lg ${message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
                         {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
                         {message.text}
                     </div>
                 )}
             </header>
 
+            <div className="space-y-6">
+                {renderCard('encargado', <Users className="text-white" size={20} />, 'Encargada de Tutorías', encargado?.name || 'No configurado', encargado)}
+                {renderCard('pi', <LayoutGrid className="text-white" size={20} />, 'Coordinación PI', pi?.name || 'No configurado', pi)}
+                {renderCard('estancias', <LayoutGrid className="text-white" size={20} />, 'Coordinación Estancias', estancias?.name || 'No configurado', estancias)}
+                {renderCard('tutores', <Users className="text-white" size={20} />, 'Coordinación de Tutores', `Periodo: ${tutores?.period || 'No configurado'}`, tutores)}
+                {renderCard('calendario', <Calendar className="text-white" size={20} />, 'Calendario Escolar', `Ciclo: ${calendario?.cycle || 'No configurado'}`, calendario)}
+                {renderCard('lengua', <GraduationCap className="text-white" size={20} />, 'Lengua Extranjera', lengua?.title || 'No configurado', lengua)}
+                {renderCard('casilleros', <MapPin className="text-white" size={20} />, 'Casilleros', casilleros?.title || 'No configurado', casilleros)}
+                {renderCard('recursamientos', <AlertCircle className="text-white" size={20} />, 'Recursamientos', `Límite: ${recursamientos?.content?.date || 'No configurado'}`, recursamientos)}
+                {renderCard('altasTest', <BookOpen className="text-white" size={20} />, 'Altas y Bajas', altasBajas?.link ? 'URL Configurada' : 'No configurado', altasBajas)}
+                {renderCard('criteriosETC', <Info className="text-white" size={20} />, 'Criterios ETC', `${criteriosETC?.content?.length || 0} criterios guardados`, criteriosETC)}
+            </div>
 
-            {/* Encargado Tutorias */}
-            {encargado && (
-                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
-                        <div className="p-3 bg-indigo-600 rounded-xl"><Users size={20} className="text-white" /></div>
-                        <h2 className="text-xl font-bold text-white">Encargada de Tutorías</h2>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <Input label="Nombre" value={encargado.name} onChange={v => setEncargado({ ...encargado, name: v })} />
-                        <Input label="Correo" value={encargado.correo} onChange={v => setEncargado({ ...encargado, correo: v })} />
-                        <Input label="Extensión" value={encargado.ext} onChange={v => setEncargado({ ...encargado, ext: v })} />
-                        <FileInput label="URL Imagen" value={encargado.image || ''} onChange={v => setEncargado({ ...encargado, image: v })} accept="image/*" department="Sistemas" />
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            loading={saving === 'encargado'}
-                            onClick={() => handleSave('encargado', async () => updateEncargadoTutorias(encargado.id, encargado, 'Sistemas'))}
-                        />
-                    </div>
-                </section>
-            )}
-
-            {/* Coordinacion PI */}
-            {pi && (
-                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
-                        <div className="p-3 bg-indigo-600 rounded-xl"><LayoutGrid size={20} className="text-white" /></div>
-                        <h2 className="text-xl font-bold text-white">Coordinación PI</h2>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <Input label="Título" value={pi.title} onChange={v => setPi({ ...pi, title: v })} />
-                        <Input label="Nombre del Coordinador" value={pi.name} onChange={v => setPi({ ...pi, name: v })} />
-                        <Input label="Correo" value={pi.correo} onChange={v => setPi({ ...pi, correo: v })} />
-                        <FileInput label="URL Imagen" value={pi.image} onChange={v => setPi({ ...pi, image: v })} accept="image/*" department="Sistemas" />
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            loading={saving === 'pi'}
-                            onClick={() => handleSave('pi', async () => updateCoordinacion(pi.id, pi, 'Sistemas'))}
-                        />
-                    </div>
-                </section>
-            )}
-
-            {/* Recursamientos */}
-            {recursamientos && (
-                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
-                        <div className="p-3 bg-indigo-600 rounded-xl"><AlertCircle size={20} className="text-white" /></div>
-                        <h2 className="text-xl font-bold text-white">Recursamientos</h2>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <Input label="Fecha Límite" value={recursamientos.content?.date || ''} onChange={v => setRecursamientos({ ...recursamientos, content: { ...recursamientos.content, date: v } })} />
-                        <Input label="Costo" value={recursamientos.content?.cost || ''} onChange={v => setRecursamientos({ ...recursamientos, content: { ...recursamientos.content, cost: v } })} />
-                    </div>
-                    <div className="w-full">
-                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Pasos a Seguir (JSON)</label>
-                        <textarea
-                            className="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white resize-y min-h-[100px] focus:outline-none focus:border-indigo-500 transition-colors font-mono text-xs"
-                            value={recursamientos.content?.steps ? JSON.stringify(recursamientos.content.steps, null, 2) : '[]'}
-                            onChange={e => {
-                                try {
-                                    const steps = JSON.parse(e.target.value);
-                                    setRecursamientos({ ...recursamientos, content: { ...recursamientos.content, steps } });
-                                } catch (err) {
-                                    // Allow typing invalid json momentarily, maybe store in separate state if strict
-                                }
-                            }}
-                            placeholder='[{"step": "01", "text": "..."}]'
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Edite el JSON array directamente para los pasos.</p>
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            loading={saving === 'recursamientos'}
-                            onClick={() => handleSave('recursamientos', async () => updateRecursoGenerico(recursamientos.id, recursamientos, 'Sistemas'))}
-                        />
-                    </div>
-                </section>
-            )}
-
-            {/* Altas y Bajas */}
-            {altasBajas && (
-                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
-                        <div className="p-3 bg-indigo-600 rounded-xl"><BookOpen size={20} className="text-white" /></div>
-                        <h2 className="text-xl font-bold text-white">Altas y Bajas</h2>
-                    </div>
-                    <div className="grid md:grid-cols-1 gap-6">
-                        <Input label="Link de Portal de Registro" value={altasBajas.link || ''} onChange={v => setAltasBajas({ ...altasBajas, link: v })} />
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            loading={saving === 'altasTest'}
-                            onClick={() => handleSave('altasTest', async () => updateRecursoGenerico(altasBajas.id, altasBajas, 'Sistemas'))}
-                        />
-                    </div>
-                </section>
-            )}
-
-            {/* Criterios ETC */}
-            {criteriosETC && (
-                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
-                        <div className="p-3 bg-indigo-600 rounded-xl"><Info size={20} className="text-white" /></div>
-                        <div className="flex-1">
-                            <h2 className="text-xl font-bold text-white">Criterios ETC</h2>
-                        </div>
-                        <button
-                            onClick={() => {
-                                const list = Array.isArray(criteriosETC.content) ? criteriosETC.content : [];
-                                setCriteriosETC({ ...criteriosETC, content: [...list, { title: 'Nuevo Criterio', description: 'Descripción' }] });
-                            }}
-                            className="text-sm flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors"
-                        >
-                            <Plus size={16} /> Añadir Criterio
-                        </button>
-                    </div>
-                    <div className="space-y-4">
-                        {(Array.isArray(criteriosETC.content) ? criteriosETC.content : []).map((c: any, idx: number) => (
-                            <div key={idx} className="bg-slate-900/50 p-4 rounded-xl border border-white/5 grid gap-2">
-                                <div className="flex justify-between">
-                                    <h4 className="text-white font-bold text-sm">Criterio #{idx + 1}</h4>
-                                    <button
-                                        onClick={() => {
-                                            const list = [...(criteriosETC.content as any[])];
-                                            list.splice(idx, 1);
-                                            setCriteriosETC({ ...criteriosETC, content: list });
-                                        }}
-                                        className="text-red-400 hover:text-red-300"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                                <Input label="Título" value={c.title} onChange={v => {
-                                    const list = [...(criteriosETC.content as any[])];
-                                    list[idx] = { ...list[idx], title: v };
-                                    setCriteriosETC({ ...criteriosETC, content: list });
-                                }} />
-                                <Input label="Descripción" value={c.description} onChange={v => {
-                                    const list = [...(criteriosETC.content as any[])];
-                                    list[idx] = { ...list[idx], description: v };
-                                    setCriteriosETC({ ...criteriosETC, content: list });
-                                }} />
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            loading={saving === 'criteriosETC'}
-                            onClick={() => handleSave('criteriosETC', async () => updateRecursoGenerico(criteriosETC.id, criteriosETC, 'Sistemas'))}
-                        />
-                    </div>
-                </section>
-            )}
-
-            {/* Coordinacion Estancias */}
-            {estancias && (
-                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
-                        <div className="p-3 bg-indigo-600 rounded-xl"><LayoutGrid size={20} className="text-white" /></div>
-                        <h2 className="text-xl font-bold text-white">Coordinación Estancias</h2>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <Input label="Título" value={estancias.title} onChange={v => setEstancias({ ...estancias, title: v })} />
-                        <Input label="Nombre del Coordinador" value={estancias.name} onChange={v => setEstancias({ ...estancias, name: v })} />
-                        <Input label="Correo" value={estancias.correo} onChange={v => setEstancias({ ...estancias, correo: v })} />
-                        <FileInput label="URL Imagen" value={estancias.image} onChange={v => setEstancias({ ...estancias, image: v })} accept="image/*" department="Sistemas" />
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            loading={saving === 'estancias'}
-                            onClick={() => handleSave('estancias', async () => updateCoordinacion(estancias.id, estancias, 'Sistemas'))}
-                        />
-                    </div>
-                </section>
-            )}
-
-            {/* Coordinacion Tutores */}
-            {tutores && (
-                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
-                        <div className="p-3 bg-indigo-600 rounded-xl"><Users size={20} className="text-white" /></div>
-                        <h2 className="text-xl font-bold text-white">Coordinación de Tutores</h2>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <Input label="Título" value={tutores.title} onChange={v => setTutores({ ...tutores, title: v })} />
-                        <Input label="Periodo" value={tutores.period} onChange={v => setTutores({ ...tutores, period: v })} />
-                        <FileInput label="URL Imagen (si no hay tabla)" value={tutores.image || ''} onChange={v => setTutores({ ...tutores, image: v })} accept="image/*" department="Sistemas" />
-                    </div>
-
-                    {/* Lista de Tutores */}
-                    <div className="mt-6 border-t border-white/5 pt-6">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-bold text-white">Lista de Tutores por Grupo</h3>
-                            <button
-                                onClick={() => {
-                                    const currentTutors = tutores.tutors || [];
-                                    setTutores({ ...tutores, tutors: [...currentTutors, { group: 'Nuevo Grupo', tutor: 'Nombre del Tutor' }] });
-                                }}
-                                className="text-sm flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors"
-                            >
-                                <Plus size={16} /> Añadir Grupo
+            {/* Modal Dinámico Multis-Sección */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto w-full">
+                    <div className="bg-slate-900 border border-white/10 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col my-8 animate-in slide-in-from-bottom-4 duration-300">
+                        <div className="flex justify-between items-center p-6 border-b border-white/10 bg-slate-900/50 sticky top-0 z-10">
+                            <h3 className="text-lg font-black text-white uppercase tracking-tight flex items-center gap-3">
+                                <Edit2 size={18} className="text-rose-400" />
+                                Editar {formData.title || 'Sección'}
+                            </h3>
+                            <button type="button" onClick={handleCloseModal} className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors">
+                                <X size={20} />
                             </button>
                         </div>
-                        <div className="space-y-3">
-                            {(tutores.tutors || []).map((t, idx) => (
-                                <div key={idx} className="flex gap-4 items-center">
-                                    <div className="w-32">
-                                        <input
-                                            type="text"
-                                            className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
-                                            value={t.group}
-                                            onChange={e => {
-                                                const newTutors = [...(tutores.tutors || [])];
-                                                newTutors[idx] = { ...t, group: e.target.value };
-                                                setTutores({ ...tutores, tutors: newTutors });
-                                            }}
-                                            placeholder="Grupo"
-                                        />
+
+                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                            
+                            {/* --- ENCARGADO TUTORIAS --- */}
+                            {activeSection === 'encargado' && (
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="md:col-span-2">
+                                        <Input label="Nombre" value={formData.name || ''} onChange={v => setFormData({ ...formData, name: v })} />
                                     </div>
-                                    <div className="flex-1">
-                                        <input
-                                            type="text"
-                                            className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
-                                            value={t.tutor}
-                                            onChange={e => {
-                                                const newTutors = [...(tutores.tutors || [])];
-                                                newTutors[idx] = { ...t, tutor: e.target.value };
-                                                setTutores({ ...tutores, tutors: newTutors });
-                                            }}
-                                            placeholder="Nombre del Tutor"
-                                        />
+                                    <Input label="Correo" value={formData.correo || ''} onChange={v => setFormData({ ...formData, correo: v })} />
+                                    <Input label="Extensión" value={formData.ext || ''} onChange={v => setFormData({ ...formData, ext: v })} />
+                                    <div className="md:col-span-2">
+                                        <FileInput label="URL Imagen" value={formData.image || ''} onChange={v => setFormData({ ...formData, image: v })} accept="image/*" department="Sistemas" />
                                     </div>
-                                    <button
-                                        onClick={() => {
-                                            const newTutors = (tutores.tutors || []).filter((_, i) => i !== idx);
-                                            setTutores({ ...tutores, tutors: newTutors });
-                                        }}
-                                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
                                 </div>
-                            ))}
-                            {(!tutores.tutors || tutores.tutors.length === 0) && (
-                                <p className="text-gray-500 italic text-sm">No hay tutores asignados. Añade uno arriba.</p>
                             )}
-                        </div>
-                    </div>
-                    <div className="w-full">
-                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Nota</label>
-                        <textarea
-                            className="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white resize-y min-h-[100px] focus:outline-none focus:border-indigo-500 transition-colors"
-                            value={tutores.note || ''}
-                            onChange={e => setTutores({ ...tutores, note: e.target.value })}
-                        />
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            loading={saving === 'tutores'}
-                            onClick={() => handleSave('tutores', async () => updateCoordinacionTutores(tutores.id, tutores, 'Sistemas'))}
-                        />
-                    </div>
-                </section>
-            )}
 
-            {/* Calendario */}
-            {calendario && (
-                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
-                        <div className="p-3 bg-indigo-600 rounded-xl"><Calendar size={20} className="text-white" /></div>
-                        <h2 className="text-xl font-bold text-white">Calendario Escolar</h2>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <Input label="Ciclo" value={calendario.cycle} onChange={v => setCalendario({ ...calendario, cycle: v })} />
-                        <FileInput label="URL Imagen" value={calendario.image} onChange={v => setCalendario({ ...calendario, image: v })} accept="image/*" department="Sistemas" />
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            loading={saving === 'calendario'}
-                            onClick={() => handleSave('calendario', async () => updateCalendario(calendario.id!, calendario, 'Sistemas'))}
-                        />
-                    </div>
-                </section>
-            )}
+                            {/* --- COORDINACION PI / ESTANCIAS --- */}
+                            {(activeSection === 'pi' || activeSection === 'estancias') && (
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="md:col-span-2">
+                                        <Input label="Título de Tarjeta" value={formData.title || ''} onChange={v => setFormData({ ...formData, title: v })} />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <Input label="Nombre del Coordinador" value={formData.name || ''} onChange={v => setFormData({ ...formData, name: v })} />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <Input label="Correo" value={formData.correo || ''} onChange={v => setFormData({ ...formData, correo: v })} />
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <FileInput label="URL Imagen" value={formData.image || ''} onChange={v => setFormData({ ...formData, image: v })} accept="image/*" department="Sistemas" />
+                                    </div>
+                                </div>
+                            )}
 
-            {/* Lengua Extranjera */}
-            {lengua && (
-                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
-                        <div className="p-3 bg-indigo-600 rounded-xl"><GraduationCap size={20} className="text-white" /></div>
-                        <h2 className="text-xl font-bold text-white">Lengua Extranjera</h2>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <Input label="Título" value={lengua.title} onChange={v => setLengua({ ...lengua, title: v })} />
-                        <Input label="Link de Solicitud" value={lengua.requestLink} onChange={v => setLengua({ ...lengua, requestLink: v })} />
-                        <Input label="Nombre Contacto" value={lengua.reports.name} onChange={v => setLengua({ ...lengua, reports: { ...lengua.reports, name: v } })} />
-                        <Input label="Correo Contacto" value={lengua.reports.correo} onChange={v => setLengua({ ...lengua, reports: { ...lengua.reports, correo: v } })} />
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            loading={saving === 'lengua'}
-                            onClick={() => handleSave('lengua', async () => updateLenguaExtranjera(lengua.id!, lengua, 'Sistemas'))}
-                        />
-                    </div>
-                </section>
-            )}
+                            {/* --- TUTORES --- */}
+                            {activeSection === 'tutores' && (
+                                <div className="space-y-4">
+                                    <Input label="Título" value={formData.title || ''} onChange={v => setFormData({ ...formData, title: v })} />
+                                    <Input label="Periodo" value={formData.period || ''} onChange={v => setFormData({ ...formData, period: v })} />
+                                    <div className="pb-4 border-b border-white/10">
+                                        <FileInput label="URL Imagen General (Si no usas la tabla)" value={formData.image || ''} onChange={v => setFormData({ ...formData, image: v })} accept="image/*" department="Sistemas" />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Nota Inferior</label>
+                                        <textarea
+                                            className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all text-sm font-medium resize-y min-h-[80px]"
+                                            value={formData.note || ''}
+                                            onChange={e => setFormData({ ...formData, note: e.target.value })}
+                                        />
+                                    </div>
 
-            {/* Casilleros */}
-            {casilleros && (
-                <section className="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-4 mb-4">
-                        <div className="p-3 bg-indigo-600 rounded-xl"><MapPin size={20} className="text-white" /></div>
-                        <h2 className="text-xl font-bold text-white">Casilleros</h2>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <Input label="Título" value={casilleros.title} onChange={v => setCasilleros({ ...casilleros, title: v })} />
-                        <Input label="Link de Solicitud" value={casilleros.link || ''} onChange={v => setCasilleros({ ...casilleros, link: v })} />
-                    </div>
-                    <div className="w-full">
-                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Descripción</label>
-                        <textarea
-                            className="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-white resize-y min-h-[100px] focus:outline-none focus:border-indigo-500 transition-colors"
-                            value={casilleros.description || ''}
-                            onChange={e => setCasilleros({ ...casilleros, description: e.target.value })}
-                        />
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button
-                            loading={saving === 'casilleros'}
-                            onClick={() => handleSave('casilleros', async () => updateRecursoGenerico(casilleros.id, casilleros, 'Sistemas'))}
-                        />
-                    </div>
-                </section>
-            )}
+                                    <div className="bg-slate-950 p-4 rounded-2xl border border-white/5 space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <h4 className="text-sm font-bold text-white uppercase tracking-widest">Lista de Tutores por Grupo</h4>
+                                            <button type="button" onClick={() => {
+                                                const tutors = Array.isArray(formData.tutors) ? formData.tutors : [];
+                                                setFormData({ ...formData, tutors: [...tutors, { group: 'Nuevo Grupo', tutor: 'Nombre del Tutor' }] });
+                                            }} className="text-xs text-rose-400 font-bold hover:text-rose-300">
+                                                + Añadir Grupo
+                                            </button>
+                                        </div>
+                                        {(!formData.tutors || formData.tutors.length === 0) ? (
+                                            <p className="text-gray-500 text-xs">Añade tu primer grupo.</p>
+                                        ) : (
+                                            formData.tutors.map((t: any, idx: number) => (
+                                                <div key={idx} className="flex gap-2">
+                                                    <input type="text" className="w-1/3 bg-slate-900 border border-white/5 rounded-lg px-3 py-2 text-white text-xs focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none" value={t.group} onChange={e => {
+                                                        const newT = [...formData.tutors];
+                                                        newT[idx].group = e.target.value;
+                                                        setFormData({ ...formData, tutors: newT });
+                                                    }} placeholder="Grupo" />
+                                                    <input type="text" className="w-full bg-slate-900 border border-white/5 rounded-lg px-3 py-2 text-white text-xs focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none" value={t.tutor} onChange={e => {
+                                                        const newT = [...formData.tutors];
+                                                        newT[idx].tutor = e.target.value;
+                                                        setFormData({ ...formData, tutors: newT });
+                                                    }} placeholder="Nombre Tutor" />
+                                                    <button type="button" onClick={() => {
+                                                        const newT = formData.tutors.filter((_:any, i:number) => i !== idx);
+                                                        setFormData({ ...formData, tutors: newT });
+                                                    }} className="text-red-400 p-2 hover:bg-red-500/10 rounded-lg">
+                                                        <X size={14} />
+                                                    </button>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
+                            {/* --- CALENDARIO --- */}
+                            {activeSection === 'calendario' && (
+                                <div className="space-y-4">
+                                    <Input label="Ciclo" value={formData.cycle || ''} onChange={v => setFormData({ ...formData, cycle: v })} />
+                                    <FileInput label="URL Imagen del Calendario" value={formData.image || ''} onChange={v => setFormData({ ...formData, image: v })} accept="image/*" department="Sistemas" />
+                                </div>
+                            )}
+
+                            {/* --- LENGUA EXTRANJERA --- */}
+                            {activeSection === 'lengua' && (
+                                <div className="space-y-4">
+                                    <Input label="Título General" value={formData.title || ''} onChange={v => setFormData({ ...formData, title: v })} />
+                                    <Input label="Link de Solicitud Directo" value={formData.requestLink || ''} onChange={v => setFormData({ ...formData, requestLink: v })} />
+                                    <div className="bg-slate-950 p-4 rounded-xl border border-white/5 space-y-4">
+                                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Contacto / Reportes</h4>
+                                        <Input label="Nombre del Contacto" value={formData.reports?.name || ''} onChange={v => setFormData({ ...formData, reports: { ...formData.reports, name: v } })} />
+                                        <Input label="Correo del Contacto" value={formData.reports?.correo || ''} onChange={v => setFormData({ ...formData, reports: { ...formData.reports, correo: v } })} />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- RECURSAMIENTOS --- */}
+                            {activeSection === 'recursamientos' && (
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Input label="Fecha Límite" value={formData.content?.date || ''} onChange={v => setFormData({ ...formData, content: { ...formData.content, date: v } })} />
+                                        <Input label="Costo" value={formData.content?.cost || ''} onChange={v => setFormData({ ...formData, content: { ...formData.content, cost: v } })} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Pasos (Formato JSON Array)</label>
+                                        <textarea
+                                            className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all font-mono text-xs resize-y min-h-[150px]"
+                                            value={formData.content?.steps ? JSON.stringify(formData.content.steps, null, 2) : '[]'}
+                                            onChange={e => {
+                                                try {
+                                                    const steps = JSON.parse(e.target.value);
+                                                    setFormData({ ...formData, content: { ...formData.content, steps } });
+                                                } catch (err) {}
+                                            }}
+                                            placeholder='[&#10;  {&#10;    "step": "01",&#10;    "text": "..."&#10;  }&#10;]'
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Si este JSON es inválido, no se actualizará en tiempo real. Use un formato estricto.</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- CASILLEROS --- */}
+                            {activeSection === 'casilleros' && (
+                                <div className="space-y-4">
+                                    <Input label="Título" value={formData.title || ''} onChange={v => setFormData({ ...formData, title: v })} />
+                                    <Input label="Link de Solicitud (Forms)" value={formData.link || ''} onChange={v => setFormData({ ...formData, link: v })} />
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Descripción Informativa</label>
+                                        <textarea
+                                            className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all text-sm font-medium resize-y min-h-[100px]"
+                                            value={formData.description || ''}
+                                            onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- ALTAS Y BAJAS --- */}
+                            {activeSection === 'altasTest' && (
+                                <div className="space-y-4">
+                                    <Input label="Link del Portal de Registro" value={formData.link || ''} onChange={v => setFormData({ ...formData, link: v })} />
+                                </div>
+                            )}
+
+                            {/* --- CRITERIOS ETC --- */}
+                            {activeSection === 'criteriosETC' && (
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest">Lista de Criterios</label>
+                                        <button type="button" onClick={() => {
+                                            const list = Array.isArray(formData.content) ? formData.content : [];
+                                            setFormData({ ...formData, content: [...list, { title: 'Nuevo Criterio', description: 'Descripción' }] });
+                                        }} className="text-xs text-rose-400 font-bold hover:text-rose-300">
+                                            + Añadir
+                                        </button>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {(Array.isArray(formData.content) ? formData.content : []).map((c: any, idx: number) => (
+                                            <div key={idx} className="bg-slate-950 p-4 rounded-xl border border-white/5 relative group">
+                                                <button type="button" onClick={() => {
+                                                    const list = [...formData.content];
+                                                    list.splice(idx, 1);
+                                                    setFormData({ ...formData, content: list });
+                                                }} className="absolute top-4 right-4 text-gray-500 hover:text-red-400">
+                                                    <X size={16} />
+                                                </button>
+                                                <h4 className="text-xs text-gray-500 font-bold mb-2">Criterio #{idx + 1}</h4>
+                                                <div className="space-y-2 pr-6">
+                                                    <input type="text" className="w-full bg-slate-900 border border-white/5 rounded-lg px-3 py-2 text-white text-sm focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none" value={c.title} onChange={e => {
+                                                        const list = [...formData.content];
+                                                        list[idx].title = e.target.value;
+                                                        setFormData({ ...formData, content: list });
+                                                    }} placeholder="Título" />
+                                                    <textarea className="w-full bg-slate-900 border border-white/5 rounded-lg px-3 py-2 text-white text-sm resize-y focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none" value={c.description} onChange={e => {
+                                                        const list = [...formData.content];
+                                                        list[idx].description = e.target.value;
+                                                        setFormData({ ...formData, content: list });
+                                                    }} placeholder="Descripción" rows={3}></textarea>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="pt-6 border-t border-white/10 flex justify-end gap-3 sticky bottom-0 bg-slate-900 pb-2">
+                                <button type="button" onClick={handleCloseModal} className="px-5 py-2.5 rounded-xl text-xs uppercase font-black tracking-widest text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                                    Cancelar
+                                </button>
+                                <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs uppercase font-black tracking-widest transition-all shadow-lg shadow-rose-500/20 disabled:opacity-50">
+                                    {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                                    Guardar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

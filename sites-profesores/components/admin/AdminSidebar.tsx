@@ -27,13 +27,6 @@ const navItems = [
             { href: '/admin/sistemas/recursos-y-avisos', label: 'Recursos y Avisos', icon: Database },
         ]
     },
-    {
-        group: 'Base de Datos (Supabase)',
-        items: [
-            { href: '/admin/comunicados', label: 'Comunicados', icon: Bell },
-            { href: '/admin/entregables', label: 'Entregables (Drive)', icon: CheckSquare },
-        ]
-    },
 ];
 
 export default function AdminSidebar() {
