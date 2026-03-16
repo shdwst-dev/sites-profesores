@@ -1,9 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Calendar, BookOpen, ExternalLink, ChevronUp, Menu, X } from 'lucide-react';
+import { Calendar, BookOpen, ExternalLink, ChevronUp, Menu, X, UploadCloud, CheckCircle2, Loader2 } from 'lucide-react';
 import Footer from '@/components/Footer';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import SubHeader from '@/components/SubHeader';
 import { getEntregables, getDocumentosDescarga } from '@/lib/api';
 import { Entregable, DocumentoDescarga } from '@/types';
@@ -133,18 +133,8 @@ export default function TIIDFormatosDocumentos() {
                                     <h2 className="text-3xl font-black text-white tracking-tight uppercase">Entregables</h2>
                                 </div>
                                 <div className="space-y-4">
-                                    {entregables.map((item, idx) => (
-                                        <div key={idx} className="flex flex-col md:flex-row gap-6 p-6 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors">
-                                            <div className="md:w-1/4">
-                                                <span className="text-indigo-400 font-black text-xs uppercase tracking-widest">{item.stage}</span>
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-white font-bold">{item.title}</p>
-                                            </div>
-                                            <div className="md:w-1/4">
-                                                <span className="text-emerald-400 font-bold text-sm bg-emerald-500/10 px-4 py-2 rounded-full inline-block">{item.deadline}</span>
-                                            </div>
-                                        </div>
+                                    {entregables.map((item) => (
+                                        <EntregableRow key={item.id} item={item} department="TIID" />
                                     ))}
                                 </div>
                             </div>
@@ -236,6 +226,87 @@ export default function TIIDFormatosDocumentos() {
             )}
 
             <Footer />
+        </div>
+    );
+}
+
+// Componente individual para manejar el estado de subida de cada fila
+function EntregableRow({ item, department }: { item: Entregable, department: string }) {
+    const [uploading, setUploading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const fileRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        setError(null);
+        setSuccess(false);
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('department', department);
+        // Categoría específica para que en Drive se cree una carpeta con el nombre del entregable
+        formData.append('category', `Entregas - ${item.title}`);
+
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al subir el archivo');
+            }
+
+            setSuccess(true);
+            setTimeout(() => setSuccess(false), 5000); // Ocultar mensaje de éxito después de 5s
+
+        } catch (err: any) {
+            console.error("Upload error:", err);
+            setError(err.message || 'Error al subir');
+        } finally {
+            setUploading(false);
+            if (fileRef.current) fileRef.current.value = '';
+        }
+    };
+
+    return (
+        <div className="flex flex-col md:flex-row gap-6 p-6 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors items-center">
+            <div className="md:w-1/4 w-full">
+                <span className="text-indigo-400 font-black text-xs uppercase tracking-widest">{item.stage}</span>
+            </div>
+            <div className="flex-1 w-full">
+                <p className="text-white font-bold">{item.title}</p>
+                {error && <p className="text-red-400 text-xs font-bold mt-2">{error}</p>}
+                {success && <p className="text-emerald-400 text-xs font-bold mt-2 flex items-center gap-1"><CheckCircle2 size={14}/> ¡Entregado con éxito!</p>}
+            </div>
+            <div className="md:w-1/4 w-full flex items-center gap-4 justify-between md:justify-end">
+                <span className="text-emerald-400 font-bold text-sm bg-emerald-500/10 px-4 py-2 rounded-full inline-block shrink-0">
+                    {item.deadline}
+                </span>
+
+                <input type="file" ref={fileRef} className="hidden" onChange={handleFileChange} accept=".pdf,.doc,.docx,.zip" />
+                
+                <button 
+                    onClick={() => !uploading && fileRef.current?.click()}
+                    disabled={uploading}
+                    title="Subir mi archivo"
+                    className={`p-2.5 rounded-xl transition-all shrink-0 ${
+                        uploading 
+                        ? 'bg-indigo-600/50 text-white cursor-wait' 
+                        : success 
+                            ? 'bg-emerald-500/20 text-emerald-400'
+                            : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95'
+                    }`}
+                >
+                    {uploading ? <Loader2 size={18} className="animate-spin" /> : (success ? <CheckCircle2 size={18} /> : <UploadCloud size={18} />)}
+                </button>
+            </div>
         </div>
     );
 }

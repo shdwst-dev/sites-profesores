@@ -2,27 +2,23 @@ import { google } from 'googleapis';
 import { Readable } from 'stream';
 
 const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
-const PARENT_FOLDER_ID = '1FVvHCx5s5B6CE1ALFQ_n5MaHqEsme8Sv';
+const PARENT_FOLDER_ID = '12yN30IgnZJfO1w9chgSbtM-cgVLfataX';
 
-// Verificación temprana de credenciales para ayudar al debugging
-const checkCredentials = () => {
-    if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
-        console.warn('⚠️ ADVERTENCIA: Faltan credenciales de Google (GOOGLE_CLIENT_EMAIL o GOOGLE_PRIVATE_KEY) en .env.local');
-    }
-};
+const oauth2Client = new google.auth.OAuth2(
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    'http://localhost:3000/api/auth/google/callback'
+);
 
-checkCredentials();
+if (process.env.GOOGLE_REFRESH_TOKEN) {
+    oauth2Client.setCredentials({
+        refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+    });
+} else {
+    console.warn('⚠️ ADVERTENCIA: Falta GOOGLE_REFRESH_TOKEN en .env.local');
+}
 
-// Autenticación de Google API
-const auth = new google.auth.GoogleAuth({
-    credentials: {
-        client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    },
-    scopes: SCOPES,
-});
-
-const drive = google.drive({ version: 'v3', auth });
+const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
 // Cache de IDs de carpetas ya creadas para no buscar cada vez
 const folderCache = new Map<string, string>();
@@ -82,8 +78,8 @@ export async function uploadToDrive(
     category: string = 'General',
     uploadedBy: string = 'Desconocido'
 ) {
-    if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY) {
-        throw new Error('Las credenciales de Google Drive no están configuradas en el servidor (.env.local).');
+    if (!process.env.GOOGLE_REFRESH_TOKEN) {
+        throw new Error('Primero debes autorizar la aplicación entrando a /api/auth/google/login');
     }
 
     // 1. Obtener/crear carpeta de departamento
@@ -129,8 +125,8 @@ export async function uploadToDrive(
         });
 
         return file.data.webViewLink;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error uploading to Google Drive:', error);
-        throw new Error('Fallo la subida a Google Drive. Verifique las credenciales y permisos.');
+        throw new Error(`Google Drive API Error: ${error.message}`);
     }
 }
