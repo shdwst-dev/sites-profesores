@@ -192,7 +192,7 @@ export default function AdminInfoInteres() {
                                 data.map(item => (
                                     <tr key={item.id} className="hover:bg-white/5 transition-colors">
                                         {columns.map(col => (
-                                            <td key={`${item.id}-${col.key}`} className="px-6 py-4 font-medium max-w-[200px] truncate" title={item[col.key]}>
+                                            <td key={`${item.id}-${col.key}`} className="px-6 py-4 font-medium max-w-[200px] truncate" title={typeof item[col.key] === 'string' ? item[col.key] : undefined}>
                                                 {col.render ? col.render(item) : item[col.key]}
                                             </td>
                                         ))}
