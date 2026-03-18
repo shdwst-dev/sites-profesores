@@ -192,7 +192,7 @@ export default function AdminSistemasFormatosDocumentos() {
         <div className="space-y-10 pb-20 selection:bg-rose-500/30">
             <header className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-white tracking-tight uppercase">Formatos y Documentos Sistemas</h1>
+                    <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight uppercase">Formatos y Documentos Sistemas</h1>
                     <p className="text-sm text-gray-400 mt-1">Actualiza la información visible en la página de Sistemas.</p>
                 </div>
                 {message && (

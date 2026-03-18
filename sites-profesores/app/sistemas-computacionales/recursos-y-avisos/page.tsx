@@ -213,7 +213,7 @@ export default function SistemasRecursosAvisos() {
                     {/* Section: Encargado */}
                     {encargadoTutorias && (
                         <section id="encargado" className="scroll-mt-32">
-                            <div className="relative p-10 bg-gradient-to-br from-rose-950/60 to-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden group">
+                            <div className="relative p-6 sm:p-10 bg-gradient-to-br from-rose-950/60 to-slate-900 border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
 
                                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
@@ -232,7 +232,7 @@ export default function SistemasRecursosAvisos() {
                                     </div>
                                     <div>
                                         <span className="inline-block px-3 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full mb-3">Dirección de Tutorías</span>
-                                        <h2 className="text-3xl font-black text-white mb-2 tracking-tight">{encargadoTutorias.name}</h2>
+                                        <h2 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight">{encargadoTutorias.name}</h2>
                                         <div className="flex flex-col md:flex-row items-center gap-4 text-gray-400">
                                             <a href={`mailto:${encargadoTutorias.correo}`} className="flex items-center gap-2 hover:text-rose-400 transition-colors font-bold text-sm">
                                                 <Mail size={16} /> {encargadoTutorias.correo}
@@ -353,7 +353,7 @@ export default function SistemasRecursosAvisos() {
 
                     {/* Section: Recursamientos */}
                     <section id="recursamientos" className="scroll-mt-32">
-                        <div className="p-10 bg-rose-600 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+                        <div className="p-6 sm:p-10 bg-rose-600 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
                             {/* Background Decoration */}
                             <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-white/10 rounded-full blur-[80px] group-hover:scale-110 transition-transform duration-1000"></div>
 
@@ -362,7 +362,7 @@ export default function SistemasRecursosAvisos() {
                                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-6">
                                         <AlertCircle size={14} /> Atención Académica
                                     </div>
-                                    <h2 className="text-4xl font-black text-white mb-6 uppercase tracking-tighter leading-none">Proceso de <br /><span className="text-rose-200">Recursamientos</span></h2>
+                                    <h2 className="text-3xl sm:text-4xl font-black text-white mb-6 uppercase tracking-tighter leading-none">Proceso de <br /><span className="text-rose-200">Recursamientos</span></h2>
                                     <p className="text-rose-100 font-medium leading-relaxed mb-8">
                                         Para aquellos alumnos que requieren retomar asignaturas, se ha establecido un calendario y normativa específica.
                                     </p>
@@ -398,7 +398,7 @@ export default function SistemasRecursosAvisos() {
 
                     {/* Section: Altas y Bajas */}
                     <section id="altasbajas" className="scroll-mt-32">
-                        <div className="bg-gradient-to-br from-rose-900/80 to-slate-950 p-12 rounded-[3rem] border border-white/10 shadow-3xl text-white">
+                        <div className="bg-gradient-to-br from-rose-900/80 to-slate-950 p-6 sm:p-12 rounded-[2rem] sm:rounded-[3rem] border border-white/10 shadow-3xl text-white">
                             <h2 className="text-3xl font-black mb-12 flex items-center gap-4 uppercase tracking-tighter">
                                 <div className="p-3 bg-white/10 rounded-2xl"><BookOpen size={28} /></div>
                                 Proceso Administrativo
@@ -429,14 +429,14 @@ export default function SistemasRecursosAvisos() {
 
                     {/* Section: ETC */}
                     <section id="etc" className="scroll-mt-32">
-                        <div className="bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-[3rem] p-12 relative overflow-hidden">
+                        <div className="bg-slate-900/60 backdrop-blur-md border border-white/10 rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-12 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-3xl"></div>
                             <div className="flex flex-col md:flex-row gap-12 items-center">
                                 <div className="md:w-1/3">
                                     <div className="p-6 bg-rose-700/20 border border-rose-500/30 rounded-[2rem] w-fit mb-6">
                                         <Info className="text-rose-400" size={32} />
                                     </div>
-                                    <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none mb-4">Criterios <br />de <span className="text-rose-400">ETC</span></h2>
+                                    <h2 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tighter leading-none mb-4">Criterios <br />de <span className="text-rose-400">ETC</span></h2>
                                     <p className="text-gray-400 text-sm font-medium leading-relaxed">Lineamientos obligatorios para la Evaluación a Título de Competencia en Sistemas.</p>
                                 </div>
                                 <div className="md:w-2/3 grid gap-4">
@@ -456,12 +456,12 @@ export default function SistemasRecursosAvisos() {
                     {/* Section: Calendario */}
                     {calendarioData && (
                         <section id="calendario" className="scroll-mt-32">
-                            <div className="bg-white rounded-[3rem] border border-gray-100 shadow-2xl p-12">
-                                <div className="flex items-center justify-between mb-12">
+                            <div className="bg-white rounded-[2rem] sm:rounded-[3rem] border border-gray-100 shadow-2xl p-6 sm:p-12">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 sm:mb-12">
                                     <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Cronograma Escolar</h2>
                                     <div className="px-5 py-2 bg-rose-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Vigente: {calendarioData.cycle}</div>
                                 </div>
-                                <div className="relative w-full h-[600px] rounded-[2rem] overflow-hidden bg-slate-50 border border-slate-200 group">
+                                <div className="relative w-full h-[350px] sm:h-[600px] rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden bg-slate-50 border border-slate-200 group">
                                     <Image
                                         src={calendarioData.image}
                                         alt="Calendario Escolar"
@@ -478,7 +478,7 @@ export default function SistemasRecursosAvisos() {
                     {/* Section: Lengua Extranjera */}
                     {lenguaExtranjera && (
                         <section id="lengua" className="scroll-mt-32">
-                            <div className="bg-white rounded-[3rem] border border-gray-100 shadow-xl p-12">
+                            <div className="bg-white rounded-[2rem] sm:rounded-[3rem] border border-gray-100 shadow-xl p-6 sm:p-12">
                                 <div className="flex items-center gap-5 mb-12">
                                     <div className="p-4 bg-rose-50 rounded-2xl text-rose-700 shadow-sm">
                                         <GraduationCap size={32} />
@@ -511,7 +511,7 @@ export default function SistemasRecursosAvisos() {
                     {/* Section: Casilleros */}
                     {casillerosData && (
                         <section id="casilleros" className="scroll-mt-32 pb-20">
-                            <div className="bg-slate-900 p-12 rounded-[3rem] text-white flex flex-col md:flex-row items-center gap-12 shadow-3xl">
+                            <div className="bg-slate-900 p-6 sm:p-12 rounded-[2rem] sm:rounded-[3rem] text-white flex flex-col md:flex-row items-center gap-8 sm:gap-12 shadow-3xl">
                                 <div className="md:w-3/5">
                                     <h2 className="text-4xl font-black mb-6 uppercase tracking-tighter">{casillerosData.title}</h2>
                                     <p className="text-gray-400 font-medium leading-relaxed">{casillerosData.description}</p>

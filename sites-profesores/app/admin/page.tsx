@@ -3,9 +3,9 @@ import Link from 'next/link';
 export default function AdminDashboard() {
     return (
         <div className="space-y-12">
-            <div className="bg-gradient-to-br from-indigo-900/50 to-slate-900 border border-white/10 rounded-[2.5rem] p-12 text-center shadow-2xl relative overflow-hidden">
+            <div className="bg-gradient-to-br from-indigo-900/50 to-slate-900 border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-12 text-center shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-[100px] -mr-32 -mt-32"></div>
-                <h1 className="text-4xl font-black text-white mb-6 uppercase tracking-tight">Bienvenido al Panel de Administración</h1>
+                <h1 className="text-2xl sm:text-4xl font-black text-white mb-6 uppercase tracking-tight">Bienvenido al Panel de Administración</h1>
                 <p className="text-lg text-indigo-300 max-w-2xl mx-auto">
                     Seleccione una sección en el menú lateral para comenzar a editar la información del sitio.
                 </p>

@@ -163,9 +163,9 @@ export default function InfoPage() {
                         {/* Left Column */}
                         <div className="lg:col-span-2 space-y-10">
                             {/* Comunicados Section */}
-                            <div id="comunicados" className="scroll-mt-32 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-8 shadow-2xl relative overflow-hidden">
+                            <div id="comunicados" className="scroll-mt-32 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-5 sm:p-8 shadow-2xl relative overflow-hidden">
                                 <div className="absolute top-0 right-0 -m-8 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
-                                <h2 className="mb-8 flex items-center gap-3 text-3xl font-bold text-white">
+                                <h2 className="mb-6 sm:mb-8 flex items-center gap-3 text-2xl sm:text-3xl font-bold text-white">
                                     <div className="p-2 bg-blue-500 rounded-lg">
                                         <Bell className="w-6 h-6 text-white" />
                                     </div>
@@ -197,8 +197,8 @@ export default function InfoPage() {
                             </div>
 
                             {/* Trámites Section */}
-                            <div id="tramites" className="scroll-mt-32 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/20 p-8 shadow-2xl">
-                                <h2 className="mb-8 flex items-center gap-3 text-3xl font-bold text-white">
+                            <div id="tramites" className="scroll-mt-32 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/20 p-5 sm:p-8 shadow-2xl">
+                                <h2 className="mb-6 sm:mb-8 flex items-center gap-3 text-2xl sm:text-3xl font-bold text-white">
                                     <div className="p-2 bg-amber-500 rounded-lg">
                                         <FileText className="w-6 h-6 text-white" />
                                     </div>
@@ -224,7 +224,7 @@ export default function InfoPage() {
                             </div>
 
                             {/* Tutores y Profesores Section */}
-                            <div id="tutores" className="scroll-mt-32 rounded-2xl bg-[#431d2a]/30 backdrop-blur-sm border border-white/10 p-8 shadow-2xl">
+                            <div id="tutores" className="scroll-mt-32 rounded-2xl bg-[#431d2a]/30 backdrop-blur-sm border border-white/10 p-4 sm:p-8 shadow-2xl">
                                 <div className="grid md:grid-cols-2 gap-4">
                                     {/* Tutores Box */}
                                     <div className="rounded-xl bg-white shadow-xl overflow-hidden flex flex-col group hover:-translate-y-1 transition-transform duration-300">
@@ -305,7 +305,7 @@ export default function InfoPage() {
                         {/* Right Column */}
                         <div className="space-y-8">
                             {/* Fechas Importantes Section */}
-                            <div id="fechas" className="scroll-mt-32 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-8 shadow-2xl">
+                            <div id="fechas" className="scroll-mt-32 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-5 sm:p-8 shadow-2xl">
                                 <h2 className="mb-8 flex items-center gap-3 text-2xl font-bold text-white">
                                     <Calendar className="w-6 h-6 text-purple-400" />
                                     Fechas Importantes
@@ -333,7 +333,7 @@ export default function InfoPage() {
                             </div>
 
                             {/* Contactos Section */}
-                            <div id="contactos" className="scroll-mt-32 bg-gradient-to-br from-yellow-50 to-amber-100 rounded-2xl p-8 border border-yellow-200/50 shadow-xl relative overflow-hidden group">
+                            <div id="contactos" className="scroll-mt-32 bg-gradient-to-br from-yellow-50 to-amber-100 rounded-2xl p-5 sm:p-8 border border-yellow-200/50 shadow-xl relative overflow-hidden group">
                                 <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-yellow-500/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
                                 <h3 className="mb-6 flex items-center gap-3 text-2xl font-bold text-amber-900 tracking-tight">
                                     <Users className="w-6 h-6 text-amber-600" />

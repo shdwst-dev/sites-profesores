@@ -125,12 +125,12 @@ export default function SistemasFormatosDocumentos() {
                     {/* Section: Entregables */}
                     {entregables.length > 0 && (
                         <section id="entregables" className="scroll-mt-32">
-                            <div className="bg-gradient-to-br from-rose-900/40 to-slate-900 border border-white/10 p-10 rounded-[2.5rem] shadow-2xl overflow-hidden group">
+                            <div className="bg-gradient-to-br from-rose-900/40 to-slate-900 border border-white/10 p-5 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden group">
                                 <div className="flex items-center gap-4 mb-8">
                                     <div className="p-3 bg-rose-50 rounded-2xl text-rose-600">
                                         <Calendar size={28} />
                                     </div>
-                                    <h2 className="text-3xl font-black text-white tracking-tight uppercase">Entregables</h2>
+                                    <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">Entregables</h2>
                                 </div>
                                 <div className="space-y-4">
                                     {entregables.map((item, idx) => (
@@ -154,12 +154,12 @@ export default function SistemasFormatosDocumentos() {
                     {/* Section: Descargas */}
                     {descargas.length > 0 && (
                         <section id="descargas" className="scroll-mt-32">
-                            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl p-10">
+                            <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] border border-gray-100 shadow-xl p-5 sm:p-10">
                                 <div className="flex items-center gap-4 mb-10">
                                     <div className="p-3 bg-rose-50 rounded-2xl text-rose-600">
                                         <BookOpen size={28} />
                                     </div>
-                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Formatos de Descarga</h2>
+                                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight uppercase">Formatos de Descarga</h2>
                                 </div>
                                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {descargas.map((item, idx) => {

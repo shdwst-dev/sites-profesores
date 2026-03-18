@@ -54,87 +54,45 @@ export default function Header() {
     };
 
     return (
-        <header style={styles.header}>
-            <div style={styles.brand}>
+        <header className="flex items-center px-4 sm:px-8 py-2 bg-white shadow-sm justify-between">
+            <div className="flex items-center gap-3 shrink-0">
                 <Image
                     src="/UPQ-Logo.png"
                     alt="Logo UPQ"
-                    width={90}
-                    height={90}
+                    width={70}
+                    height={70}
+                    className="w-14 h-14 sm:w-[70px] sm:h-[70px]"
                 />
             </div>
             
-            <div style={styles.userSection}>
+            <div className="flex items-center gap-2 sm:gap-4">
                 {/* Muestra la foto de perfil y nombre del usuario */}
                 {user && (
-                    <div style={styles.userInfo}>
+                    <div className="flex items-center gap-2">
                         {user.picture && (
                             <Image
                                 src={user.picture}
                                 alt="Foto de perfil"
-                                width={40}
-                                height={40}
-                                style={styles.profilePic}
+                                width={36}
+                                height={36}
+                                className="rounded-full border-2 border-gray-200 w-8 h-8 sm:w-9 sm:h-9"
                             />
                         )}
-                        <span style={styles.userName}>{user.name || user.email}</span>
+                        <span className="text-sm text-gray-700 font-medium hidden sm:inline max-w-[150px] truncate">
+                            {user.name || user.email}
+                        </span>
                     </div>
                 )}
                 
-                <button type="button" onClick={manejarLogout} style={styles.btnCerrarSesion}>
-                    <LogOut size={20} />
-                    <span>Cerrar Sesión</span>
+                <button
+                    type="button"
+                    onClick={manejarLogout}
+                    className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-[#c41e3a] text-white rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-all hover:bg-[#a31830] active:scale-95"
+                >
+                    <LogOut size={18} />
+                    <span className="hidden sm:inline">Cerrar Sesión</span>
                 </button>
             </div>
         </header>
     );
 }
-
-const styles = {
-    header: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0.5rem 2rem',
-        backgroundColor: '#ffffff',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.08)',
-        justifyContent: 'space-between',
-    },
-    brand: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-    },
-    userSection: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '1.5rem',
-    },
-    userInfo: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-    },
-    profilePic: {
-        borderRadius: '50%',
-        border: '2px solid #ddd',
-    } as const,
-    userName: {
-        fontSize: '0.95rem',
-        color: '#333',
-        fontWeight: 500 as const,
-    },
-    btnCerrarSesion: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-        padding: '0.75rem 1.5rem',
-        backgroundColor: '#c41e3a',
-        color: '#ffffff',
-        border: 'none',
-        borderRadius: '8px',
-        fontSize: '1rem',
-        fontWeight: 500 as const,
-        cursor: 'pointer',
-        transition: 'background-color 0.2s, transform 0.1s',
-    },
-};

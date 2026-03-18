@@ -169,7 +169,7 @@ export default function AdminTIIDRecursos() {
         <div className="space-y-10 pb-20">
             <header className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-white tracking-tight uppercase">Recursos TIID</h1>
+                    <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight uppercase">Recursos TIID</h1>
                     <p className="text-sm text-gray-400 mt-1">Actualiza la información visible en la página de Recursos y Avisos.</p>
                 </div>
                 {message && (

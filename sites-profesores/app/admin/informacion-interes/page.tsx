@@ -220,7 +220,7 @@ export default function AdminInfoInteres() {
         <div className="space-y-10 pb-20">
             <header className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-black text-white tracking-tight uppercase">Información de Interés</h1>
+                    <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight uppercase">Información de Interés</h1>
                     <p className="text-sm text-gray-400 mt-1">Administra fechas, comunicados, trámites y contactos globales.</p>
                 </div>
                 {message && (

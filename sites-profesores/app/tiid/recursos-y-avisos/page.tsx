@@ -215,7 +215,7 @@ export default function TIIDRecursosAvisos() {
                     {/* Section: Encargado */}
                     {encargadoTutorias && (
                         <section id="encargado" className="scroll-mt-32">
-                            <div className="relative p-10 bg-gradient-to-br from-indigo-900/60 to-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden group">
+                            <div className="relative p-6 sm:p-10 bg-gradient-to-br from-indigo-900/60 to-slate-900 border border-white/10 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
 
                                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
@@ -234,7 +234,7 @@ export default function TIIDRecursosAvisos() {
                                     </div>
                                     <div>
                                         <span className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full mb-3">Coordinación de Tutorías</span>
-                                        <h2 className="text-3xl font-black text-white mb-2 tracking-tight">{encargadoTutorias.name}</h2>
+                                        <h2 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight">{encargadoTutorias.name}</h2>
                                         <div className="flex flex-col md:flex-row items-center gap-4 text-gray-400">
                                             <a href={`mailto:${encargadoTutorias.correo}`} className="flex items-center gap-2 hover:text-indigo-400 transition-colors font-bold text-sm">
                                                 <Mail size={16} /> {encargadoTutorias.correo}
@@ -355,7 +355,7 @@ export default function TIIDRecursosAvisos() {
 
                     {/* Section: Recursamientos */}
                     <section id="recursamientos" className="scroll-mt-32">
-                        <div className="p-10 bg-indigo-600 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+                        <div className="p-6 sm:p-10 bg-indigo-600 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
                             {/* Background Decoration */}
                             <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-white/10 rounded-full blur-[80px] group-hover:scale-110 transition-transform duration-1000"></div>
 
@@ -364,7 +364,7 @@ export default function TIIDRecursosAvisos() {
                                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-6">
                                         <AlertCircle size={14} /> Atención Académica
                                     </div>
-                                    <h2 className="text-4xl font-black text-white mb-6 uppercase tracking-tighter leading-none">Proceso de <br /><span className="text-indigo-200">Recursamientos</span></h2>
+                                    <h2 className="text-3xl sm:text-4xl font-black text-white mb-6 uppercase tracking-tighter leading-none">Proceso de <br /><span className="text-indigo-200">Recursamientos</span></h2>
                                     <p className="text-indigo-100 font-medium leading-relaxed mb-8">
                                         Para aquellos alumnos que requieren retomar asignaturas, se ha establecido un calendario y normativa específica.
                                     </p>
@@ -400,13 +400,13 @@ export default function TIIDRecursosAvisos() {
 
                     {/* Section: Altas y Bajas */}
                     <section id="altasbajas" className="scroll-mt-32">
-                        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl p-10 relative overflow-hidden">
+                        <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] border border-gray-100 shadow-xl p-6 sm:p-10 relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-2 h-full bg-indigo-600"></div>
                             <div className="flex items-center gap-4 mb-10">
                                 <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
                                     <BookOpen size={28} />
                                 </div>
-                                <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Altas y Bajas</h2>
+                                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight uppercase">Altas y Bajas</h2>
                             </div>
                             <div className="grid md:grid-cols-2 gap-10">
                                 <div className="space-y-6">
@@ -437,7 +437,7 @@ export default function TIIDRecursosAvisos() {
 
                     {/* Section: Criterios ETC */}
                     <section id="etc" className="scroll-mt-32">
-                        <div className="bg-[#431d2a] rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group">
+                        <div className="bg-[#431d2a] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 text-white shadow-2xl relative overflow-hidden group">
                             <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors duration-700"></div>
                             <h2 className="text-3xl font-black mb-10 flex items-center gap-4 uppercase tracking-tighter">
                                 <Info size={32} className="text-rose-400" />
@@ -457,17 +457,17 @@ export default function TIIDRecursosAvisos() {
                     {/* Section: Calendario */}
                     {calendarioData && (
                         <section id="calendario" className="scroll-mt-32">
-                            <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl p-10">
-                                <div className="flex items-center justify-between mb-10">
+                            <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] border border-gray-100 shadow-xl p-6 sm:p-10">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 sm:mb-10">
                                     <div className="flex items-center gap-4">
                                         <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
                                             <Calendar size={28} />
                                         </div>
-                                        <h2 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Calendario Institucional</h2>
+                                        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight uppercase">Calendario Institucional</h2>
                                     </div>
                                     <span className="bg-indigo-600 text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg">{calendarioData.cycle}</span>
                                 </div>
-                                <div className="relative w-full h-[600px] rounded-[2rem] overflow-hidden bg-slate-100 border border-slate-200 group">
+                                <div className="relative w-full h-[350px] sm:h-[600px] rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden bg-slate-100 border border-slate-200 group">
                                     <Image
                                         src={calendarioData.image}
                                         alt="Calendario Escolar"
@@ -484,12 +484,12 @@ export default function TIIDRecursosAvisos() {
                     {/* Section: Lengua Extranjera */}
                     {lenguaExtranjera && (
                         <section id="lengua" className="scroll-mt-32">
-                            <div className="bg-slate-900 p-10 rounded-[2.5rem] border border-white/10 shadow-3xl text-white">
+                            <div className="bg-slate-900 p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] border border-white/10 shadow-3xl text-white">
                                 <div className="flex items-center gap-4 mb-10">
                                     <div className="p-3 bg-indigo-600 rounded-2xl">
                                         <GraduationCap size={28} />
                                     </div>
-                                    <h2 className="text-3xl font-black tracking-tight uppercase">{lenguaExtranjera.title}</h2>
+                                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight uppercase">{lenguaExtranjera.title}</h2>
                                 </div>
                                 <div className="grid md:grid-cols-2 gap-12">
                                     <div className="space-y-8">
@@ -529,7 +529,7 @@ export default function TIIDRecursosAvisos() {
                     {/* Section: Casilleros */}
                     {casillerosData && (
                         <section id="casilleros" className="scroll-mt-32 pb-20">
-                            <div className="bg-gradient-to-br from-slate-200 to-slate-300 p-10 rounded-[2.5rem] border border-white/10 shadow-xl flex flex-col md:flex-row items-center gap-10">
+                            <div className="bg-gradient-to-br from-slate-200 to-slate-300 p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] border border-white/10 shadow-xl flex flex-col md:flex-row items-center gap-6 sm:gap-10">
                                 <div className="md:w-1/2">
                                     <div className="p-3 bg-white rounded-2xl w-fit mb-6 shadow-sm">
                                         <MapPin size={28} className="text-slate-900" />

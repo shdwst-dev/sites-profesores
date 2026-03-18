@@ -2,31 +2,12 @@ import React from 'react';
 
 export default function Footer() {
     return (
-        <footer style={styles.footer}>
-            <div style={styles.footerContent}>
-                <p style={styles.footerText}>Universidad Politécnica de Querétaro</p>
-                <p style={styles.footerText}>DITH Ana Laura Lira Cortes</p>
-                <p style={styles.footerText}>ana.lira@upq.mx</p>
+        <footer className="bg-[#0a4a8c] text-white px-4 sm:px-8 py-3 text-center mt-auto">
+            <div className="max-w-[1200px] mx-auto">
+                <p className="text-xs sm:text-sm my-1">Universidad Politécnica de Querétaro</p>
+                <p className="text-xs sm:text-sm my-1">DITH Ana Laura Lira Cortes</p>
+                <p className="text-xs sm:text-sm my-1">ana.lira@upq.mx</p>
             </div>
         </footer>
     );
 }
-
-const styles = {
-    footer: {
-        backgroundColor: '#0a4a8c',
-        color: '#fff',
-        padding: '0.5rem 2rem',
-        textAlign: 'center' as const,
-        marginTop: 'auto',
-    },
-    footerContent: {
-        maxWidth: '1200px',
-        margin: '0 auto',
-    },
-    footerText: {
-        margin: '8px 0',
-        fontSize: '16px',
-        fontWeight: 400,
-    },
-};
