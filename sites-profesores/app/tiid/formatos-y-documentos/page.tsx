@@ -233,46 +233,68 @@ export default function TIIDFormatosDocumentos() {
 // Componente individual para manejar el estado de subida de cada fila
 function EntregableRow({ item, department }: { item: Entregable, department: string }) {
     const [uploading, setUploading] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+    const [successCount, setSuccessCount] = useState(0);
     const [error, setError] = useState<string | null>(null);
     const fileRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
 
         setUploading(true);
         setError(null);
-        setSuccess(false);
+        setSuccessCount(0);
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('department', department);
-        // Categoría específica para que en Drive se cree una carpeta con el nombre del entregable
-        formData.append('category', `Entregas - ${item.title}`);
+        const totalFiles = files.length;
+        setUploadProgress({ current: 0, total: totalFiles });
 
-        try {
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
+        let uploaded = 0;
+        const errors: string[] = [];
 
-            const data = await response.json();
+        for (let i = 0; i < totalFiles; i++) {
+            const file = files[i];
+            setUploadProgress({ current: i + 1, total: totalFiles });
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Error al subir el archivo');
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('department', department);
+            formData.append('category', `Entregas - ${item.title}`);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || `Error al subir ${file.name}`);
+                }
+
+                uploaded++;
+            } catch (err: any) {
+                console.error(`Upload error (${file.name}):`, err);
+                errors.push(`${file.name}: ${err.message || 'Error'}`);
             }
-
-            setSuccess(true);
-            setTimeout(() => setSuccess(false), 5000); // Ocultar mensaje de éxito después de 5s
-
-        } catch (err: any) {
-            console.error("Upload error:", err);
-            setError(err.message || 'Error al subir');
-        } finally {
-            setUploading(false);
-            if (fileRef.current) fileRef.current.value = '';
         }
+
+        setSuccessCount(uploaded);
+
+        if (errors.length > 0) {
+            setError(`${errors.length} archivo(s) fallaron: ${errors[0]}${errors.length > 1 ? ` y ${errors.length - 1} más` : ''}`);
+        }
+
+        setUploading(false);
+        setUploadProgress({ current: 0, total: 0 });
+
+        // Ocultar mensaje de éxito después de 5s
+        if (uploaded > 0) {
+            setTimeout(() => setSuccessCount(0), 5000);
+        }
+
+        if (fileRef.current) fileRef.current.value = '';
     };
 
     return (
@@ -282,29 +304,39 @@ function EntregableRow({ item, department }: { item: Entregable, department: str
             </div>
             <div className="flex-1 w-full">
                 <p className="text-white font-bold">{item.title}</p>
+                {uploading && (
+                    <p className="text-indigo-300 text-xs font-bold mt-2 flex items-center gap-1">
+                        <Loader2 size={14} className="animate-spin" />
+                        Subiendo {uploadProgress.current} de {uploadProgress.total} archivo(s)...
+                    </p>
+                )}
                 {error && <p className="text-red-400 text-xs font-bold mt-2">{error}</p>}
-                {success && <p className="text-emerald-400 text-xs font-bold mt-2 flex items-center gap-1"><CheckCircle2 size={14}/> ¡Entregado con éxito!</p>}
+                {successCount > 0 && !uploading && (
+                    <p className="text-emerald-400 text-xs font-bold mt-2 flex items-center gap-1">
+                        <CheckCircle2 size={14}/> {successCount === 1 ? '¡Entregado con éxito!' : `¡${successCount} archivos entregados con éxito!`}
+                    </p>
+                )}
             </div>
             <div className="md:w-1/4 w-full flex items-center gap-4 justify-between md:justify-end">
                 <span className="text-emerald-400 font-bold text-sm bg-emerald-500/10 px-4 py-2 rounded-full inline-block shrink-0">
                     {item.deadline}
                 </span>
 
-                <input type="file" ref={fileRef} className="hidden" onChange={handleFileChange} accept=".pdf,.doc,.docx,.zip" />
+                <input type="file" ref={fileRef} className="hidden" onChange={handleFileChange} accept=".pdf,.doc,.docx,.zip" multiple />
                 
                 <button 
                     onClick={() => !uploading && fileRef.current?.click()}
                     disabled={uploading}
-                    title="Subir mi archivo"
+                    title="Subir archivo(s)"
                     className={`p-2.5 rounded-xl transition-all shrink-0 ${
                         uploading 
                         ? 'bg-indigo-600/50 text-white cursor-wait' 
-                        : success 
+                        : successCount > 0 
                             ? 'bg-emerald-500/20 text-emerald-400'
                             : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95'
                     }`}
                 >
-                    {uploading ? <Loader2 size={18} className="animate-spin" /> : (success ? <CheckCircle2 size={18} /> : <UploadCloud size={18} />)}
+                    {uploading ? <Loader2 size={18} className="animate-spin" /> : (successCount > 0 ? <CheckCircle2 size={18} /> : <UploadCloud size={18} />)}
                 </button>
             </div>
         </div>
