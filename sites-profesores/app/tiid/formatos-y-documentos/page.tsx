@@ -126,11 +126,21 @@ export default function TIIDFormatosDocumentos() {
                     {entregables.length > 0 && (
                         <section id="entregables" className="scroll-mt-32">
                             <div className="bg-gradient-to-br from-indigo-900/40 to-slate-900 border border-white/10 p-5 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden group">
-                                <div className="flex items-center gap-4 mb-8">
-                                    <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
-                                        <Calendar size={28} />
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                                            <Calendar size={28} />
+                                        </div>
+                                        <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">Entregables</h2>
                                     </div>
-                                    <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">Entregables</h2>
+                                    <a
+                                        href="https://drive.google.com/drive/u/3/folders/12yN30IgnZJfO1w9chgSbtM-cgVLfataX"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-all shadow-lg hover:shadow-white/10 border border-white/10 text-sm"
+                                    >
+                                        <ExternalLink size={18} /> Verificar subidas en Drive
+                                    </a>
                                 </div>
                                 <div className="space-y-4">
                                     {entregables.map((item) => (
