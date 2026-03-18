@@ -4,9 +4,10 @@ import { Readable } from 'stream';
 const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
 const PARENT_FOLDER_ID = '12yN30IgnZJfO1w9chgSbtM-cgVLfataX';
 
+// Autenticación OAuth2 usando las credenciales del bot (separadas del login)
 const oauth2Client = new google.auth.OAuth2(
-    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_DRIVE_CLIENT_ID,
+    process.env.GOOGLE_DRIVE_CLIENT_SECRET,
     'http://localhost:3000/api/auth/google/callback'
 );
 
@@ -19,6 +20,7 @@ if (process.env.GOOGLE_REFRESH_TOKEN) {
 }
 
 const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
 
 // Cache de IDs de carpetas ya creadas para no buscar cada vez
 const folderCache = new Map<string, string>();
