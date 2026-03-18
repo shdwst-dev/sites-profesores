@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { signSession } from '@/lib/auth';
+import { supabaseAdmin } from '@/lib/supabaseServer';
 
 // POST /api/auth/google
 // Maneja el login después de que el usuario se autentica con el botón de Google
@@ -27,6 +28,22 @@ export async function POST(request: Request) {
     // EL aud (audience) debe coincidir con tu GOOGLE_CLIENT_ID
     if (aud !== process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
         return NextResponse.json({ message: 'Audience mismatch' }, { status: 401 });
+    }
+
+    // Verifica que el correo esté registrado en la tabla emails_permitidos
+    const { data: allowedEmail, error: dbError } = await supabaseAdmin
+      .from('emails_permitidos')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .maybeSingle();
+
+    if (dbError) {
+      console.error('Error al consultar emails_permitidos:', dbError);
+      return NextResponse.json({ message: 'Error al verificar permisos' }, { status: 500 });
+    }
+
+    if (!allowedEmail) {
+      return NextResponse.json({ message: 'Tu correo no tiene permiso para acceder. Contacta al administrador.' }, { status: 403 });
     }
 
     // Crea el token de sesión interno
