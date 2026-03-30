@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { LogOut } from 'lucide-react';
+import { LogOut, ShieldCheck } from 'lucide-react';
 
 interface User {
     name?: string;
     picture?: string;
     email?: string;
+    rol?: string | null;
 }
 
 export default function Header() {
@@ -84,6 +85,18 @@ export default function Header() {
                     </div>
                 )}
                 
+                {/* Botón de Panel Admin: solo visible para usuarios con rol 'admin' */}
+                {user?.rol === 'admin' && (
+                    <button
+                        type="button"
+                        onClick={() => router.push('/admin')}
+                        className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-indigo-600 text-white rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-all hover:bg-indigo-700 active:scale-95 mr-2"
+                    >
+                        <ShieldCheck size={18} />
+                        <span className="hidden sm:inline">Panel Admin</span>
+                    </button>
+                )}
+
                 <button
                     type="button"
                     onClick={manejarLogout}
@@ -96,3 +109,4 @@ export default function Header() {
         </header>
     );
 }
+

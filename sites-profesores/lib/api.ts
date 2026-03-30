@@ -7,7 +7,9 @@ import {
     CoordinacionTutores, RecursoGenerico, CalendarioData, LenguaExtranjeraData
 } from '@/types';
 
-// Generic fetcher with fallback
+// Generic fetcher — solo usa mocks si no hay conexión a Supabase.
+// Si Supabase está configurado y la tabla está vacía, devuelve [] en lugar del mock,
+// para que los borrados/inserts reales no sean sobreescritos por datos de demostración.
 async function fetchWithFallback<T>(
     tableName: string,
     mockData: T[],
@@ -15,9 +17,12 @@ async function fetchWithFallback<T>(
     single: boolean = false,
     department?: string
 ): Promise<T | T[] | null> {
-    try {
-        if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return single ? (Array.isArray(mockData) ? mockData[0] : mockData) : mockData;
+    // Sin conexión a Supabase: usar mocks como datos de demostración
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+        return single ? (Array.isArray(mockData) ? mockData[0] : mockData) : mockData;
+    }
 
+    try {
         let query = supabase.from(tableName).select('*');
 
         if (department) {
@@ -32,30 +37,34 @@ async function fetchWithFallback<T>(
 
         if (error) {
             console.warn(`Error fetching ${tableName}:`, error);
-            // Return mock if error, but cast to T[] or T correctly
+            // Solo hace fallback a mock si es un error de conexión real
             if (single) {
                 return Array.isArray(mockData) ? mockData[0] : mockData;
             }
             return mockData;
         }
 
-        if (!data || data.length === 0) {
-            // Fallback if table is empty
-            if (single) {
-                return Array.isArray(mockData) ? mockData[0] : mockData;
-            }
-            return mockData;
+        // Si la tabla está vacía en Supabase, devolver vacío (no mock)
+        // Así los datos borrados no regresan
+        if (!data) {
+            return single ? null : [];
+        }
+
+        if (data.length === 0) {
+            return single ? null : ([] as unknown as T[]);
         }
 
         return single ? data[0] : data;
     } catch (e) {
         console.error(`Exception fetching ${tableName}:`, e);
+        // Fallback a mock solo en caso de excepción inesperada
         if (single) {
             return Array.isArray(mockData) ? mockData[0] : mockData;
         }
         return mockData;
     }
 }
+
 
 // Data Fetching Functions
 
@@ -205,47 +214,58 @@ export const getLenguaExtranjera = async (department: string = 'TIID'): Promise<
     return rawData as LenguaExtranjeraData;
 };
 
-// Helper to handle Mock ID (Number) vs Real ID (UUID)
-// If ID is number, we assume it's mock data and we need to INSERT a new row.
-// If ID is string (UUID), we UPDATE.
-// Helper to handle Mock ID (Number) vs Real ID (UUID)
-// If ID is number, we assume it's mock data and we need to INSERT a new row.
-// If ID is string (UUID), we UPDATE.
-async function saveToSupabase(tableName: string, id: string | number, data: any, department: string = 'TIID') {
-    console.log(`[saveToSupabase] Attempting to save to ${tableName}. ID: ${id}, Dept: ${department}`);
+
+// Helper que delega escrituras al API route /api/admin/save (usa supabaseAdmin con service_role)
+// Esto evita los bloqueos de RLS que ocurren con el cliente público (anon key).
+async function saveToSupabase(tableName: string, id: string | number, data: any, department: string | null = null, shouldNotify: boolean = false) {
+    console.log(`[saveToSupabase] Saving to ${tableName}. ID: ${id}, Dept: ${department}`);
 
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-        console.error('[saveToSupabase] No Supabase URL found in environment variables.');
         throw new Error('No configuration for database found (NEXT_PUBLIC_SUPABASE_URL missing).');
     }
 
     if (typeof id === 'number') {
-        console.log('[saveToSupabase] ID is number (mock), attempting INSERT...');
+        // INSERT: es un registro nuevo (mock ID numérico)
         const { id: _, ...insertData } = data;
-        const payload = { ...insertData, department };
+        const payload = department ? { ...insertData, department } : { ...insertData };
 
-        // Ensure tutors is saved if present (assuming JSONB column exists)
-        // if (Array.isArray(payload.tutors)) {
-        //    delete payload.tutors;
-        // }
+        const res = await fetch('/api/admin/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ table: tableName, operation: 'insert', payload, notify: shouldNotify }),
+            credentials: 'include',
+        });
 
-        const { data: inserted, error } = await supabase.from(tableName).insert([payload]).select();
-        if (error) {
-            console.error('[saveToSupabase] Insert Error:', error);
-            throw error;
+        if (!res.ok) {
+            const rawText = await res.text().catch(() => '');
+            let err: any = {};
+            try { err = JSON.parse(rawText); } catch { err = { message: rawText }; }
+            console.error(`[saveToSupabase] Insert Error (HTTP ${res.status}):`, err);
+            throw new Error(err.message || `Error al insertar registro (${res.status})`);
         }
-        console.log('[saveToSupabase] Insert Success:', inserted);
+        console.log('[saveToSupabase] Insert Success');
     } else {
-        console.log('[saveToSupabase] ID is string (UUID), attempting UPDATE...');
+        // UPDATE: ID es un UUID real
         const { id: _, ...updateData } = data;
-        const { data: updated, error } = await supabase.from(tableName).update(updateData).eq('id', id).select();
-        if (error) {
-            console.error('[saveToSupabase] Update Error:', error.message, error.details || '', error.hint || '');
-            throw error;
+
+        const res = await fetch('/api/admin/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ table: tableName, operation: 'update', id, payload: updateData, notify: shouldNotify }),
+            credentials: 'include',
+        });
+
+        if (!res.ok) {
+            const rawText = await res.text().catch(() => '');
+            let err: any = {};
+            try { err = JSON.parse(rawText); } catch { err = { message: rawText }; }
+            console.error(`[saveToSupabase] Update Error (HTTP ${res.status}):`, err);
+            throw new Error(err.message || `Error al actualizar registro (${res.status})`);
         }
-        console.log('[saveToSupabase] Update Success:', updated);
+        console.log('[saveToSupabase] Update Success');
     }
 }
+
 
 export const updateEncargadoTutorias = async (id: string | number, data: Partial<EncargadoTutoria>, department = 'TIID') => {
     await saveToSupabase('encargados_tutorias', id, data, department);
@@ -289,27 +309,34 @@ export const updateLenguaExtranjera = async (id: string | number, data: Partial<
 async function deleteFromSupabase(tableName: string, id: string | number) {
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return;
 
-    // If mock data (number id), we can't really delete from server unless we track it, 
-    // but usually we just return success for UI simulation if dev mode.
+    // Mock data (número) no se puede borrar del servidor
     if (typeof id === 'number') {
         console.warn('Cannot delete mock data from server.');
         return;
     }
 
-    const { error } = await supabase.from(tableName).delete().eq('id', id);
-    if (error) {
-        console.error(`Error deleting from ${tableName}:`, error);
-        throw error;
+    const res = await fetch('/api/admin/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table: tableName, operation: 'delete', id }),
+        credentials: 'include',
+    });
+
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        console.error(`[deleteFromSupabase] Delete error en ${tableName}:`, err);
+        throw new Error(err.message || 'Error al eliminar registro');
     }
 }
 
+
 // Entregables CRUD
-export const createEntregable = async (data: Omit<Entregable, 'id'>, department = 'TIID') => {
-    await saveToSupabase('entregables', Date.now(), data, department); // Use dummy ID for saveToSupabase logic which handles insert
+export const createEntregable = async (data: Omit<Entregable, 'id'>, department = 'TIID', shouldNotify = false) => {
+    await saveToSupabase('entregables', Date.now(), data, department, shouldNotify); // Use dummy ID for saveToSupabase logic which handles insert
 };
 
-export const updateEntregable = async (id: string | number, data: Partial<Entregable>, department = 'TIID') => {
-    await saveToSupabase('entregables', id, data, department);
+export const updateEntregable = async (id: string | number, data: Partial<Entregable>, department = 'TIID', shouldNotify = false) => {
+    await saveToSupabase('entregables', id, data, department, shouldNotify);
 };
 
 export const deleteEntregable = async (id: string | number) => {
@@ -317,12 +344,12 @@ export const deleteEntregable = async (id: string | number) => {
 };
 
 // Documentos Descarga CRUD
-export const createDocumentoDescarga = async (data: Omit<DocumentoDescarga, 'id'>, department = 'TIID') => {
-    await saveToSupabase('documentos_descarga', Date.now(), data, department);
+export const createDocumentoDescarga = async (data: Omit<DocumentoDescarga, 'id'>, department = 'TIID', shouldNotify = false) => {
+    await saveToSupabase('documentos_descarga', Date.now(), data, department, shouldNotify);
 };
 
-export const updateDocumentoDescarga = async (id: string | number, data: Partial<DocumentoDescarga>, department = 'TIID') => {
-    await saveToSupabase('documentos_descarga', id, data, department);
+export const updateDocumentoDescarga = async (id: string | number, data: Partial<DocumentoDescarga>, department = 'TIID', shouldNotify = false) => {
+    await saveToSupabase('documentos_descarga', id, data, department, shouldNotify);
 };
 
 export const deleteDocumentoDescarga = async (id: string | number) => {
@@ -330,12 +357,12 @@ export const deleteDocumentoDescarga = async (id: string | number) => {
 };
 
 // Comunicados CRUD
-export const createComunicado = async (data: Omit<Comunicado, 'id'>) => {
-    await saveToSupabase('comunicados', Date.now(), data);
+export const createComunicado = async (data: Omit<Comunicado, 'id'>, shouldNotify = false) => {
+    await saveToSupabase('comunicados', Date.now(), data, null, shouldNotify);
 };
 
-export const updateComunicado = async (id: string | number, data: Partial<Comunicado>) => {
-    await saveToSupabase('comunicados', id, data);
+export const updateComunicado = async (id: string | number, data: Partial<Comunicado>, shouldNotify = false) => {
+    await saveToSupabase('comunicados', id, data, null, shouldNotify);
 };
 
 export const deleteComunicado = async (id: string | number) => {
@@ -343,12 +370,12 @@ export const deleteComunicado = async (id: string | number) => {
 };
 
 // Fechas Importantes CRUD
-export const createFechaImportante = async (data: Omit<FechaImportante, 'id'>) => {
-    await saveToSupabase('fechas_importantes', Date.now(), data);
+export const createFechaImportante = async (data: Omit<FechaImportante, 'id'>, shouldNotify = false) => {
+    await saveToSupabase('fechas_importantes', Date.now(), data, null, shouldNotify);
 };
 
-export const updateFechaImportante = async (id: string | number, data: Partial<FechaImportante>) => {
-    await saveToSupabase('fechas_importantes', id, data);
+export const updateFechaImportante = async (id: string | number, data: Partial<FechaImportante>, shouldNotify = false) => {
+    await saveToSupabase('fechas_importantes', id, data, null, shouldNotify);
 };
 
 export const deleteFechaImportante = async (id: string | number) => {
@@ -356,12 +383,12 @@ export const deleteFechaImportante = async (id: string | number) => {
 };
 
 // Tramites CRUD
-export const createTramite = async (data: Omit<Tramite, 'id'>) => {
-    await saveToSupabase('tramites', Date.now(), data);
+export const createTramite = async (data: Omit<Tramite, 'id'>, shouldNotify = false) => {
+    await saveToSupabase('tramites', Date.now(), data, null, shouldNotify);
 };
 
-export const updateTramite = async (id: string | number, data: Partial<Tramite>) => {
-    await saveToSupabase('tramites', id, data);
+export const updateTramite = async (id: string | number, data: Partial<Tramite>, shouldNotify = false) => {
+    await saveToSupabase('tramites', id, data, null, shouldNotify);
 };
 
 export const deleteTramite = async (id: string | number) => {

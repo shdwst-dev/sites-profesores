@@ -5,6 +5,7 @@ import {
     Save, Loader2, CheckCircle, AlertCircle, Plus, Trash2,
     Bell, Calendar, FileText, Users, Phone, Edit2, X
 } from 'lucide-react';
+import Toast, { ToastMessage } from '@/components/Toast';
 import {
     getComunicados, getFechasImportantes, getTramites, getTutoresProfesores, getContactos,
     createComunicado, updateComunicado, deleteComunicado,
@@ -20,7 +21,8 @@ type SectionType = 'comunicados' | 'fechas' | 'tramites' | 'tutores' | 'contacto
 export default function AdminInfoInteres() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [message, setMessage] = useState<ToastMessage>(null);
+    const [shouldNotify, setShouldNotify] = useState(false);
 
     // Data State
     const [comunicados, setComunicados] = useState<Comunicado[]>([]);
@@ -96,14 +98,14 @@ export default function AdminInfoInteres() {
         setSaving(true);
         try {
             if (activeSection === 'comunicados') {
-                if (editingItem) await updateComunicado(editingItem.id, formData);
-                else await createComunicado(formData);
+                if (editingItem) await updateComunicado(editingItem.id, formData, shouldNotify);
+                else await createComunicado(formData, shouldNotify);
             } else if (activeSection === 'fechas') {
-                if (editingItem) await updateFechaImportante(editingItem.id, formData);
-                else await createFechaImportante(formData);
+                if (editingItem) await updateFechaImportante(editingItem.id, formData, shouldNotify);
+                else await createFechaImportante(formData, shouldNotify);
             } else if (activeSection === 'tramites') {
-                if (editingItem) await updateTramite(editingItem.id, formData);
-                else await createTramite(formData);
+                if (editingItem) await updateTramite(editingItem.id, formData, shouldNotify);
+                else await createTramite(formData, shouldNotify);
             } else if (activeSection === 'tutores') {
                 if (editingItem) await updateTutorProfesor(editingItem.id, formData);
                 else await createTutorProfesor(formData);
@@ -218,17 +220,18 @@ export default function AdminInfoInteres() {
 
     return (
         <div className="space-y-10 pb-20">
+            <Toast message={message} onClose={() => setMessage(null)} />
             <header className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 mb-8">
                 <div>
                     <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight uppercase">Información de Interés</h1>
                     <p className="text-sm text-gray-400 mt-1">Administra fechas, comunicados, trámites y contactos globales.</p>
                 </div>
-                {message && (
-                    <div className={`px-4 py-3 rounded-xl flex items-center gap-3 animate-in fade-in duration-300 font-medium shadow-lg ${message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
-                        {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-                        {message.text}
+                <div className="md:ml-auto flex items-center gap-3 bg-slate-800/50 border border-white/5 px-4 py-2 rounded-2xl">
+                    <div className={`w-10 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${shouldNotify ? 'bg-indigo-600' : 'bg-slate-600'}`} onClick={() => setShouldNotify(!shouldNotify)}>
+                        <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${shouldNotify ? 'translate-x-4' : 'translate-x-0'}`} />
                     </div>
-                )}
+                    <span className="text-sm font-bold text-white whitespace-nowrap">Notificar por correo</span>
+                </div>
             </header>
 
             {/* Tablas de Secciones */}
