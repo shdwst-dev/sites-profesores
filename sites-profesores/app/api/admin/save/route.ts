@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { verifySessionToken } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabaseServer';
+import { sendNewContentAlert } from '@/lib/email';
 
 // Tablas permitidas para operaciones admin (whitelist de seguridad)
 const ALLOWED_TABLES = new Set([
@@ -56,9 +57,10 @@ export async function POST(request: Request) {
             operation: 'insert' | 'update' | 'delete';
             id?: string | number;
             payload?: Record<string, unknown>;
+            notify?: boolean;
         };
 
-        const { table, operation, id, payload } = body;
+        const { table, operation, id, payload, notify } = body;
 
         // 2. Validar tabla permitida
         if (!ALLOWED_TABLES.has(table)) {
@@ -73,6 +75,13 @@ export async function POST(request: Request) {
                 console.error(`[admin/save] Insert error en ${table}:`, error);
                 return NextResponse.json({ message: error.message, details: error.details }, { status: 500 });
             }
+
+            // Enviar alerta por correo SOLO si notify es true
+            if (notify) {
+                console.log(`[admin/save] Disparando alerta de correo para ${table}...`);
+                sendNewContentAlert(table, payload).catch(e => console.error('[Alert Integration]:', e));
+            }
+
             return NextResponse.json({ data });
         }
 

@@ -40,6 +40,7 @@ export default function AdminInfoInteres() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState<string | null>(null);
     const [message, setMessage] = useState<ToastMessage>(null);
+    const [shouldNotify, setShouldNotify] = useState(false);
 
     // Data State
     const [comunicados, setComunicados] = useState<Comunicado[]>([]);
@@ -96,8 +97,18 @@ export default function AdminInfoInteres() {
         <div className="space-y-10 pb-20">
             <Toast message={message} onClose={() => setMessage(null)} />
             <header className="mb-8">
-                <h1 className="text-3xl font-black text-white">Editar Información de Interés</h1>
-                <p className="text-gray-400">Actualiza los comunicados, fechas, trámites, tutores/profesores y contactos.</p>
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    <div>
+                        <h1 className="text-3xl font-black text-white">Editar Información de Interés</h1>
+                        <p className="text-gray-400">Actualiza los comunicados, fechas, trámites, tutores/profesores y contactos.</p>
+                    </div>
+                    <div className="md:ml-auto flex items-center gap-3 bg-slate-800/50 border border-white/5 px-4 py-2 rounded-2xl">
+                        <div className={`w-10 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${shouldNotify ? 'bg-indigo-600' : 'bg-slate-600'}`} onClick={() => setShouldNotify(!shouldNotify)}>
+                            <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${shouldNotify ? 'translate-x-4' : 'translate-x-0'}`} />
+                        </div>
+                        <span className="text-sm font-bold text-white whitespace-nowrap">Notificar por correo</span>
+                    </div>
+                </div>
             </header>
 
             {/* ───── Comunicados ───── */}
@@ -110,7 +121,7 @@ export default function AdminInfoInteres() {
                     </div>
                     <button
                         onClick={async () => {
-                            await createComunicado({ title: 'Nuevo comunicado', description: 'Descripción...', date: new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }), classification: 'Institucional' });
+                            await createComunicado({ title: 'Nuevo comunicado', description: 'Descripción...', date: new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }), classification: 'Institucional' }, false);
                             setComunicados(await getComunicados());
                         }}
                         className="p-2 bg-blue-600 rounded-lg hover:bg-blue-500 transition-colors"
@@ -169,7 +180,10 @@ export default function AdminInfoInteres() {
                                     <Trash2 size={18} />
                                 </button>
                                 <button
-                                    onClick={() => handleSave(`comunicado-${item.id}`, async () => updateComunicado(item.id, item))}
+                                    onClick={() => handleSave(`comunicado-${item.id}`, async () => {
+                                        await updateComunicado(item.id, item, shouldNotify);
+                                        if (shouldNotify) setMessage({ type: 'success', text: 'Comunicado guardado y notificación enviada.' });
+                                    })}
                                     disabled={saving === `comunicado-${item.id}`}
                                     className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-colors disabled:opacity-50"
                                 >
@@ -191,7 +205,7 @@ export default function AdminInfoInteres() {
                     </div>
                     <button
                         onClick={async () => {
-                            await createFechaImportante({ date: '01 Ene', title: 'Nueva fecha', urgent: false });
+                            await createFechaImportante({ date: '01 Ene', title: 'Nueva fecha', urgent: false }, false);
                             setFechas(await getFechasImportantes());
                         }}
                         className="p-2 bg-purple-600 rounded-lg hover:bg-purple-500 transition-colors"
@@ -238,7 +252,10 @@ export default function AdminInfoInteres() {
                                     <Trash2 size={18} />
                                 </button>
                                 <button
-                                    onClick={() => handleSave(`fecha-${item.id}`, async () => updateFechaImportante(item.id, item))}
+                                    onClick={() => handleSave(`fecha-${item.id}`, async () => {
+                                        await updateFechaImportante(item.id, item, shouldNotify);
+                                        if (shouldNotify) setMessage({ type: 'success', text: 'Fecha guardada y notificación enviada.' });
+                                    })}
                                     disabled={saving === `fecha-${item.id}`}
                                     className="p-3 bg-purple-600 text-white rounded-xl hover:bg-purple-500 transition-colors disabled:opacity-50"
                                 >
@@ -260,7 +277,7 @@ export default function AdminInfoInteres() {
                     </div>
                     <button
                         onClick={async () => {
-                            await createTramite({ title: 'Nuevo trámite', description: 'Descripción del trámite', link: '#' });
+                            await createTramite({ title: 'Nuevo trámite', description: 'Descripción del trámite', link: '#' }, false);
                             setTramites(await getTramites());
                         }}
                         className="p-2 bg-amber-600 rounded-lg hover:bg-amber-500 transition-colors"
@@ -299,7 +316,10 @@ export default function AdminInfoInteres() {
                                     <Trash2 size={18} />
                                 </button>
                                 <button
-                                    onClick={() => handleSave(`tramite-${item.id}`, async () => updateTramite(item.id, item))}
+                                    onClick={() => handleSave(`tramite-${item.id}`, async () => {
+                                        await updateTramite(item.id, item, shouldNotify);
+                                        if (shouldNotify) setMessage({ type: 'success', text: 'Trámite guardado y notificación enviada.' });
+                                    })}
                                     disabled={saving === `tramite-${item.id}`}
                                     className="p-3 bg-amber-600 text-white rounded-xl hover:bg-amber-500 transition-colors disabled:opacity-50"
                                 >

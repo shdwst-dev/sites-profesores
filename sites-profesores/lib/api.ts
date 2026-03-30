@@ -217,7 +217,7 @@ export const getLenguaExtranjera = async (department: string = 'TIID'): Promise<
 
 // Helper que delega escrituras al API route /api/admin/save (usa supabaseAdmin con service_role)
 // Esto evita los bloqueos de RLS que ocurren con el cliente público (anon key).
-async function saveToSupabase(tableName: string, id: string | number, data: any, department: string | null = null) {
+async function saveToSupabase(tableName: string, id: string | number, data: any, department: string | null = null, shouldNotify: boolean = false) {
     console.log(`[saveToSupabase] Saving to ${tableName}. ID: ${id}, Dept: ${department}`);
 
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
@@ -232,7 +232,7 @@ async function saveToSupabase(tableName: string, id: string | number, data: any,
         const res = await fetch('/api/admin/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ table: tableName, operation: 'insert', payload }),
+            body: JSON.stringify({ table: tableName, operation: 'insert', payload, notify: shouldNotify }),
             credentials: 'include',
         });
 
@@ -251,7 +251,7 @@ async function saveToSupabase(tableName: string, id: string | number, data: any,
         const res = await fetch('/api/admin/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ table: tableName, operation: 'update', id, payload: updateData }),
+            body: JSON.stringify({ table: tableName, operation: 'update', id, payload: updateData, notify: shouldNotify }),
             credentials: 'include',
         });
 
@@ -331,12 +331,12 @@ async function deleteFromSupabase(tableName: string, id: string | number) {
 
 
 // Entregables CRUD
-export const createEntregable = async (data: Omit<Entregable, 'id'>, department = 'TIID') => {
-    await saveToSupabase('entregables', Date.now(), data, department); // Use dummy ID for saveToSupabase logic which handles insert
+export const createEntregable = async (data: Omit<Entregable, 'id'>, department = 'TIID', shouldNotify = false) => {
+    await saveToSupabase('entregables', Date.now(), data, department, shouldNotify); // Use dummy ID for saveToSupabase logic which handles insert
 };
 
-export const updateEntregable = async (id: string | number, data: Partial<Entregable>, department = 'TIID') => {
-    await saveToSupabase('entregables', id, data, department);
+export const updateEntregable = async (id: string | number, data: Partial<Entregable>, department = 'TIID', shouldNotify = false) => {
+    await saveToSupabase('entregables', id, data, department, shouldNotify);
 };
 
 export const deleteEntregable = async (id: string | number) => {
@@ -344,12 +344,12 @@ export const deleteEntregable = async (id: string | number) => {
 };
 
 // Documentos Descarga CRUD
-export const createDocumentoDescarga = async (data: Omit<DocumentoDescarga, 'id'>, department = 'TIID') => {
-    await saveToSupabase('documentos_descarga', Date.now(), data, department);
+export const createDocumentoDescarga = async (data: Omit<DocumentoDescarga, 'id'>, department = 'TIID', shouldNotify = false) => {
+    await saveToSupabase('documentos_descarga', Date.now(), data, department, shouldNotify);
 };
 
-export const updateDocumentoDescarga = async (id: string | number, data: Partial<DocumentoDescarga>, department = 'TIID') => {
-    await saveToSupabase('documentos_descarga', id, data, department);
+export const updateDocumentoDescarga = async (id: string | number, data: Partial<DocumentoDescarga>, department = 'TIID', shouldNotify = false) => {
+    await saveToSupabase('documentos_descarga', id, data, department, shouldNotify);
 };
 
 export const deleteDocumentoDescarga = async (id: string | number) => {
@@ -357,12 +357,12 @@ export const deleteDocumentoDescarga = async (id: string | number) => {
 };
 
 // Comunicados CRUD
-export const createComunicado = async (data: Omit<Comunicado, 'id'>) => {
-    await saveToSupabase('comunicados', Date.now(), data);
+export const createComunicado = async (data: Omit<Comunicado, 'id'>, shouldNotify = false) => {
+    await saveToSupabase('comunicados', Date.now(), data, null, shouldNotify);
 };
 
-export const updateComunicado = async (id: string | number, data: Partial<Comunicado>) => {
-    await saveToSupabase('comunicados', id, data);
+export const updateComunicado = async (id: string | number, data: Partial<Comunicado>, shouldNotify = false) => {
+    await saveToSupabase('comunicados', id, data, null, shouldNotify);
 };
 
 export const deleteComunicado = async (id: string | number) => {
@@ -370,12 +370,12 @@ export const deleteComunicado = async (id: string | number) => {
 };
 
 // Fechas Importantes CRUD
-export const createFechaImportante = async (data: Omit<FechaImportante, 'id'>) => {
-    await saveToSupabase('fechas_importantes', Date.now(), data);
+export const createFechaImportante = async (data: Omit<FechaImportante, 'id'>, shouldNotify = false) => {
+    await saveToSupabase('fechas_importantes', Date.now(), data, null, shouldNotify);
 };
 
-export const updateFechaImportante = async (id: string | number, data: Partial<FechaImportante>) => {
-    await saveToSupabase('fechas_importantes', id, data);
+export const updateFechaImportante = async (id: string | number, data: Partial<FechaImportante>, shouldNotify = false) => {
+    await saveToSupabase('fechas_importantes', id, data, null, shouldNotify);
 };
 
 export const deleteFechaImportante = async (id: string | number) => {
@@ -383,12 +383,12 @@ export const deleteFechaImportante = async (id: string | number) => {
 };
 
 // Tramites CRUD
-export const createTramite = async (data: Omit<Tramite, 'id'>) => {
-    await saveToSupabase('tramites', Date.now(), data);
+export const createTramite = async (data: Omit<Tramite, 'id'>, shouldNotify = false) => {
+    await saveToSupabase('tramites', Date.now(), data, null, shouldNotify);
 };
 
-export const updateTramite = async (id: string | number, data: Partial<Tramite>) => {
-    await saveToSupabase('tramites', id, data);
+export const updateTramite = async (id: string | number, data: Partial<Tramite>, shouldNotify = false) => {
+    await saveToSupabase('tramites', id, data, null, shouldNotify);
 };
 
 export const deleteTramite = async (id: string | number) => {
