@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifySessionToken } from '@/lib/auth';
+import { supabaseAdmin } from '@/lib/supabaseServer';
 
 // GET /api/auth/me
 // Retorna los datos del usuario actual si la sesión es válida
@@ -18,11 +19,19 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: 'No autorizado' }, { status: 401 });
   }
 
-  // Retorna los datos del usuario autenticado
+  // Consulta el rol del usuario en la tabla usuarios
+  const { data: usuario } = await supabaseAdmin
+    .from('usuarios')
+    .select('rol')
+    .eq('email', session.email)
+    .maybeSingle();
+
+  // Retorna los datos del usuario autenticado incluyendo el rol
   return NextResponse.json({
     email: session.email,
     name: session.name,
     picture: session.picture,
     sub: session.sub,
+    rol: usuario?.rol ?? null,
   });
 }

@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { LogOut } from 'lucide-react';
+import { LogOut, ShieldCheck } from 'lucide-react';
 
 interface User {
     name?: string;
     picture?: string;
     email?: string;
+    rol?: string | null;
 }
 
 export default function Header() {
@@ -81,6 +82,18 @@ export default function Header() {
                     </div>
                 )}
                 
+                {/* Botón de Panel Admin: solo visible para usuarios con rol 'admin' */}
+                {user?.rol === 'admin' && (
+                    <button
+                        type="button"
+                        onClick={() => router.push('/admin')}
+                        style={styles.btnAdmin}
+                    >
+                        <ShieldCheck size={20} />
+                        <span>Panel Admin</span>
+                    </button>
+                )}
+
                 <button type="button" onClick={manejarLogout} style={styles.btnCerrarSesion}>
                     <LogOut size={20} />
                     <span>Cerrar Sesión</span>
@@ -122,6 +135,20 @@ const styles = {
         fontSize: '0.95rem',
         color: '#333',
         fontWeight: 500 as const,
+    },
+    btnAdmin: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        padding: '0.75rem 1.5rem',
+        backgroundColor: '#1e40af',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '8px',
+        fontSize: '1rem',
+        fontWeight: 500 as const,
+        cursor: 'pointer',
+        transition: 'background-color 0.2s, transform 0.1s',
     },
     btnCerrarSesion: {
         display: 'flex',

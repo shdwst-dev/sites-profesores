@@ -1,11 +1,38 @@
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Home, FileText, Settings, LogOut, LayoutDashboard, Database, BookOpen, Info } from 'lucide-react';
+import { FileText, LogOut, LayoutDashboard, Database, BookOpen, Info } from 'lucide-react';
+import { verifySessionToken } from '@/lib/auth';
+import { supabaseAdmin } from '@/lib/supabaseServer';
 
-export default function AdminLayout({
+// Server Component: verifica sesión y rol antes de renderizar el panel admin
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    // 1. Leer la cookie de sesión desde el servidor
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get('session_token')?.value;
+    const session = await verifySessionToken(sessionToken);
+
+    // 2. Si no hay sesión válida, redirige al login
+    if (!session) {
+        redirect('/');
+    }
+
+    // 3. Consultar el rol del usuario en la base de datos
+    const { data: usuario } = await supabaseAdmin
+        .from('usuarios')
+        .select('rol')
+        .eq('email', session.email)
+        .maybeSingle();
+
+    // 4. Si no tiene el rol 'admin', redirige al home sin acceso
+    if (usuario?.rol !== 'admin') {
+        redirect('/home');
+    }
+
     return (
         <div className="min-h-screen bg-slate-900 flex text-white font-sans">
             {/* Sidebar */}
@@ -42,13 +69,13 @@ export default function AdminLayout({
                         <span className="font-medium text-sm">Formatos y Documentos</span>
                     </Link>
                     <Link href="/admin/sistemas/recursos-y-avisos" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
-                        <Database size={18} />
+                        <FileText size={18} />
                         <span className="font-medium text-sm">Recursos y Avisos</span>
                     </Link>
                 </nav>
 
                 <div className="p-4 border-t border-white/10">
-                    <Link href="/" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-red-500/10 hover:text-red-400 rounded-xl transition-all">
+                    <Link href="/home" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-red-500/10 hover:text-red-400 rounded-xl transition-all">
                         <LogOut size={18} />
                         <span className="font-medium text-sm">Salir al Sitio</span>
                     </Link>
@@ -64,3 +91,4 @@ export default function AdminLayout({
         </div>
     );
 }
+
