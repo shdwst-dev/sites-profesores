@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Loader2, CheckCircle, AlertCircle, Users, LayoutGrid, Calendar, GraduationCap, MapPin, AlignLeft, BookOpen, Info } from 'lucide-react';
+import { Save, Loader2, Users, LayoutGrid, Calendar, GraduationCap, MapPin, AlignLeft, BookOpen, Info, AlertCircle } from 'lucide-react';
+import Toast, { ToastMessage } from '@/components/Toast';
 import {
     getEncargadoTutorias,
     getCoordinacionPI,
@@ -32,7 +33,7 @@ import FileInput from '@/components/admin/FileInput';
 export default function AdminTIIDRecursos() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState<string | null>(null);
-    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [message, setMessage] = useState<ToastMessage>(null);
 
     // Data State
     const [encargado, setEncargado] = useState<EncargadoTutoria | null>(null);
@@ -105,17 +106,10 @@ export default function AdminTIIDRecursos() {
 
     return (
         <div className="space-y-10 pb-20">
-            <header className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl font-black text-white">Editar Recursos TIID</h1>
-                    <p className="text-gray-400">Actualiza la información visible en la página de Recursos y Avisos.</p>
-                </div>
-                {message && (
-                    <div className={`px-4 py-2 rounded-lg flex items-center gap-2 ${message.type === 'success' ? 'bg-green-500/20 text-green-400 border border-green-500/50' : 'bg-red-500/20 text-red-400 border border-red-500/50'}`}>
-                        {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-                        {message.text}
-                    </div>
-                )}
+            <Toast message={message} onClose={() => setMessage(null)} />
+            <header className="mb-8">
+                <h1 className="text-3xl font-black text-white">Editar Recursos TIID</h1>
+                <p className="text-gray-400">Actualiza la información visible en la página de Recursos y Avisos.</p>
             </header>
 
 

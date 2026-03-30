@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import {
-    Save, Loader2, CheckCircle, AlertCircle, Plus, Trash2,
+    Save, Loader2, Plus, Trash2,
     Bell, Calendar, FileText, Users, Phone
 } from 'lucide-react';
+import Toast, { ToastMessage } from '@/components/Toast';
 import {
     getComunicados,
     getFechasImportantes,
@@ -38,7 +39,7 @@ import {
 export default function AdminInfoInteres() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState<string | null>(null);
-    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [message, setMessage] = useState<ToastMessage>(null);
 
     // Data State
     const [comunicados, setComunicados] = useState<Comunicado[]>([]);
@@ -93,17 +94,10 @@ export default function AdminInfoInteres() {
 
     return (
         <div className="space-y-10 pb-20">
-            <header className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl font-black text-white">Editar Información de Interés</h1>
-                    <p className="text-gray-400">Actualiza los comunicados, fechas, trámites, tutores/profesores y contactos.</p>
-                </div>
-                {message && (
-                    <div className={`px-4 py-2 rounded-lg flex items-center gap-2 ${message.type === 'success' ? 'bg-green-500/20 text-green-400 border border-green-500/50' : 'bg-red-500/20 text-red-400 border border-red-500/50'}`}>
-                        {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-                        {message.text}
-                    </div>
-                )}
+            <Toast message={message} onClose={() => setMessage(null)} />
+            <header className="mb-8">
+                <h1 className="text-3xl font-black text-white">Editar Información de Interés</h1>
+                <p className="text-gray-400">Actualiza los comunicados, fechas, trámites, tutores/profesores y contactos.</p>
             </header>
 
             {/* ───── Comunicados ───── */}

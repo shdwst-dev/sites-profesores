@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Loader2, CheckCircle, AlertCircle, Calendar, BookOpen, Plus, Trash2 } from 'lucide-react';
+import { Save, Loader2, Calendar, BookOpen, Plus, Trash2 } from 'lucide-react';
+import Toast, { ToastMessage } from '@/components/Toast';
 import {
     getEntregables,
     getDocumentosDescarga,
@@ -21,7 +22,7 @@ import FileInput from '@/components/admin/FileInput';
 export default function AdminTIIDFormatosDocumentos() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState<string | null>(null);
-    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [message, setMessage] = useState<ToastMessage>(null);
 
     // Data State
     const [entregables, setEntregables] = useState<Entregable[]>([]);
@@ -67,17 +68,10 @@ export default function AdminTIIDFormatosDocumentos() {
 
     return (
         <div className="space-y-10 pb-20">
-            <header className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl font-black text-white">Editar Formatos y Documentos TIID</h1>
-                    <p className="text-gray-400">Actualiza la información visible en la página de Formatos y Documentos.</p>
-                </div>
-                {message && (
-                    <div className={`px-4 py-2 rounded-lg flex items-center gap-2 ${message.type === 'success' ? 'bg-green-500/20 text-green-400 border border-green-500/50' : 'bg-red-500/20 text-red-400 border border-red-500/50'}`}>
-                        {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-                        {message.text}
-                    </div>
-                )}
+            <Toast message={message} onClose={() => setMessage(null)} />
+            <header className="mb-8">
+                <h1 className="text-3xl font-black text-white">Editar Formatos y Documentos TIID</h1>
+                <p className="text-gray-400">Actualiza la información visible en la página de Formatos y Documentos.</p>
             </header>
 
             {/* Entregables */}

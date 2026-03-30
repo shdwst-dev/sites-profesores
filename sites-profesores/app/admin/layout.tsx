@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { FileText, LogOut, LayoutDashboard, Database, BookOpen, Info } from 'lucide-react';
+import { FileText, LogOut, LayoutDashboard, Database, BookOpen, Info, LogIn } from 'lucide-react';
 import { verifySessionToken } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabaseServer';
 
@@ -77,7 +77,7 @@ export default async function AdminLayout({
                 <div className="p-4 border-t border-white/10">
                     <Link href="/home" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-red-500/10 hover:text-red-400 rounded-xl transition-all">
                         <LogOut size={18} />
-                        <span className="font-medium text-sm">Salir al Sitio</span>
+                        <span className="font-medium text-sm">Salir al menú principal</span>
                     </Link>
                 </div>
             </aside>
