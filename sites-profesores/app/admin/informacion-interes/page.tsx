@@ -22,7 +22,6 @@ export default function AdminInfoInteres() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState<ToastMessage>(null);
-    const [shouldNotify, setShouldNotify] = useState(false);
 
     // Data State
     const [comunicados, setComunicados] = useState<Comunicado[]>([]);
@@ -98,14 +97,14 @@ export default function AdminInfoInteres() {
         setSaving(true);
         try {
             if (activeSection === 'comunicados') {
-                if (editingItem) await updateComunicado(editingItem.id, formData, shouldNotify);
-                else await createComunicado(formData, shouldNotify);
+                if (editingItem) await updateComunicado(editingItem.id, formData);
+                else await createComunicado(formData);
             } else if (activeSection === 'fechas') {
-                if (editingItem) await updateFechaImportante(editingItem.id, formData, shouldNotify);
-                else await createFechaImportante(formData, shouldNotify);
+                if (editingItem) await updateFechaImportante(editingItem.id, formData);
+                else await createFechaImportante(formData);
             } else if (activeSection === 'tramites') {
-                if (editingItem) await updateTramite(editingItem.id, formData, shouldNotify);
-                else await createTramite(formData, shouldNotify);
+                if (editingItem) await updateTramite(editingItem.id, formData);
+                else await createTramite(formData);
             } else if (activeSection === 'tutores') {
                 if (editingItem) await updateTutorProfesor(editingItem.id, formData);
                 else await createTutorProfesor(formData);
@@ -225,12 +224,6 @@ export default function AdminInfoInteres() {
                 <div>
                     <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight uppercase">Información de Interés</h1>
                     <p className="text-sm text-gray-400 mt-1">Administra fechas, comunicados, trámites y contactos globales.</p>
-                </div>
-                <div className="md:ml-auto flex items-center gap-3 bg-slate-800/50 border border-white/5 px-4 py-2 rounded-2xl">
-                    <div className={`w-10 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${shouldNotify ? 'bg-indigo-600' : 'bg-slate-600'}`} onClick={() => setShouldNotify(!shouldNotify)}>
-                        <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${shouldNotify ? 'translate-x-4' : 'translate-x-0'}`} />
-                    </div>
-                    <span className="text-sm font-bold text-white whitespace-nowrap">Notificar por correo</span>
                 </div>
             </header>
 
