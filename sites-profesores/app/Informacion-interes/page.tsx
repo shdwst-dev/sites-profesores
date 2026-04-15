@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Bell, Calendar, FileText, Users, ExternalLink, ChevronRight, Menu, X, ChevronUp, LayoutGrid } from 'lucide-react';
 import Footer from '@/components/Footer';
 import SubHeader from '@/components/SubHeader';
+import { useTheme } from '@/components/ThemeProvider';
 import { useState, useEffect } from 'react';
 import {
     getComunicados,
@@ -22,6 +23,8 @@ import {
 
 export default function InfoPage() {
     const router = useRouter();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('');
@@ -122,7 +125,7 @@ export default function InfoPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#0f172a]">
+        <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg-primary)' }}>
             <SubHeader
                 title="Información de Interés"
                 subtitle={activeSection ? sections.find(s => s.id === activeSection)?.label : "Comunicados y Fechas"}
@@ -133,8 +136,8 @@ export default function InfoPage() {
             <div className="flex-1 w-full max-w-[1400px] mx-auto flex gap-8 px-4 sm:px-6 lg:px-8 py-10">
                 {/* Floating Table of Contents for Desktop */}
                 <aside className="hidden xl:block w-64 shrink-0 sticky top-32 h-fit">
-                    <div className="bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl">
-                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 px-2">Contenidos</h3>
+                    <div className={`backdrop-blur-xl border rounded-[2rem] p-6 shadow-2xl ${isDark ? 'bg-slate-900/40 border-white/10' : 'bg-white/80 border-gray-200'}`}>
+                        <h3 className={`text-xs font-black uppercase tracking-[0.2em] mb-6 px-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Contenidos</h3>
                         <nav className="space-y-1">
                             {sections.map((s) => {
                                 const Icon = s.icon;
@@ -145,7 +148,7 @@ export default function InfoPage() {
                                         onClick={(e) => handleSectionClick(s.id, e)}
                                         className={`
                                             flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 group
-                                            ${activeSection === s.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}
+                                            ${activeSection === s.id ? 'bg-indigo-600 text-white shadow-lg' : isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}
                                         `}
                                     >
                                         <Icon size={16} className={activeSection === s.id ? 'text-white' : 'group-hover:text-indigo-400'} />
@@ -163,9 +166,9 @@ export default function InfoPage() {
                         {/* Left Column */}
                         <div className="lg:col-span-2 space-y-10">
                             {/* Comunicados Section */}
-                            <div id="comunicados" className="scroll-mt-32 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-5 sm:p-8 shadow-2xl relative overflow-hidden">
+                            <div id="comunicados" className={`scroll-mt-32 rounded-2xl backdrop-blur-sm border p-5 sm:p-8 shadow-2xl relative overflow-hidden ${isDark ? 'bg-white/10 border-white/20' : 'bg-white/80 border-gray-200'}`}>
                                 <div className="absolute top-0 right-0 -m-8 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
-                                <h2 className="mb-6 sm:mb-8 flex items-center gap-3 text-2xl sm:text-3xl font-bold text-white">
+                                <h2 className={`mb-6 sm:mb-8 flex items-center gap-3 text-2xl sm:text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                     <div className="p-2 bg-blue-500 rounded-lg">
                                         <Bell className="w-6 h-6 text-white" />
                                     </div>
@@ -197,8 +200,8 @@ export default function InfoPage() {
                             </div>
 
                             {/* Trámites Section */}
-                            <div id="tramites" className="scroll-mt-32 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/20 p-5 sm:p-8 shadow-2xl">
-                                <h2 className="mb-6 sm:mb-8 flex items-center gap-3 text-2xl sm:text-3xl font-bold text-white">
+                            <div id="tramites" className={`scroll-mt-32 rounded-2xl backdrop-blur-sm border p-5 sm:p-8 shadow-2xl ${isDark ? 'bg-white/5 border-white/20' : 'bg-white/80 border-gray-200'}`}>
+                                <h2 className={`mb-6 sm:mb-8 flex items-center gap-3 text-2xl sm:text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                     <div className="p-2 bg-amber-500 rounded-lg">
                                         <FileText className="w-6 h-6 text-white" />
                                     </div>
@@ -224,7 +227,7 @@ export default function InfoPage() {
                             </div>
 
                             {/* Tutores y Profesores Section */}
-                            <div id="tutores" className="scroll-mt-32 rounded-2xl bg-[#431d2a]/30 backdrop-blur-sm border border-white/10 p-4 sm:p-8 shadow-2xl">
+                            <div id="tutores" className={`scroll-mt-32 rounded-2xl backdrop-blur-sm border p-4 sm:p-8 shadow-2xl ${isDark ? 'bg-[#431d2a]/30 border-white/10' : 'bg-white/60 border-gray-200'}`}>
                                 <div className="grid md:grid-cols-2 gap-4">
                                     {/* Tutores Box */}
                                     <div className="rounded-xl bg-white shadow-xl overflow-hidden flex flex-col group hover:-translate-y-1 transition-transform duration-300">
@@ -305,8 +308,8 @@ export default function InfoPage() {
                         {/* Right Column */}
                         <div className="space-y-8">
                             {/* Fechas Importantes Section */}
-                            <div id="fechas" className="scroll-mt-32 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-5 sm:p-8 shadow-2xl">
-                                <h2 className="mb-8 flex items-center gap-3 text-2xl font-bold text-white">
+                            <div id="fechas" className={`scroll-mt-32 rounded-2xl backdrop-blur-sm border p-5 sm:p-8 shadow-2xl ${isDark ? 'bg-white/10 border-white/20' : 'bg-white/80 border-gray-200'}`}>
+                                <h2 className={`mb-8 flex items-center gap-3 text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                     <Calendar className="w-6 h-6 text-purple-400" />
                                     Fechas Importantes
                                 </h2>

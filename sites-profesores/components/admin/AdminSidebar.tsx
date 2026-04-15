@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Menu, X, LayoutDashboard, Info, BookOpen, FileText, Database, Bell, CheckSquare } from 'lucide-react';
+import { Menu, X, LayoutDashboard, Info, BookOpen, FileText, Database, Bell, CheckSquare, Users, Settings } from 'lucide-react';
 import LogoutButton from '@/components/admin/LogoutButton';
 
 const navItems = [
@@ -25,6 +25,12 @@ const navItems = [
         items: [
             { href: '/admin/sistemas/formatos-y-documentos', label: 'Formatos y Documentos', icon: BookOpen },
             { href: '/admin/sistemas/recursos-y-avisos', label: 'Recursos y Avisos', icon: Database },
+        ]
+    },
+    {
+        group: 'Configuración',
+        items: [
+            { href: '/admin/usuarios', label: 'Gestión de Usuarios', icon: Users },
         ]
     },
 ];

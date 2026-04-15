@@ -1,0 +1,18 @@
+{
+  "name": "Portal Docente UPQ",
+  "short_name": "Portal UPQ",
+  "description": "Gestión académica para profesores de la Universidad Politécnica de Querétaro",
+  "start_url": "/home",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/UPQ-Logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

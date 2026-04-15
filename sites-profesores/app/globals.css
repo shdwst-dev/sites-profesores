@@ -1,8 +1,44 @@
 @import "tailwindcss";
 
-:root {
+/* ============================
+   Theme Variables
+   ============================ */
+
+/* Dark Theme (default) */
+:root,
+.dark {
   --background: linear-gradient(180deg, #1e3a5f 0%, #431d2a 100%);
   --foreground: #171717;
+  --bg-primary: #0f172a;
+  --bg-card: rgba(255, 255, 255, 0.1);
+  --bg-card-solid: #1e293b;
+  --bg-header: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-heading: #ffffff;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --card-text-primary: #1f2937;
+  --card-text-secondary: #4b5563;
+  --card-bg: #ffffff;
+  --search-bg: #0f172a;
+}
+
+/* Light Theme */
+.light {
+  --background: linear-gradient(180deg, #dbeafe 0%, #f3e8ff 100%);
+  --foreground: #1f2937;
+  --bg-primary: #f8fafc;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-solid: #ffffff;
+  --bg-header: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-heading: #0f172a;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --card-text-primary: #1f2937;
+  --card-text-secondary: #4b5563;
+  --card-bg: #ffffff;
+  --search-bg: #ffffff;
 }
 
 @theme inline {
@@ -11,17 +47,17 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
 html,
 body {
-  /* Asegura que cubra al menos toda la pantalla */
   min-height: 100vh;
-
-  /* Fondo aplicado directamente con attachment fixed */
   background: var(--background);
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
+  transition: background 0.4s ease;
 }
+
 body {
   background-color: transparent;
   color: var(--foreground);
@@ -43,4 +79,25 @@ body {
 
 .formato-row:hover .formato-nombre {
   text-decoration: underline;
+}
+
+/* ============================
+   Light Theme Overrides (public pages)
+   ============================ */
+
+/* Cards in sections — text readability in light mode */
+.light .section-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+/* Heading colors in light mode for public sections */
+.light .section-heading {
+  color: #0f172a;
+}
+
+/* Sub-text in light mode */
+.light .section-subtext {
+  color: #475569;
 }
