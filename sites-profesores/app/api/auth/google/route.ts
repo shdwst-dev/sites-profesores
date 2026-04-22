@@ -46,6 +46,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Tu correo no tiene permiso para acceder. Contacta al administrador.' }, { status: 403 });
     }
 
+    // Actualiza o crea el registro en la tabla 'usuarios' para marcarlo como Activo
+    const emailLower = email.toLowerCase();
+    const { data: existingUser } = await supabaseAdmin
+      .from('usuarios')
+      .select('id')
+      .eq('email', emailLower)
+      .maybeSingle();
+
+    if (existingUser) {
+      await supabaseAdmin
+        .from('usuarios')
+        .update({
+          nombre: name,
+          picture: picture,
+          last_login: new Date().toISOString(),
+        })
+        .eq('email', emailLower);
+    } else {
+      await supabaseAdmin
+        .from('usuarios')
+        .insert([{
+          email: emailLower,
+          nombre: name,
+          picture: picture,
+          rol: 'profesor',
+          last_login: new Date().toISOString(),
+        }]);
+    }
+
     // Crea el token de sesión interno
     const sessionToken = await signSession({
       email,
