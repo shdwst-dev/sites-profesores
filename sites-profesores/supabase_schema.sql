@@ -98,6 +98,7 @@ create table if not exists coordinaciones_tutores (
   title text not null,
   period text,
   note text,
+  tutors jsonb default '[]'::jsonb, -- Lista de grupos: [{"group": "Grupo A", "tutor": "Nombre"}]
   department text default 'TIID',
   created_at timestamp with time zone default timezone('utc'::text, now())
 );
@@ -105,11 +106,11 @@ create table if not exists coordinaciones_tutores (
 -- Table: recursos_genericos (Specific by Department)
 create table if not exists recursos_genericos (
   id uuid default uuid_generate_v4() primary key,
-  type text not null, -- 'AltasBajas', 'Casilleros', 'CriteriosETC'
+  type text not null, -- 'AltasBajas', 'Casilleros', 'CriteriosETC', 'Recursamientos'
   title text,
   description text,
   link text,
-  extra_data jsonb,
+  content jsonb, -- Datos estructurados: pasos, criterios, etc.
   department text default 'TIID',
   created_at timestamp with time zone default timezone('utc'::text, now())
 );

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Loader2, CheckCircle, AlertCircle, Users, LayoutGrid, Calendar, GraduationCap, MapPin, AlignLeft, BookOpen, Info, Edit2, X } from 'lucide-react';
+import { Save, Loader2, CheckCircle, AlertCircle, Users, LayoutGrid, Calendar, GraduationCap, MapPin, AlignLeft, BookOpen, Info, Edit2, X, Plus, Trash2 } from 'lucide-react';
+import Toast, { ToastMessage } from '@/components/Toast';
 import Input from '@/components/admin/Input';
 import {
     getEncargadoTutorias,
@@ -31,7 +32,7 @@ import FileInput from '@/components/admin/FileInput';
 export default function AdminTIIDRecursos() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [message, setMessage] = useState<ToastMessage>(null);
 
     // Data State
     const [encargado, setEncargado] = useState<EncargadoTutoria | null>(null);
@@ -167,17 +168,12 @@ export default function AdminTIIDRecursos() {
 
     return (
         <div className="space-y-10 pb-20">
+            <Toast message={message} onClose={() => setMessage(null)} />
             <header className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 mb-8">
                 <div>
                     <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight uppercase">Recursos TIID</h1>
                     <p className="text-sm text-gray-400 mt-1">Actualiza la información visible en la página de Recursos y Avisos.</p>
                 </div>
-                {message && (
-                    <div className={`px-4 py-3 rounded-xl flex items-center gap-3 animate-in fade-in duration-300 font-medium shadow-lg ${message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
-                        {message.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-                        {message.text}
-                    </div>
-                )}
             </header>
 
             <div className="space-y-6">
@@ -326,19 +322,56 @@ export default function AdminTIIDRecursos() {
                                         <Input label="Costo" value={formData.content?.cost || ''} onChange={v => setFormData({ ...formData, content: { ...formData.content, cost: v } })} />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Pasos (Formato JSON Array)</label>
-                                        <textarea
-                                            className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-mono text-xs resize-y min-h-[150px]"
-                                            value={formData.content?.steps ? JSON.stringify(formData.content.steps, null, 2) : '[]'}
-                                            onChange={e => {
-                                                try {
-                                                    const steps = JSON.parse(e.target.value);
-                                                    setFormData({ ...formData, content: { ...formData.content, steps } });
-                                                } catch (err) {}
-                                            }}
-                                            placeholder='[&#10;  {&#10;    "step": "01",&#10;    "text": "..."&#10;  }&#10;]'
-                                        />
-                                        <p className="text-xs text-gray-500 mt-1">Si este JSON es inválido, no se actualizará en tiempo real. Use un formato estricto.</p>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest">Pasos del Proceso</label>
+                                            <button type="button" onClick={() => {
+                                                const steps = Array.isArray(formData.content?.steps) ? formData.content.steps : [];
+                                                setFormData({ ...formData, content: { ...formData.content, steps: [...steps, { step: String(steps.length + 1).padStart(2, '0'), text: 'Nuevo paso' }] } });
+                                            }} className="text-xs text-indigo-400 font-bold hover:text-indigo-300 flex items-center gap-1">
+                                                <Plus size={12} /> Añadir paso
+                                            </button>
+                                        </div>
+                                        <div className="space-y-2">
+                                            {(Array.isArray(formData.content?.steps) ? formData.content.steps : []).map((s: any, idx: number) => (
+                                                <div key={idx} className="flex gap-2 items-start">
+                                                    <div className="w-12 shrink-0">
+                                                        <input
+                                                            type="text"
+                                                            className="w-full bg-slate-950 border border-white/10 rounded-lg px-2 py-2 text-white text-xs font-mono text-center focus:border-indigo-500 outline-none"
+                                                            value={s.step}
+                                                            onChange={e => {
+                                                                const steps = [...formData.content.steps];
+                                                                steps[idx] = { ...steps[idx], step: e.target.value };
+                                                                setFormData({ ...formData, content: { ...formData.content, steps } });
+                                                            }}
+                                                            placeholder="01"
+                                                        />
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-indigo-500 outline-none"
+                                                        value={s.text}
+                                                        onChange={e => {
+                                                            const steps = [...formData.content.steps];
+                                                            steps[idx] = { ...steps[idx], text: e.target.value };
+                                                            setFormData({ ...formData, content: { ...formData.content, steps } });
+                                                        }}
+                                                        placeholder="Descripción del paso"
+                                                    />
+                                                    <button type="button" onClick={() => {
+                                                        const steps = formData.content.steps.filter((_: any, i: number) => i !== idx);
+                                                        setFormData({ ...formData, content: { ...formData.content, steps } });
+                                                    }} className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg shrink-0">
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            {(!formData.content?.steps || formData.content.steps.length === 0) && (
+                                                <p className="text-gray-500 text-xs text-center py-4 bg-slate-950 rounded-xl border border-white/5">
+                                                    Añade pasos con el botón de arriba.
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             )}

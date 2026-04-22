@@ -155,12 +155,7 @@ export const getCoordinacionTutores = async (department: string = 'TIID'): Promi
 export const getRecursosGenericos = async (type: string, department: string = 'TIID'): Promise<RecursoGenerico | null> => {
     const mockCasilleros = department === 'Sistemas' ? mocks.casillerosDataSistemas : mocks.casillerosData;
 
-    // If type is not handled in mocks (like AltasBajas which is often just a link), return null if checking mocks
-    // But fetchWithFallback handles array of mocks. 
-    // We can simulate fetchWithFallback behavior manually or update fetchWithFallback to filter by two columns?
-    // fetchWithFallback only filters by department. 
-    // So we use Supabase directly for this specific query as it has 2 filters (type AND department)
-
+    // Usamos Supabase directamente porque necesitamos filtrar por dos columnas (type AND department)
     try {
         if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
             if (type === 'Casilleros') return mockCasilleros;
@@ -178,7 +173,15 @@ export const getRecursosGenericos = async (type: string, department: string = 'T
             if (type === 'Casilleros') return mockCasilleros;
             return null;
         }
-        return data as RecursoGenerico;
+
+        // Compatibilidad: si la BD aún tiene `extra_data` en vez de `content`, remapear
+        const result = data as any;
+        if ('extra_data' in result && !('content' in result)) {
+            result.content = result.extra_data;
+            delete result.extra_data;
+        }
+
+        return result as RecursoGenerico;
     } catch {
         if (type === 'Casilleros') return mockCasilleros;
         return null;
@@ -281,7 +284,16 @@ export const updateCoordinacionTutores = async (id: string | number, data: Parti
 };
 
 export const updateRecursoGenerico = async (id: string | number, data: Partial<RecursoGenerico>, department = 'TIID') => {
-    await saveToSupabase('recursos_genericos', id, data, department);
+    const payload: any = { ...data };
+    // Si el frontend manda `content` pero la BD tiene columna `content` (nueva) o `extra_data` (legado),
+    // nos aseguramos de que el payload use el nombre correcto.
+    // Como ya migramos la BD a `content`, simplemente lo dejamos como viene.
+    // Si por algún motivo la BD aún usa extra_data, este bloque lo adapta:
+    if ('extra_data' in payload) {
+        payload.content = payload.extra_data;
+        delete payload.extra_data;
+    }
+    await saveToSupabase('recursos_genericos', id, payload, department);
 };
 
 export const updateCalendario = async (id: string | number, data: Partial<CalendarioData>, department = 'TIID') => {
