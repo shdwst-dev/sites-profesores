@@ -13,9 +13,9 @@ async function test() {
     const { data: d1, error: e1 } = await supabase.from('emails_permitidos').select('*').limit(1);
     console.log("Error emails_permitidos:", e1?.message || "OK");
 
-    console.log("\nTesteando usuarios...");
-    const { data: d2, error: e2 } = await supabase.from('usuarios').select('email, nombre, rol, picture, last_login').limit(1);
-    console.log("Error usuarios:", e2?.message || "OK");
+    console.log("\nTesteando entregables...");
+    const { data: d2, error: e2 } = await supabase.from('entregables').select('*').limit(1);
+    console.log("Error entregables:", e2?.message || "OK", "Data:", d2);
 }
 
 test();

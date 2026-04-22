@@ -112,9 +112,13 @@ export default function AdminTIIDFormatosDocumentos() {
         const { section, id } = deleteTarget;
         setDeleteTarget(null);
         try {
-            if (section === 'entregables') await deleteEntregable(id);
-            else if (section === 'descargas') await deleteDocumentoDescarga(id);
-            await loadData();
+            if (section === 'entregables') {
+                await deleteEntregable(id);
+                setEntregables(prev => prev.filter(item => item.id !== id));
+            } else if (section === 'descargas') {
+                await deleteDocumentoDescarga(id);
+                setDescargas(prev => prev.filter(item => item.id !== id));
+            }
             showMessage('success', 'Elemento eliminado correctamente.');
         } catch (error) {
             console.error("Error deleting:", error);
