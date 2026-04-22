@@ -247,6 +247,8 @@ async function saveToSupabase(tableName: string, id: string | number, data: any,
             throw new Error(err.message || `Error al insertar registro (${res.status})`);
         }
         console.log('[saveToSupabase] Insert Success');
+        const json = await res.json();
+        return json.data ? json.data[0] : null;
     } else {
         // UPDATE: ID es un UUID real
         const { id: _, ...updateData } = data;
@@ -266,6 +268,8 @@ async function saveToSupabase(tableName: string, id: string | number, data: any,
             throw new Error(err.message || `Error al actualizar registro (${res.status})`);
         }
         console.log('[saveToSupabase] Update Success');
+        const json = await res.json();
+        return json.data ? json.data[0] : null;
     }
 }
 
@@ -344,11 +348,11 @@ async function deleteFromSupabase(tableName: string, id: string | number) {
 
 // Entregables CRUD
 export const createEntregable = async (data: Omit<Entregable, 'id'>, department = 'TIID', shouldNotify = false) => {
-    await saveToSupabase('entregables', Date.now(), data, department, shouldNotify); // Use dummy ID for saveToSupabase logic which handles insert
+    return await saveToSupabase('entregables', Date.now(), data, department, shouldNotify);
 };
 
 export const updateEntregable = async (id: string | number, data: Partial<Entregable>, department = 'TIID', shouldNotify = false) => {
-    await saveToSupabase('entregables', id, data, department, shouldNotify);
+    return await saveToSupabase('entregables', id, data, department, shouldNotify);
 };
 
 export const deleteEntregable = async (id: string | number) => {
@@ -357,11 +361,11 @@ export const deleteEntregable = async (id: string | number) => {
 
 // Documentos Descarga CRUD
 export const createDocumentoDescarga = async (data: Omit<DocumentoDescarga, 'id'>, department = 'TIID', shouldNotify = false) => {
-    await saveToSupabase('documentos_descarga', Date.now(), data, department, shouldNotify);
+    return await saveToSupabase('documentos_descarga', Date.now(), data, department, shouldNotify);
 };
 
 export const updateDocumentoDescarga = async (id: string | number, data: Partial<DocumentoDescarga>, department = 'TIID', shouldNotify = false) => {
-    await saveToSupabase('documentos_descarga', id, data, department, shouldNotify);
+    return await saveToSupabase('documentos_descarga', id, data, department, shouldNotify);
 };
 
 export const deleteDocumentoDescarga = async (id: string | number) => {

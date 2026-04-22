@@ -86,13 +86,22 @@ export default function AdminTIIDFormatosDocumentos() {
         setSaving(true);
         try {
             if (activeSection === 'entregables') {
-                if (editingItem) await updateEntregable(editingItem.id, formData);
-                else await createEntregable({ ...formData, department: 'TIID' });
+                if (editingItem) {
+                    const updated = await updateEntregable(editingItem.id, formData);
+                    setEntregables(prev => prev.map(item => item.id === editingItem.id ? (updated || { ...item, ...formData }) : item));
+                } else {
+                    const created = await createEntregable({ ...formData, department: 'TIID' });
+                    if (created) setEntregables(prev => [...prev, created]);
+                }
             } else if (activeSection === 'descargas') {
-                if (editingItem) await updateDocumentoDescarga(editingItem.id, formData);
-                else await createDocumentoDescarga({ ...formData, department: 'TIID' });
+                if (editingItem) {
+                    const updated = await updateDocumentoDescarga(editingItem.id, formData);
+                    setDescargas(prev => prev.map(item => item.id === editingItem.id ? (updated || { ...item, ...formData }) : item));
+                } else {
+                    const created = await createDocumentoDescarga({ ...formData, department: 'TIID' });
+                    if (created) setDescargas(prev => [...prev, created]);
+                }
             }
-            await loadData();
             showMessage('success', 'Cambios guardados correctamente.');
             handleCloseModal();
         } catch (error) {
