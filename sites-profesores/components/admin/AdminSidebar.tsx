@@ -24,7 +24,7 @@ const navItems = [
         group: 'Sistemas',
         items: [
             { href: '/admin/sistemas/formatos-y-documentos', label: 'Formatos y Documentos', icon: BookOpen },
-            { href: '/admin/sistemas/recursos-y-avisos', label: 'Recursos y Avisos', icon: Database },
+            { href: '/admin/sistemas/recursos-y-avisos', label: 'Recursos y Avisos', icon: FileText },
         ]
     },
     {
@@ -63,11 +63,10 @@ export default function AdminSidebar() {
                                     key={item.href}
                                     href={item.href}
                                     onClick={() => setOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                                        isActive(item.href)
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive(item.href)
                                             ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
                                             : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                    }`}
+                                        }`}
                                 >
                                     <Icon size={18} />
                                     <span className="font-medium text-sm">{item.label}</span>
