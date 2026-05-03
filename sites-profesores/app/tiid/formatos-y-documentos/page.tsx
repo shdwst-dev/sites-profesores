@@ -134,7 +134,7 @@ export default function TIIDFormatosDocumentos() {
                                         <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">Entregables</h2>
                                     </div>
                                     <a
-                                        href="https://drive.google.com/drive/folders/1uEvZZy3jhXpj0_67CGelYYyq5cBh45cq"
+                                        href="https://drive.google.com/drive/folders/1uEvZZy3jhXpj0_67CGelYYyq5cBh45cq?usp=drive_link"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-all shadow-lg hover:shadow-white/10 border border-white/10 text-sm"
@@ -323,7 +323,7 @@ function EntregableRow({ item, department }: { item: Entregable, department: str
                 {error && <p className="text-red-400 text-xs font-bold mt-2">{error}</p>}
                 {successCount > 0 && !uploading && (
                     <p className="text-emerald-400 text-xs font-bold mt-2 flex items-center gap-1">
-                        <CheckCircle2 size={14}/> {successCount === 1 ? '¡Entregado con éxito!' : `¡${successCount} archivos entregados con éxito!`}
+                        <CheckCircle2 size={14} /> {successCount === 1 ? '¡Entregado con éxito!' : `¡${successCount} archivos entregados con éxito!`}
                     </p>
                 )}
             </div>
@@ -333,18 +333,17 @@ function EntregableRow({ item, department }: { item: Entregable, department: str
                 </span>
 
                 <input type="file" ref={fileRef} className="hidden" onChange={handleFileChange} accept=".pdf,.doc,.docx,.zip" multiple />
-                
-                <button 
+
+                <button
                     onClick={() => !uploading && fileRef.current?.click()}
                     disabled={uploading}
                     title="Subir archivo(s)"
-                    className={`p-2.5 rounded-xl transition-all shrink-0 ${
-                        uploading 
-                        ? 'bg-indigo-600/50 text-white cursor-wait' 
-                        : successCount > 0 
+                    className={`p-2.5 rounded-xl transition-all shrink-0 ${uploading
+                        ? 'bg-indigo-600/50 text-white cursor-wait'
+                        : successCount > 0
                             ? 'bg-emerald-500/20 text-emerald-400'
                             : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95'
-                    }`}
+                        }`}
                 >
                     {uploading ? <Loader2 size={18} className="animate-spin" /> : (successCount > 0 ? <CheckCircle2 size={18} /> : <UploadCloud size={18} />)}
                 </button>

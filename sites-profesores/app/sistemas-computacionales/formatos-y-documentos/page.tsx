@@ -134,7 +134,7 @@ export default function SistemasFormatosDocumentos() {
                                         <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">Entregables</h2>
                                     </div>
                                     <a
-                                        href="https://drive.google.com/drive/folders/1uEvZZy3jhXpj0_67CGelYYyq5cBh45cq"
+                                        href="https://drive.google.com/drive/folders/1uEvZZy3jhXpj0_67CGelYYyq5cBh45cq?usp=drive_link"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-all shadow-lg hover:shadow-white/10 border border-white/10 text-sm"
