@@ -2,7 +2,7 @@ import { google } from 'googleapis';
 import { Readable } from 'stream';
 
 const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
-const PARENT_FOLDER_ID = '12yN30IgnZJfO1w9chgSbtM-cgVLfataX';
+const PARENT_FOLDER_ID = process.env.GOOGLE_DRIVE_ROOT_FOLDER_ID || '1uEvZZy3jhXpj0_67CGelYYyq5cBh45cq';
 
 // Autenticación OAuth2 usando las credenciales del bot (separadas del login)
 const oauth2Client = new google.auth.OAuth2(
