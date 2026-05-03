@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Menu, X, LayoutDashboard, Info, BookOpen, FileText, Database, Bell, CheckSquare, Users, Settings } from 'lucide-react';
+import { Menu, X, LayoutDashboard, Info, BookOpen, FileText, Database, Bell, CheckSquare, Users, Settings, Home } from 'lucide-react';
 import LogoutButton from '@/components/admin/LogoutButton';
 
 const navItems = [
@@ -77,7 +77,15 @@ export default function AdminSidebar() {
                 ))}
             </nav>
 
-            <div className="p-4 border-t border-white/10">
+            <div className="p-4 border-t border-white/10 space-y-2">
+                <Link
+                    href="/home"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-indigo-600/20 hover:text-indigo-400 rounded-xl transition-all w-full"
+                >
+                    <Home size={18} />
+                    <span className="font-medium text-sm">Volver al Portal</span>
+                </Link>
                 <LogoutButton />
             </div>
         </>
