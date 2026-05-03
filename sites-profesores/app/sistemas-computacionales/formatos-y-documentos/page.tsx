@@ -1,9 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Calendar, BookOpen, ExternalLink, ChevronUp, Menu, X } from 'lucide-react';
+import { Calendar, BookOpen, ExternalLink, ChevronUp, Menu, X, UploadCloud, CheckCircle2, Loader2 } from 'lucide-react';
 import Footer from '@/components/Footer';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import SubHeader from '@/components/SubHeader';
 import { getEntregables, getDocumentosDescarga } from '@/lib/api';
 import { Entregable, DocumentoDescarga } from '@/types';
@@ -143,18 +143,8 @@ export default function SistemasFormatosDocumentos() {
                                     </a>
                                 </div>
                                 <div className="space-y-4">
-                                    {entregables.map((item, idx) => (
-                                        <div key={idx} className="flex flex-col md:flex-row gap-6 p-6 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors">
-                                            <div className="md:w-1/4">
-                                                <span className="text-rose-400 font-black text-xs uppercase tracking-widest">{item.stage}</span>
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-white font-bold">{item.title}</p>
-                                            </div>
-                                            <div className="md:w-1/4">
-                                                <span className="text-rose-400 font-bold text-sm bg-rose-500/10 px-4 py-2 rounded-full inline-block">{item.deadline}</span>
-                                            </div>
-                                        </div>
+                                    {entregables.map((item) => (
+                                        <EntregableRow key={item.id} item={item} department="Sistemas" />
                                     ))}
                                 </div>
                             </div>
@@ -246,6 +236,117 @@ export default function SistemasFormatosDocumentos() {
             )}
 
             <Footer />
+        </div>
+    );
+}
+
+// Componente individual para manejar el estado de subida de cada fila
+function EntregableRow({ item, department }: { item: Entregable, department: string }) {
+    const [uploading, setUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+    const [successCount, setSuccessCount] = useState(0);
+    const [error, setError] = useState<string | null>(null);
+    const fileRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        setUploading(true);
+        setError(null);
+        setSuccessCount(0);
+
+        const totalFiles = files.length;
+        setUploadProgress({ current: 0, total: totalFiles });
+
+        let uploaded = 0;
+        const errors: string[] = [];
+
+        for (let i = 0; i < totalFiles; i++) {
+            const file = files[i];
+            setUploadProgress({ current: i + 1, total: totalFiles });
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('department', department);
+            formData.append('category', `Entregas - ${item.title}`);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || `Error al subir ${file.name}`);
+                }
+
+                uploaded++;
+            } catch (err: any) {
+                console.error(`Upload error (${file.name}):`, err);
+                errors.push(`${file.name}: ${err.message || 'Error'}`);
+            }
+        }
+
+        setSuccessCount(uploaded);
+
+        if (errors.length > 0) {
+            setError(`${errors.length} archivo(s) fallaron: ${errors[0]}${errors.length > 1 ? ` y ${errors.length - 1} más` : ''}`);
+        }
+
+        setUploading(false);
+        setUploadProgress({ current: 0, total: 0 });
+
+        if (uploaded > 0) {
+            setTimeout(() => setSuccessCount(0), 5000);
+        }
+
+        if (fileRef.current) fileRef.current.value = '';
+    };
+
+    return (
+        <div className="flex flex-col md:flex-row gap-6 p-6 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors items-center">
+            <div className="md:w-1/4 w-full">
+                <span className="text-rose-400 font-black text-xs uppercase tracking-widest">{item.stage}</span>
+            </div>
+            <div className="flex-1 w-full">
+                <p className="text-white font-bold">{item.title}</p>
+                {uploading && (
+                    <p className="text-rose-300 text-xs font-bold mt-2 flex items-center gap-1">
+                        <Loader2 size={14} className="animate-spin" />
+                        Subiendo {uploadProgress.current} de {uploadProgress.total} archivo(s)...
+                    </p>
+                )}
+                {error && <p className="text-red-400 text-xs font-bold mt-2">{error}</p>}
+                {successCount > 0 && !uploading && (
+                    <p className="text-emerald-400 text-xs font-bold mt-2 flex items-center gap-1">
+                        <CheckCircle2 size={14} /> {successCount === 1 ? '¡Entregado con éxito!' : `¡${successCount} archivos entregados con éxito!`}
+                    </p>
+                )}
+            </div>
+            <div className="md:w-1/4 w-full flex items-center gap-4 justify-between md:justify-end">
+                <span className="text-rose-400 font-bold text-sm bg-rose-500/10 px-4 py-2 rounded-full inline-block shrink-0">
+                    {item.deadline}
+                </span>
+
+                <input type="file" ref={fileRef} className="hidden" onChange={handleFileChange} accept=".pdf,.doc,.docx,.zip" multiple />
+
+                <button
+                    onClick={() => !uploading && fileRef.current?.click()}
+                    disabled={uploading}
+                    title="Subir archivo(s)"
+                    className={`p-2.5 rounded-xl transition-all shrink-0 ${uploading
+                        ? 'bg-rose-600/50 text-white cursor-wait'
+                        : successCount > 0
+                            ? 'bg-emerald-500/20 text-emerald-400'
+                            : 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:scale-105 active:scale-95'
+                        }`}
+                >
+                    {uploading ? <Loader2 size={18} className="animate-spin" /> : (successCount > 0 ? <CheckCircle2 size={18} /> : <UploadCloud size={18} />)}
+                </button>
+            </div>
         </div>
     );
 }
